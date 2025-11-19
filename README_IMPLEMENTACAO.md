@@ -27,6 +27,7 @@ cd desafio-gdash-2025-02
 ```
 
 2. **Configure as variáveis de ambiente**:
+
 A partir do arquivo .env.example, criar um arquivo .env
 
 ```bash
