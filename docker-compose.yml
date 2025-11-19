@@ -1,0 +1,32 @@
+services:
+  python-producer:
+    build:
+      context: ./python-producer
+      dockerfile: Dockerfile
+    container_name: python-producer
+    depends_on:
+      - rabbitmq
+    env_file:
+      - .env
+    networks:
+      - weather-network
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - weather-network
+
+networks:
+  weather-network:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
