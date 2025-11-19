@@ -202,6 +202,7 @@ O frontend estará em http://localhost:5173
 
 ### Python Collector
 
+**Linux/Mac:**
 ```bash
 cd python-collector
 pip install -r requirements.txt
@@ -214,14 +215,61 @@ export LOCATION_NAME=São Paulo
 python main.py
 ```
 
+**Windows (PowerShell):**
+```powershell
+cd python-collector
+pip install -r requirements.txt
+$env:RABBITMQ_URL="amqp://guest:guest@localhost:5672/"
+$env:QUEUE_NAME="weather_data"
+$env:COLLECT_INTERVAL="3600"
+$env:LATITUDE="23.5505"
+$env:LONGITUDE="-46.6333"
+$env:LOCATION_NAME="São Paulo"
+python main.py
+```
+
+**Windows (CMD):**
+```cmd
+cd python-collector
+pip install -r requirements.txt
+set RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+set QUEUE_NAME=weather_data
+set COLLECT_INTERVAL=3600
+set LATITUDE=23.5505
+set LONGITUDE=-46.6333
+set LOCATION_NAME=São Paulo
+python main.py
+```
+
 ### Go Worker
 
+**Linux/Mac:**
 ```bash
 cd go-worker
 go mod download
 export RABBITMQ_URL=amqp://guest:guest@localhost:5672/
 export API_URL=http://localhost:3000/api/weather/logs
 export QUEUE_NAME=weather_data
+go run main.go
+```
+
+**Windows (PowerShell):**
+```powershell
+cd go-worker
+go mod download
+$env:RABBITMQ_URL="amqp://guest:guest@localhost:5672/"
+$env:API_URL="http://localhost:3000/api/weather/logs"
+$env:QUEUE_NAME="weather_data"
+go run main.go
+```
+
+**Windows (CMD):**
+```cmd
+cd go-worker
+go mod download
+set RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+set API_URL=http://localhost:3000/api/weather/logs
+set QUEUE_NAME=weather_data
 go run main.go
 ```
 
