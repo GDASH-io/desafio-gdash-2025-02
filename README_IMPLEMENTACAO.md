@@ -180,6 +180,8 @@ desafio-gdash-2025-02/
 
 ## 🧪 Como Rodar Cada Serviço Individualmente
 
+**Nota**: Certifique-se de que o MongoDB e RabbitMQ estejam rodando antes de executar os serviços individuais.
+
 ### Backend (NestJS)
 
 ```bash
