@@ -15,7 +15,7 @@ export class PrismaWeatherRepository implements WeatherRepository {
         humidity: data.humidity,
         windSpeed: data.windSpeed,
         conditionCode: data.conditionCode,
-        collectedAt: new Date(data.collectedAt), 
+        collectedAt: data.collectedAt,
       },
     });
   }
