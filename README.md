@@ -145,6 +145,10 @@ desafio-gdash-2025-02/
 
 ## 🔧 Executando Serviços Individualmente
 
+> ⚠️ **Importante**: Esta seção é **apenas para execução manual dos serviços sem Docker Compose**.  
+> Se você optou por usar `docker compose up --build` (recomendado), **não é necessário** executar os serviços individualmente, pois o Docker Compose já cuida de tudo automaticamente.  
+> Use esta seção apenas se precisar rodar algum serviço isoladamente para desenvolvimento ou debug.
+
 ### Backend NestJS
 
 ```bash
