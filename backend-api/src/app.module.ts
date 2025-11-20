@@ -5,9 +5,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { WeatherModule } from './weather/weather.module';
 import { PrismaService } from './prisma/prisma.service';
 import { UsersModule } from './users/users.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
-  imports: [PrismaModule, WeatherModule, UsersModule],
+  imports: [PrismaModule, WeatherModule, UsersModule, SeedModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
