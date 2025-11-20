@@ -1,0 +1,139 @@
+services:
+  # MongoDB
+  mongo:
+    image: mongo:7
+    container_name: gdash-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-gdash}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin123}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend NestJS
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gdash-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-admin123}@mongo:27017/${MONGO_DATABASE:-gdash}?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@gdash.io}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - gdash-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gdash-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api}
+    depends_on:
+      - api
+    networks:
+      - gdash-network
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  # Python Collector
+  collector-python:
+    build:
+      context: ./collector-python
+      dockerfile: Dockerfile
+    container_name: gdash-collector
+    restart: unless-stopped
+    environment:
+      WEATHER_API_PROVIDER: ${WEATHER_API_PROVIDER:-open-meteo}
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-}
+      CITY_NAME: ${CITY_NAME:-Maceió, BR}
+      LATITUDE: ${LATITUDE:--9.5713}
+      LONGITUDE: ${LONGITUDE:--36.7820}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASSWORD:-admin123}@rabbitmq:5672/
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-weather.readings}
+      PULL_INTERVAL_SECONDS: ${PULL_INTERVAL_SECONDS:-3600}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - gdash-network
+
+  # Go Worker
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: gdash-worker
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASSWORD:-admin123}@rabbitmq:5672/
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-weather.readings}
+      API_BASE_URL: http://api:3000
+      API_WEATHER_INGEST_PATH: /api/weather/logs
+      MAX_RETRIES: ${MAX_RETRIES:-3}
+    depends_on:
+      - rabbitmq
+      - api
+    networks:
+      - gdash-network
+
+networks:
+  gdash-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  rabbitmq_data:
+
