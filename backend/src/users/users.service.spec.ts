@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UsersService } from './users.service';
 import { User, UserDocument } from './schemas/user.schema';
+import { Role } from './enums/role.enum';
 
 type MockUserModel = {
   (data: User): UserDocument;
@@ -19,16 +20,19 @@ describe('UsersService', () => {
   const mockUser: User = {
     email: 'test@example.com',
     password: 'hashedPassword123',
+    role: Role.USER,
   };
 
   const mockUserDocument = {
     _id: '507f1f77bcf86cd799439011',
     email: 'test@example.com',
     password: 'hashedPassword123',
+    role: Role.USER,
     save: jest.fn().mockResolvedValue({
       _id: '507f1f77bcf86cd799439011',
       email: 'test@example.com',
       password: 'hashedPassword123',
+      role: Role.USER,
     }),
   } as unknown as UserDocument;
 
@@ -90,6 +94,7 @@ describe('UsersService', () => {
       expect(mockUserModelConstructor).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'hashedPassword123',
+        role: Role.USER,
       });
 
       saveSpy.mockRestore();

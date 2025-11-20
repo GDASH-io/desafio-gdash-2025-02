@@ -3,7 +3,10 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { hashPassword } from '../utils/hash-password';
-import { User, UserDocument } from './schemas/user.schema';
+import { UserDocument } from './schemas/user.schema';
+import { Role } from './enums/role.enum';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 jest.mock('../utils/hash-password');
 
@@ -11,7 +14,7 @@ describe('UsersController', () => {
   let controller: UsersController;
   let usersService: jest.Mocked<UsersService>;
 
-  const mockUser: User = {
+  const mockUser: CreateUserDto = {
     email: 'test@example.com',
     password: 'password123',
   };
@@ -20,6 +23,7 @@ describe('UsersController', () => {
     _id: '507f1f77bcf86cd799439011',
     email: 'test@example.com',
     password: 'hashedPassword123',
+    role: Role.USER,
     save: jest.fn(),
   } as unknown as UserDocument;
 
@@ -29,6 +33,7 @@ describe('UsersController', () => {
       _id: '507f1f77bcf86cd799439012',
       email: 'test2@example.com',
       password: 'hashedPassword456',
+      role: Role.USER,
     } as unknown as UserDocument,
   ];
 
@@ -80,6 +85,7 @@ describe('UsersController', () => {
       expect(usersService.createUser).toHaveBeenCalledWith({
         ...mockUser,
         password: 'hashedPassword123',
+        role: Role.USER,
       });
       expect(result).toEqual(mockUserDocument);
     });
@@ -193,7 +199,7 @@ describe('UsersController', () => {
   describe('updateUser', () => {
     it('should update a user successfully', async () => {
       const userId = '507f1f77bcf86cd799439011';
-      const updatedUserData: User = {
+      const updatedUserData: UpdateUserDto = {
         email: 'updated@example.com',
         password: 'newpassword123',
       };

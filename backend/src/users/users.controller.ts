@@ -8,19 +8,24 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User, UserDocument } from './schemas/user.schema';
+import { UserDocument } from './schemas/user.schema';
 import { hashPassword } from '../utils/hash-password';
 import { userSchema } from './validation/create-user.schema';
 import { z } from 'zod';
+import { Role } from './enums/role.enum';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async createUser(@Body() userData: User): Promise<UserDocument> {
+  async createUser(@Body() userData: CreateUserDto): Promise<UserDocument> {
     const result = userSchema.safeParse(userData);
 
     if (!result.success) {
@@ -39,15 +44,18 @@ export class UsersController {
     return this.usersService.createUser({
       ...userData,
       password: hashedPassword,
+      role: Role.USER,
     });
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getUsers(): Promise<UserDocument[]> {
     return this.usersService.findAllUsers();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getUserById(@Param('id') id: string): Promise<UserDocument> {
     const user = await this.usersService.findUserById(id);
     if (!user) {
@@ -57,9 +65,10 @@ export class UsersController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   async updateUser(
     @Param('id') id: string,
-    @Body() userData: User,
+    @Body() userData: UpdateUserDto,
   ): Promise<UserDocument> {
     const result = userSchema.safeParse(userData);
 
@@ -67,7 +76,7 @@ export class UsersController {
       throw new BadRequestException(z.treeifyError(result.error));
     }
 
-    const hashedPassword = await hashPassword(userData.password);
+    const hashedPassword = await hashPassword(userData.password!);
 
     const updatedUser = await this.usersService.updateUser(id, {
       ...userData,
@@ -82,6 +91,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async deleteUser(@Param('id') id: string): Promise<{ message: string }> {
     const deletedUser = await this.usersService.deleteUser(id);
     if (!deletedUser) {
