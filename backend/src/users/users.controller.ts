@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -18,6 +19,8 @@ import { z } from 'zod';
 import { Role } from './enums/role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PaginationQueryDto } from '../utils/pagination-query.dto';
+import { PaginatedResponseDto } from '../utils/paginated-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
@@ -50,8 +53,21 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getUsers(): Promise<UserDocument[]> {
-    return this.usersService.findAllUsers();
+  async getUsers(
+    @Query() query: PaginationQueryDto,
+  ): Promise<PaginatedResponseDto<UserDocument>> {
+    const page = query.page ? Number(query.page) : 1;
+    const totalItems = query.totalItems ? Number(query.totalItems) : 10;
+
+    if (page < 1) {
+      throw new BadRequestException('Page must be greater than 0');
+    }
+
+    if (totalItems < 1) {
+      throw new BadRequestException('TotalItems must be greater than 0');
+    }
+
+    return this.usersService.findUsersPaginated(page, totalItems);
   }
 
   @Get(':id')
