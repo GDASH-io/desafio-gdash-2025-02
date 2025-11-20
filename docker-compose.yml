@@ -23,6 +23,22 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - weather-network
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    environment:
+      - BACKEND_PORT=${BACKEND_PORT}
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - weather-network
 
 networks:
   weather-network:
