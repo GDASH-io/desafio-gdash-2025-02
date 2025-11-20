@@ -13,6 +13,23 @@ Sistema full-stack desenvolvido para coletar, processar e exibir dados climátic
 
 ## 🎥 Vídeo Explicativo
 
+**Link do vídeo:** [A ser adicionado após gravação]
+
+> 📝 **Roteiro completo do vídeo:** Consulte o arquivo [`VIDEO_ROTEIRO.md`](./VIDEO_ROTEIRO.md) para o roteiro detalhado de até 5 minutos.
+
+---
+
+## 📚 Documentação Adicional
+
+Este projeto inclui documentação detalhada sobre a arquitetura e fluxos:
+
+- **[ARQUITETURA.md](./ARQUITETURA.md)** - Descrição completa da arquitetura do sistema
+- **[FLUXOGRAMA_ARQUITETURA.md](./FLUXOGRAMA_ARQUITETURA.md)** - Fluxogramas em texto da arquitetura
+- **[DIAGRAMAS.md](./DIAGRAMAS.md)** - Diagramas visuais em Mermaid (renderizáveis no GitHub)
+- **[VIDEO_ROTEIRO.md](./VIDEO_ROTEIRO.md)** - Roteiro completo para o vídeo explicativo
+
+---
+
 # 📋 Documentação da Implementação
 
 ## 🏗️ Arquitetura
