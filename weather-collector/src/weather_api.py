@@ -69,23 +69,20 @@ class WeatherAPI:
         rain_probability = min(100, int(precipitation * 20)) if precipitation else 0
         
         normalized = {
-            'timestamp': datetime.utcnow().isoformat() + 'Z',
-            'location': {
-                'latitude': float(self.latitude),
-                'longitude': float(self.longitude),
-                'city': self.city
-            },
-            'weather': {
-                'temperature': current.get('temperature_2m'),
-                'humidity': current.get('relative_humidity_2m'),
-                'wind_speed': current.get('wind_speed_10m'),
-                'condition': condition,
-                'weather_code': weather_code,
-                'precipitation': precipitation,
-                'rain_probability': rain_probability
-            }
+            'temperature': current.get('temperature_2m'),
+            'temperature_unit': '°C',
+            'humidity': current.get('relative_humidity_2m'),
+            'humidity_unit': '%',
+            'wind_speed': current.get('wind_speed_10m'),
+            'wind_speed_unit': 'km/h',
+            'condition': condition,
+            'weather_code': weather_code,
+            'precipitation': precipitation,
+            'precipitation_unit': 'mm',
+            'rain_probability': rain_probability
         }
         
-        print(f"Dados coletados: {normalized['weather']['temperature']}°C, {condition}")
+        print(f"Dados coletados: {normalized['temperature']}°C, {condition}")
+        print(f"DEBUG - Dados normalizados: {normalized}")
         
         return normalized
