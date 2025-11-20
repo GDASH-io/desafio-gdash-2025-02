@@ -2,6 +2,10 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { LogOut, Cloud, Users, Search } from 'lucide-react';
 
+type IsActive = {
+  isActive: boolean
+}
+
 export default function Layout() {
   const navigate = useNavigate();
 
@@ -25,7 +29,7 @@ export default function Layout() {
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <NavLink
                   to="/dashboard"
-                  className={({ isActive }) =>
+                  className={({ isActive }: IsActive) =>
                     `inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors ${
                       isActive
                         ? 'text-gray-900 border-blue-500'
@@ -38,7 +42,7 @@ export default function Layout() {
                 </NavLink>
                 <NavLink
                   to="/users"
-                  className={({ isActive }) =>
+                  className={({ isActive }: IsActive) =>
                     `inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors ${
                       isActive
                         ? 'text-gray-900 border-blue-500'
@@ -51,7 +55,7 @@ export default function Layout() {
                 </NavLink>
                 <NavLink
                   to="/explore"
-                  className={({ isActive }) =>
+                  className={({ isActive }: IsActive) =>
                     `inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors ${
                       isActive
                         ? 'text-gray-900 border-blue-500'
