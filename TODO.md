@@ -2,6 +2,8 @@
 
 ## Estado Atual do Desenvolvimento
 
+**Nota:** O Pull Request será criado apenas quando todo o projeto estiver implementado (todas as fases concluídas).
+
 ### Fase 0 - Preparação ✅
 - [x] Branch base criada
 - [x] Estrutura inicial definida
