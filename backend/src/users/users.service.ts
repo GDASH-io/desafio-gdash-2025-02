@@ -7,12 +7,28 @@ import { Model } from 'mongoose';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(userData: User): Promise<UserDocument> {
+  async createUser(userData: User): Promise<UserDocument> {
     const newUser = new this.userModel(userData);
     return newUser.save();
   }
 
-  async findOne(email: string): Promise<UserDocument | null> {
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
+  }
+
+  async findAllUsers(): Promise<UserDocument[]> {
+    return this.userModel.find().exec();
+  }
+
+  async updateUser(id: string, userData: User): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndUpdate(id, userData, { new: true }).exec();
+  }
+
+  async deleteUser(id: string): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
+  }
+
+  async findUserById(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id).exec();
   }
 }
