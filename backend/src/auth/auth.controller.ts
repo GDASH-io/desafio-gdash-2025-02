@@ -5,8 +5,11 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
+import { LoginDto } from './dto/login.dto';
+import { LoginResponseDto } from './dto/login-response.dto';
 import { z } from 'zod';
 
 const loginSchema = z.object({
@@ -14,13 +17,22 @@ const loginSchema = z.object({
   password: z.string().min(1, { message: 'Password is required' }),
 });
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
+  @ApiOperation({ summary: 'Login user' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: LoginResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(
-    @Body() loginData: { email: string; password: string },
+    @Body() loginData: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = loginSchema.safeParse(loginData);
@@ -46,6 +58,20 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logout successful',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Logged out successfully',
+        },
+      },
+    },
+  })
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token');
     return { message: 'Logged out successfully' };

@@ -23,20 +23,20 @@ export class UsersService {
 
   async findUsersPaginated(
     page: number = 1,
-    totalItems: number = 10,
+    itemsPerPage: number = 10,
   ): Promise<PaginatedResponseDto<UserDocument>> {
-    const skip = (page - 1) * totalItems;
+    const skip = (page - 1) * itemsPerPage;
     const [data, total] = await Promise.all([
-      this.userModel.find().skip(skip).limit(totalItems).exec(),
+      this.userModel.find().skip(skip).limit(itemsPerPage).exec(),
       this.userModel.countDocuments().exec(),
     ]);
 
-    const totalPages = Math.ceil(total / totalItems);
+    const totalPages = Math.ceil(total / itemsPerPage);
 
     return {
       data,
       page,
-      totalItems,
+      itemsPerPage,
       totalPages,
       total,
     };

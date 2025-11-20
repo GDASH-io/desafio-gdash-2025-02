@@ -1,17 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateUserDto {
+export class LoginDto {
   @ApiProperty({
     description: 'User email address',
     example: 'user@example.com',
-    required: false,
   })
-  email?: string;
+  email: string;
 
   @ApiProperty({
     description: 'User password',
-    example: 'newSecurePassword123',
-    required: false,
+    example: 'password123',
   })
-  password?: string;
+  password: string;
 }
