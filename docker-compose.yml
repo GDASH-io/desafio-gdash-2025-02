@@ -1,0 +1,82 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: gdash-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - gdash-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: gdash-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - gdash-network
+
+  mongodb:
+    image: mongo:6
+    container_name: gdash-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - gdash-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash-rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - gdash-network
+
+  collector:
+    build: ./colletor-python
+    container_name: gdash-collector
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093,localhost:9092
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY:-9e265572a94f330abf8b957bd6ee66c4}
+      - LATITUDE=${LATITUDE:--19.5186}
+      - LONGITUDE=${LONGITUDE:--42.6289}
+      - TIMEZONE=${TIMEZONE:-America/Sao_Paulo}
+      - COLLECT_INTERVAL_SECONDS=${COLLECT_INTERVAL_SECONDS:-3600}
+      - COLLECT_INTERVAL_TYPE=${COLLECT_INTERVAL_TYPE:-hourly}
+      - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW:-ana.raw.readings}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
+      - HEALTHCHECK_PORT=${HEALTHCHECK_PORT:-8080}
+    depends_on:
+      - kafka
+    networks:
+      - gdash-network
+    ports:
+      - "8080:8080"
+
+networks:
+  gdash-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+
