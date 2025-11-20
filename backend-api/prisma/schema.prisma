@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "mongodb"
+}
+
+model WeatherLog {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  location      Json     
+  temperature   Float
+  humidity      Float
+  windSpeed     Float    @map("wind_speed")
+  conditionCode Int      @map("condition_code")
+  collectedAt   DateTime @map("collected_at")
+  createdAt     DateTime @default(now())
+
+  @@map("weather_logs") 
+}
