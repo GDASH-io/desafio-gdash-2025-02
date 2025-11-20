@@ -36,7 +36,18 @@ services:
       - .env
     volumes:
       - ./backend:/app
-      - /app/node_modules
+    networks:
+      - weather-network
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
     networks:
       - weather-network
 
@@ -46,3 +57,4 @@ networks:
 
 volumes:
   rabbitmq_data:
+  mongodb_data:
