@@ -61,18 +61,13 @@ def sendToQueue(data):
         print(f"Erro ao enviar para fila: {e}")
 
 
-# Execução principal
 if __name__ == "__main__":
     print("🚀 Iniciando Coletor...")
 
     while True:
-        # 1. Coleta
         dados = getData()
-
         if dados:
-            # 2. Envia (se a coleta funcionou)
             sendToQueue(dados)
 
-        # 3. Espera 10 segundos antes de repetir
         print("⏳ Aguardando 10 segundos...")
         time.sleep(10)
