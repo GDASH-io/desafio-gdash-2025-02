@@ -4,75 +4,54 @@
 
 ## 🎯 Prioridades
 
-### 1. Fase 6 - IA/Insights (Alta Prioridade)
+### 1. Testes (Média Prioridade)
 
-Esta é a próxima fase crítica do projeto. Implementar módulo de insights com análise de dados climáticos e geração de recomendações.
+Implementar testes unitários e de integração para garantir qualidade do código.
 
 #### Tarefas Principais:
 
-1. **Estrutura do Módulo**
-   - [ ] Criar módulo `InsightsModule` no NestJS
-   - [ ] Implementar Clean Architecture (Domain, Application, Infrastructure)
-   - [ ] Criar entidade `Insight` no MongoDB
+1. **Testes Unitários**
+   - [ ] Testes para use cases de weather
+   - [ ] Testes para use cases de auth
+   - [ ] Testes para use cases de users
+   - [ ] Testes para use cases de insights
+   - [ ] Testes para regras heurísticas
+   - [ ] Testes para analisadores
 
-2. **Regras Heurísticas para PV**
-   - [ ] High soiling risk (baseado em precipitação acumulada)
-   - [ ] Consecutive cloudy days (dias consecutivos com alta cobertura de nuvens)
-   - [ ] Heat derating (temperatura acima de threshold)
-   - [ ] Wind derating (vento extremo)
-   - [ ] Estimated production impact (%)
+2. **Testes de Integração**
+   - [ ] Testes para controllers
+   - [ ] Testes de autenticação e autorização
+   - [ ] Testes de validação de DTOs
+   - [ ] Testes E2E do fluxo completo
 
-3. **Análise Estatística**
-   - [ ] Média de temperatura/umidade em períodos
-   - [ ] Detecção de tendência (subindo/caindo)
-   - [ ] Classificação do dia (frio/quente/agradável/chuvoso)
+3. **Cobertura**
+   - [ ] Configurar cobertura de código (Jest)
+   - [ ] Alcançar >80% de cobertura
 
-4. **Geração de Texto**
-   - [ ] Resumo do período
-   - [ ] Alertas contextuais
-   - [ ] Recomendações de manutenção
-
-5. **Pontuações**
-   - [ ] Comfort score (0-100)
-   - [ ] PV production score (0-100)
-
-6. **Endpoints**
-   - [ ] GET `/api/v1/weather/insights?from=&to=`
-   - [ ] POST `/api/v1/weather/insights` (forçar recálculo)
-
-7. **Cache**
-   - [ ] Implementar cache de insights (MongoDB ou Redis)
-
-8. **Frontend**
-   - [ ] Seção de Insights no Dashboard
-   - [ ] Visualização de gráficos de insights
-   - [ ] Alertas e recomendações
-
-9. **Testes**
-   - [ ] Testes unitários para cada regra
-   - [ ] Testes de integração com dados históricos
-
-**Estimativa:** 2-3 semanas
+**Estimativa:** 1-2 semanas
 
 ---
 
-### 2. Testes da API NestJS (Média Prioridade)
+### 2. Melhorias Opcionais (Baixa Prioridade)
 
-Completar cobertura de testes da API.
+#### Melhorias no Sistema de Insights
 
-#### Tarefas:
+- [ ] Geração automática de insights após inserção de dados (hook)
+- [ ] Agendamento diário para insights históricos
+- [ ] Filtros por tipo de insight no frontend
+- [ ] Cache Redis (opcional, para melhor performance)
 
-- [ ] Testes unitários para use cases
-- [ ] Testes unitários para controllers
-- [ ] Testes de integração para endpoints
-- [ ] Testes de autenticação e autorização
-- [ ] Testes de validação de DTOs
+#### Otimizações
 
-**Estimativa:** 1 semana
+- [ ] Processamento assíncrono de insights
+- [ ] Batch processing para grandes volumes
+- [ ] Métricas e monitoramento (Prometheus/Grafana)
+
+**Estimativa:** 1-2 semanas (se decidir implementar)
 
 ---
 
-### 3. Fase 2 - Paginação ANA (Baixa Prioridade - Opcional)
+### 3. Fase 2 - Paginação ANA (Opcional)
 
 Implementar coletor para dados hidrológicos da ANA.
 
@@ -83,99 +62,24 @@ Implementar coletor para dados hidrológicos da ANA.
 - [ ] Implementar paginação com cursor
 - [ ] Respeitar rate limits
 - [ ] Normalizar dados
-- [ ] Publicar no Kafka
+- [ ] Publicar no Kafka (`ana.hydro.readings`)
+- [ ] Testes
 
 **Estimativa:** 1-2 semanas (se decidir implementar)
 
----
-
-## 📋 Checklist de Preparação para Fase 6
-
-### Antes de Começar:
-
-- [ ] Revisar documentação de estratégia de IA: [IA_INSIGHTS_STRATEGY.md](./IA_INSIGHTS_STRATEGY.md)
-- [ ] Analisar dados históricos disponíveis no MongoDB
-- [ ] Definir thresholds para regras heurísticas
-- [ ] Criar branch: `feature/insights-ai`
-- [ ] Configurar ambiente de desenvolvimento
-
-### Durante o Desenvolvimento:
-
-- [ ] Seguir Clean Architecture
-- [ ] Implementar testes junto com código
-- [ ] Documentar cada regra e algoritmo
-- [ ] Validar resultados com dados reais
-- [ ] Fazer commits seguindo Conventional Commits
-
-### Antes de Finalizar:
-
-- [ ] Revisar código
-- [ ] Executar todos os testes
-- [ ] Testar integração completa
-- [ ] Atualizar documentação
-- [ ] Atualizar [Endpoints.md](./Endpoints.md)
-- [ ] Atualizar [TODO.md](./TODO.md)
-
----
-
-## 🚀 Como Começar a Fase 6
-
-1. **Criar branch:**
-   ```bash
-   git checkout -b feature/insights-ai
-   ```
-
-2. **Estrutura inicial:**
-   ```
-   api-nest/src/
-   ├── domain/
-   │   ├── entities/
-   │   │   └── insight.entity.ts
-   │   └── repositories/
-   │       └── insight.repository.ts
-   ├── application/
-   │   └── usecases/
-   │       └── insights/
-   │           ├── generate-insights.use-case.ts
-   │           ├── get-insights.use-case.ts
-   │           └── calculate-pv-metrics.use-case.ts
-   ├── infra/
-   │   └── services/
-   │       ├── pv-rules.service.ts
-   │       ├── statistics.service.ts
-   │       └── text-generator.service.ts
-   └── presentation/
-       └── controllers/
-           └── insights.controller.ts
-   ```
-
-3. **Começar pela regra mais simples:**
-   - Implementar cálculo de média de temperatura
-   - Criar teste unitário
-   - Integrar no use case
-   - Testar com dados reais
-
-4. **Iterar:**
-   - Adicionar uma regra por vez
-   - Testar cada regra isoladamente
-   - Integrar no endpoint
-   - Validar resultados
+**Prioridade:** Baixa (opcional)
 
 ---
 
 ## 📊 Métricas de Sucesso
 
-A Fase 6 será considerada concluída quando:
+Os testes serão considerados concluídos quando:
 
-- ✅ Todos os endpoints de insights estiverem funcionando
-- ✅ Regras heurísticas calculando corretamente
-- ✅ Análise estatística gerando dados precisos
-- ✅ Textos gerados sendo relevantes e úteis
-- ✅ Pontuações refletindo condições reais
-- ✅ Cache funcionando corretamente
-- ✅ Frontend exibindo insights
-- ✅ Testes com cobertura adequada (>80%)
-- ✅ Documentação completa
+- ✅ Cobertura de código >80%
+- ✅ Todos os use cases com testes unitários
+- ✅ Todos os controllers com testes de integração
+- ✅ Testes E2E do fluxo completo funcionando
+- ✅ CI/CD configurado (opcional)
 
 ---
 
@@ -185,4 +89,16 @@ A Fase 6 será considerada concluída quando:
 - [Documentação de Endpoints](./Endpoints.md)
 - [TODO Detalhado](./TODO.md)
 - [Status do Projeto](./STATUS.md)
+- [README Principal](../README.md)
 
+---
+
+## 📌 Notas Importantes
+
+1. **Fase 6 está completa** - O sistema de insights de IA está implementado e funcionando
+2. **Testes são importantes** - Mesmo que não sejam obrigatórios, demonstram qualidade do código
+3. **Fase 2 é opcional** - Não está no README do desafio, pode ser implementada se houver tempo
+
+---
+
+**Última atualização:** 21/11/2025

@@ -5,6 +5,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { WeatherModule } from './modules/weather/weather.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { InsightsModule } from './modules/insights/insights.module';
 import { JwtAuthGuard } from './infra/auth/jwt-auth.guard';
 
 @Module({
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from './infra/auth/jwt-auth.guard';
     WeatherModule,
     AuthModule,
     UsersModule,
+    InsightsModule,
   ],
   providers: [
     {

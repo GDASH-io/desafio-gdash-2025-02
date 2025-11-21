@@ -2,7 +2,7 @@
 
 Este documento descreve todos os endpoints da aplicação, incluindo os já implementados e os que serão desenvolvidos nas próximas fases.
 
-**Última atualização:** 21/11/2025 - Fases 1, 3, 4 e 5 concluídas
+**Última atualização:** 21/11/2025 - Fases 1, 3, 4, 5 e 6 concluídas
 
 ---
 
@@ -398,9 +398,9 @@ curl -X GET "http://localhost:3000/api/v1/weather/export.xlsx?start=2025-11-19T0
 
 ### 3.2. Insights de IA
 
-#### ⏳ GET `/api/v1/weather/insights`
+#### ✅ GET `/api/v1/weather/insights`
 
-**Status:** A ser implementado (Fase 6)
+**Status:** Implementado (Fase 6)
 
 **Descrição:** Gera e retorna insights de IA baseados em dados históricos de clima.
 
@@ -478,9 +478,9 @@ curl -X GET "http://localhost:3000/api/v1/weather/insights?from=2025-11-12T00:00
 
 ---
 
-#### ⏳ POST `/api/v1/weather/insights`
+#### ✅ POST `/api/v1/weather/insights`
 
-**Status:** A ser implementado (Fase 6)
+**Status:** Implementado (Fase 6)
 
 **Descrição:** Força recálculo de insights (ignora cache).
 
@@ -976,8 +976,8 @@ Todas as respostas de erro seguem o formato:
 - ✅ Autenticação (login, register)
 - ✅ Usuários (CRUD completo)
 
-### Pendentes (Fase 6)
-- ⏳ Insights de IA (GET, POST)
+### Implementados (Fase 6)
+- ✅ Insights de IA (GET, POST)
 
 ### Opcionais
 - ⏳ API Pública (Pokemon endpoints)

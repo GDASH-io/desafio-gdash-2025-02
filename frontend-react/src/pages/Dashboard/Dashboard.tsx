@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import LineChart from '../../components/Chart/LineChart';
+import InsightsSection from '../../components/Insights/InsightsSection';
 import { usePolling } from '../../hooks/usePolling';
 import api from '../../app/api';
 
@@ -201,6 +202,9 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Seção de Insights */}
+        <InsightsSection />
       </div>
     </Layout>
   );

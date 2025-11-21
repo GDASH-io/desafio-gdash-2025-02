@@ -83,32 +83,35 @@
 - [x] Testes unitários básicos (Vitest)
 - [x] Dockerfile e nginx.conf
 - [x] Documentação (README.md)
-- [ ] Seção de Insights de IA no Dashboard (aguardando Fase 6)
+- [x] Seção de Insights de IA no Dashboard
 
-### Fase 6 - IA / Insights (NestJS) ⏳ PENDENTE
-- [ ] Criar branch: `feature/insights-ai`
-- [ ] Implementar módulo de Insights (Clean Architecture)
-- [ ] Use case: Gerar insights sob demanda (GET `/api/v1/weather/insights?from=&to=`)
-- [ ] Use case: Gerar insights automaticamente (hook após inserção de dados)
-- [ ] Implementar regras heurísticas para PV:
-  - [ ] High soiling risk (precipitação acumulada)
-  - [ ] Consecutive cloudy days (dias consecutivos com alta cobertura de nuvens)
-  - [ ] Heat derating (temperatura acima de threshold)
-  - [ ] Wind derating (vento extremo)
-  - [ ] Estimated production impact (%)
-- [ ] Implementar análise estatística:
-  - [ ] Média de temperatura/umidade em períodos
-  - [ ] Detecção de tendência (subindo/caindo)
-  - [ ] Classificação do dia (frio/quente/agradável/chuvoso)
-- [ ] Implementar geração de resumos em texto:
-  - [ ] Resumo do período (ex: "Últimos 3 dias: temp média 28°C, alta umidade, tendência de chuva")
-  - [ ] Alertas contextuais ("Alta chance de chuva", "Calor extremo", "Frio intenso")
-- [ ] Implementar pontuação de conforto climático (0-100)
-- [ ] Implementar pontuação de produção PV estimada (0-100)
-- [ ] Endpoint POST `/api/v1/weather/insights` (forçar recálculo)
-- [ ] Cache de insights (Redis opcional ou MongoDB)
-- [ ] Testes unitários para cada regra/insight
-- [ ] Testes de integração com dados históricos
+### Fase 6 - IA / Insights (NestJS) ✅ CONCLUÍDA
+
+- [x] Implementar módulo de Insights (Clean Architecture)
+- [x] Use case: Gerar insights sob demanda (GET `/api/v1/weather/insights?from=&to=`)
+- [x] Use case: Buscar insights com cache (GetInsightsUseCase)
+- [x] Implementar regras heurísticas para PV:
+  - [x] High soiling risk (precipitação acumulada)
+  - [x] Consecutive cloudy days (dias consecutivos com alta cobertura de nuvens)
+  - [x] Heat derating (temperatura acima de threshold)
+  - [x] Wind derating (vento extremo)
+  - [x] Estimated production impact (%)
+- [x] Implementar análise estatística:
+  - [x] Média de temperatura/umidade em períodos
+  - [x] Detecção de tendência (subindo/caindo)
+  - [x] Classificação do dia (frio/quente/agradável/chuvoso)
+- [x] Implementar geração de resumos em texto:
+  - [x] Resumo do período (ex: "Últimos 3 dias: temp média 28°C, alta umidade, tendência de chuva")
+  - [x] Alertas contextuais ("Alta chance de chuva", "Calor extremo", "Frio intenso")
+- [x] Implementar pontuação de conforto climático (0-100)
+- [x] Implementar pontuação de produção PV estimada (0-100)
+- [x] Endpoint GET `/api/v1/weather/insights` (buscar insights)
+- [x] Endpoint POST `/api/v1/weather/insights` (forçar recálculo)
+- [x] Cache de insights (MongoDB com TTL de 1 hora)
+- [x] Integração no frontend (componente InsightsSection)
+- [ ] Testes unitários para cada regra/insight (opcional)
+- [ ] Testes de integração com dados históricos (opcional)
+- [ ] Geração automática após inserção (hook - opcional)
 
 ---
 

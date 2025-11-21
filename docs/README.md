@@ -2,11 +2,25 @@
 
 Este diretório contém toda a documentação do projeto, organizada por categoria.
 
-## 📚 Índice de Documentos
+## Índice de Documentos
 
-### Status e Progresso
+### Visão Geral e Arquitetura
 
+- **[system-architecture.md](./system-architecture.md)** - Arquitetura completa do sistema
+- **[uml-diagram.md](./uml-diagram.md)** - Diagramas UML da aplicação
 - **[STATUS.md](./STATUS.md)** - Status atual do projeto, progresso por fase e métricas
+
+### Documentação por Fase
+
+- **[FASE1.md](./FASE1.md)** - Fase 1: Collector (Python) - Open-Meteo
+- **[FASE2.md](./FASE2.md)** - Fase 2: Paginação ANA (Opcional)
+- **[FASE3.md](./FASE3.md)** - Fase 3: Worker (Go)
+- **[FASE4.md](./FASE4.md)** - Fase 4: API NestJS (Persistência e Endpoints)
+- **[FASE5.md](./FASE5.md)** - Fase 5: Frontend React (Dashboard)
+- **[FASE6.md](./FASE6.md)** - Fase 6: IA/Insights (NestJS)
+
+### Planejamento e Progresso
+
 - **[TODO.md](./TODO.md)** - Checklist detalhado de tarefas por fase
 - **[NEXT_STEPS.md](./NEXT_STEPS.md)** - Próximos passos e prioridades de desenvolvimento
 
@@ -14,32 +28,50 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 
 - **[Endpoints.md](./Endpoints.md)** - Documentação completa de todos os endpoints da API
 - **[COMMIT_GUIDE.md](./COMMIT_GUIDE.md)** - Guia de convenções de commits (Conventional Commits)
+- **[IA_INSIGHTS_STRATEGY.md](./IA_INSIGHTS_STRATEGY.md)** - Estratégia e arquitetura de IA/Insights (Fase 6)
+
+### Testes e Implementação
+
+- **[TESTE_SISTEMA.md](./TESTE_SISTEMA.md)** - Guia completo de teste do sistema
+- **[IMPLEMENTACAO_COMPLETA.md](./IMPLEMENTACAO_COMPLETA.md)** - Resumo da implementação da Fase 6
+- **[test-system.sh](./test-system.sh)** - Script automatizado de testes
 
 ### Planos de Fase
 
-- **[FASE1_PLAN.md](./FASE1_PLAN.md)** - Plano detalhado da Fase 1 (Collector)
 - **[FASE2_PLAN.md](./FASE2_PLAN.md)** - Plano detalhado da Fase 2 (Paginação ANA - Opcional)
-- **[FASE3_PLAN.md](./FASE3_PLAN.md)** - Plano detalhado da Fase 3 (Worker Go)
-- **[FASE4_PLAN.md](./FASE4_PLAN.md)** - Plano detalhado da Fase 4 (API NestJS)
-- **[IA_INSIGHTS_STRATEGY.md](./IA_INSIGHTS_STRATEGY.md)** - Estratégia para implementação de IA/Insights (Fase 6)
 
 ### Documentos Históricos
 
-- **[REVISAO_PROJETO.md](./REVISAO_PROJETO.md)** - Revisão inicial do projeto
-- **[initial_project_files_gdash_challenge.md](./initial_project_files_gdash_challenge.md)** - Arquivos iniciais do desafio
+- **[initial_project_files_gdash_challenge.md](./initial_project_files_gdash_challenge.md)** - Arquivos iniciais do desafio (referência histórica)
+- **[CHANGELOG_DOCS.md](./CHANGELOG_DOCS.md)** - Changelog das atualizações de documentação
 
 ---
 
-## 🚀 Início Rápido
+## Início Rápido
 
-1. **Para entender o status atual:** Leia [STATUS.md](./STATUS.md)
-2. **Para ver o que falta fazer:** Leia [TODO.md](./TODO.md)
-3. **Para saber o que fazer a seguir:** Leia [NEXT_STEPS.md](./NEXT_STEPS.md)
-4. **Para consultar endpoints:** Leia [Endpoints.md](./Endpoints.md)
+1. **Para entender a arquitetura:** Leia [system-architecture.md](./system-architecture.md)
+2. **Para ver diagramas UML:** Leia [uml-diagram.md](./uml-diagram.md)
+3. **Para entender o status atual:** Leia [STATUS.md](./STATUS.md)
+4. **Para ver detalhes de cada fase:** Leia [FASE1.md](./FASE1.md) até [FASE6.md](./FASE6.md)
+5. **Para consultar endpoints:** Leia [Endpoints.md](./Endpoints.md)
+6. **Para testar o sistema:** Leia [TESTE_SISTEMA.md](./TESTE_SISTEMA.md)
 
 ---
 
-## 📝 Notas
+## Status Atual do Projeto
+
+**Progresso Total: ~95%**
+
+- Fase 1 - Collector (Python): 100%
+- Fase 3 - Worker (Go): 100%
+- Fase 4 - API NestJS: 100%
+- Fase 5 - Frontend React: 100%
+- Fase 6 - IA/Insights: 100%
+- Fase 2 - Paginação ANA: 0% (Opcional)
+
+---
+
+## Notas
 
 - Todos os documentos são atualizados conforme o desenvolvimento avança
 - O README.md principal do projeto está na raiz: [../README.md](../README.md)
@@ -51,5 +83,23 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 
 ---
 
-**Última atualização:** 21/11/2025
+## Arquitetura do Projeto
 
+O projeto segue **Clean Architecture** em todos os serviços:
+
+```
+Open-Meteo API → Collector (Python) → Kafka → Worker (Go) → API NestJS → MongoDB
+                                                                    ↓
+                                                              Frontend React
+```
+
+### Serviços
+
+- **Collector (Python)**: Coleta dados climáticos da Open-Meteo API
+- **Worker (Go)**: Processa mensagens do Kafka e calcula métricas PV
+- **API NestJS**: Persiste dados e expõe endpoints REST com insights de IA
+- **Frontend React**: Interface web com dashboard e visualizações
+
+---
+
+**Última atualização:** 21/11/2025

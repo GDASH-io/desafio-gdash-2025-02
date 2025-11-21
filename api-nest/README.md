@@ -19,10 +19,26 @@ api-nest/
 │   ├── main.ts                    # Entry point
 │   ├── app.module.ts              # Módulo principal
 │   ├── domain/                     # Entidades e interfaces
-│   ├── application/                # Use cases
-│   ├── infra/                      # Implementações (MongoDB, JWT)
+│   │   ├── entities/              # WeatherLog, User, Insight
+│   │   └── repositories/          # Interfaces de repositórios
+│   ├── application/               # Use cases
+│   │   └── usecases/
+│   │       ├── auth/               # Login, Register
+│   │       ├── users/              # CRUD de usuários
+│   │       ├── weather/            # Weather logs
+│   │       └── insights/           # Geração de insights
+│   ├── infra/                      # Implementações
+│   │   ├── auth/                   # JWT, Guards
+│   │   ├── database/               # Repositórios MongoDB
+│   │   └── ai/                     # Regras, analisadores, scorers
 │   ├── presentation/               # Controllers e DTOs
+│   │   ├── controllers/           # REST controllers
+│   │   └── dto/                    # Data Transfer Objects
 │   └── modules/                    # Módulos NestJS
+│       ├── auth/
+│       ├── users/
+│       ├── weather/
+│       └── insights/
 └── database/seed/                  # Seeds
 ```
 
@@ -36,6 +52,11 @@ api-nest/
 - `GET /api/v1/weather/export.csv` - Exportar CSV (com autenticação)
 - `GET /api/v1/weather/export.xlsx` - Exportar XLSX (com autenticação)
 - `GET /api/v1/weather/health` - Healthcheck
+
+### Insights de IA
+
+- `GET /api/v1/weather/insights` - Buscar insights (com cache, requer autenticação)
+- `POST /api/v1/weather/insights` - Forçar regeneração de insights (requer autenticação)
 
 ### Autenticação
 
