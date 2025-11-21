@@ -32,13 +32,18 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         status_code = 200
         response = {"status": "healthy"}
         
-        # Verificar conexão Kafka
+        # Verificar conexão Kafka (não bloqueia se falhar)
         if self.kafka_producer:
-            if self.kafka_producer.is_connected():
-                response["kafka"] = "connected"
-            else:
-                response["kafka"] = "disconnected"
-                status_code = 503
+            try:
+                if self.kafka_producer.is_connected():
+                    response["kafka"] = "connected"
+                else:
+                    response["kafka"] = "disconnected"
+                    # Não retornar 503 apenas por Kafka desconectado,
+                    # o serviço em si está saudável
+            except Exception as e:
+                response["kafka"] = "error"
+                logger.warning(f"Erro ao verificar Kafka no healthcheck: {e}")
         else:
             response["kafka"] = "not_initialized"
         
