@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { differenceInMinutes } from 'date-fns';
+import { differenceInMinutes, parseISO, format } from 'date-fns';
 
 interface WeatherLog {
   _id: string;
@@ -16,6 +16,7 @@ interface WeatherLog {
   is_day: number;
   humidity?: number;
   precipitation_probability?: number;
+  createdAt: string; 
 }
 
 interface WeatherInsights {
@@ -42,11 +43,11 @@ export function WeatherDashboard() {
     try {
       const logsResponse = await axios.get(`${API_BASE_URL}/api/weather/logs`);
       const now = new Date();
-      const twoHoursAgo = 120;
+      const twoHoursAgo = 120; 
 
       const filteredLogs = logsResponse.data.filter((log: WeatherLog) => {
-        const logTimestamp = new Date(log.timestamp);
-        return differenceInMinutes(now, logTimestamp) <= twoHoursAgo;
+        const logCreatedAt = new Date(log.createdAt); 
+        return differenceInMinutes(now, logCreatedAt) <= twoHoursAgo;
       });
 
       setWeatherLogs(filteredLogs);
@@ -160,7 +161,9 @@ export function WeatherDashboard() {
           <TableBody>
             {weatherLogs.map((log) => (
               <TableRow key={log._id}>
-                <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
+                <TableCell>
+                  {format(parseISO(log.timestamp), 'dd/MM/yyyy HH:mm:ss')}
+                </TableCell>
                 <TableCell>{log.latitude}</TableCell>
                 <TableCell>{log.longitude}</TableCell>
                 <TableCell>{log.temperature}</TableCell>
