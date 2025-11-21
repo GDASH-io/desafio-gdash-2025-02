@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: python-producer
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
     networks:
@@ -14,7 +15,7 @@ services:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"
+      - "5673:5672"
       - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
@@ -23,6 +24,12 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - weather-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   backend:
     build:
       context: ./backend
