@@ -35,28 +35,32 @@ let WeatherService = WeatherService_1 = class WeatherService {
             const model = this.genAI.getGenerativeModel({
                 model: 'gemini-2.5-flash',
             });
-            const prompt = `
-        Atue como um meteorologista. Analise estes dados:
-        - Temperatura: ${createWeatherDto.temperature}°C
-        - Umidade: ${createWeatherDto.humidity}% (Ideal: 40-60%)
-        - Vento: ${createWeatherDto.windSpeed} km/h
-        
-        Dê um conselho curto (máx 15 palavras) considerando o conforto térmico e se o ar está muito seco ou úmido.
-        Responda em Português do Brasil.
-      `;
+            const prompt = `Você é um meteorologista. Analise rapidamente:
+- Temp: ${createWeatherDto.temperature}°C
+- Umidade: ${createWeatherDto.humidity}%
+- Vento: ${createWeatherDto.windSpeed} km/h
+
+Dê APENAS 1 frase curta (máx 10 palavras) com um conselho prático.
+Exemplos:
+- "Ar seco. Beba água e hidrate-se bem."
+- "Umidade alta. Dia abafado, mas brisa ajuda."
+- "Clima perfeito. Temperatura agradável."
+
+Responda SÓ COM A FRASE, nada mais.`;
             const result = await model.generateContent(prompt);
-            const response = await result.response;
+            const response = result.response;
             generatedInsight = response.text();
-            this.logger.log(`Insight (Gemini 2.5) gerado: "${generatedInsight}"`);
+            this.logger.log(`✅ Insight (Gemini 2.5) gerado: "${generatedInsight}"`);
         }
         catch (error) {
-            this.logger.warn(`Falha na IA. Usando fallback. Erro: ${error.message}`);
+            this.logger.warn(`⚠️ Falha na IA. Usando fallback. Erro: ${String(error).substring(0, 50)}`);
             generatedInsight = this.generateFallbackInsight(createWeatherDto);
         }
         const createdWeather = new this.weatherModel({
             ...createWeatherDto,
             insight: generatedInsight,
         });
+        this.logger.log(`📊 Novo registro: ${createWeatherDto.temperature}°C, ${createWeatherDto.humidity}% umidade, ${createWeatherDto.windSpeed} km/h vento`);
         return createdWeather.save();
     }
     generateFallbackInsight(dto) {
