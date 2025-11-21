@@ -7,6 +7,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      retries: 20
+    restart: always
 
   python-producer:
     build: ./python-producer
@@ -21,7 +26,8 @@ services:
       RABBITMQ_QUEUE: weather.data
       COLLECTION_INTERVAL_MINUTES: 60
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     volumes:
       - ./python-producer/logs:/logs
     restart: always

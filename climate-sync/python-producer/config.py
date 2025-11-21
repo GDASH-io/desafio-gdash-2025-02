@@ -16,5 +16,8 @@ class Config:
     RABBITMQ_PASS = os.getenv("RABBITMQ_PASS", "guest")
     RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE", "weather.data")
     
-    # Schedule (minutos)
-    COLLECTION_INTERVAL_MINUTES = float(os.getenv("COLLECTION_INTERVAL_MINUTES", "1"))
+    # Schedule
+    COLLECTION_INTERVAL_MINUTES = int(os.getenv("COLLECTION_INTERVAL_MINUTES", "60"))
+    
+    # Logs
+    LOG_PATH = "/logs/producer.log"
