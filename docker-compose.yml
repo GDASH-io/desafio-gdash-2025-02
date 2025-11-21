@@ -1,0 +1,117 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7
+    container_name: gdash-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: gdash-weather
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NestJS API
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: gdash-api
+    restart: unless-stopped
+    ports:
+      - "3333:3333"
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      MONGODB_URI: mongodb://mongodb:27017/gdash-weather
+      JWT_SECRET: ${JWT_SECRET:-gdash-super-secret-jwt-key-min-32-chars}
+      JWT_EXPIRES_IN: 1d
+      REFRESH_TOKEN_EXPIRES_IN: 7d
+      CORS_ORIGIN: http://localhost:3000
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-123456}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3333/api/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # React Frontend
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:3333
+    container_name: gdash-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  # Python Weather Collector
+  collector:
+    build:
+      context: ./services/collector
+      dockerfile: Dockerfile
+    container_name: gdash-collector
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_QUEUE: weather_data
+      WEATHER_LATITUDE: ${WEATHER_LATITUDE:--23.5505}
+      WEATHER_LONGITUDE: ${WEATHER_LONGITUDE:--46.6333}
+      WEATHER_LOCATION: ${WEATHER_LOCATION:-São Paulo}
+      COLLECTION_INTERVAL_MINUTES: ${COLLECTION_INTERVAL_MINUTES:-60}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # Go Worker
+  worker:
+    build:
+      context: ./services/worker
+      dockerfile: Dockerfile
+    container_name: gdash-worker
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_QUEUE: weather_data
+      API_BASE_URL: http://api:3333
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
