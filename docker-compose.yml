@@ -55,8 +55,7 @@ services:
     build: ./colletor-python
     container_name: gdash-collector
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093,localhost:9092
-      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY:-9e265572a94f330abf8b957bd6ee66c4}
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
       - LATITUDE=${LATITUDE:--19.5186}
       - LONGITUDE=${LONGITUDE:--42.6289}
       - TIMEZONE=${TIMEZONE:-America/Sao_Paulo}
@@ -72,6 +71,47 @@ services:
       - gdash-network
     ports:
       - "8080:8080"
+
+  worker:
+    build: ./worker-go
+    container_name: gdash-worker
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
+      - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW:-ana.raw.readings}
+      - KAFKA_TOPIC_PROCESSED=${KAFKA_TOPIC_PROCESSED:-ana.processed.readings}
+      - API_URL=http://api:3000
+      - MAX_RETRIES=${WORKER_MAX_RETRIES:-3}
+    depends_on:
+      - kafka
+      - api
+    networks:
+      - gdash-network
+
+  api:
+    build: ./api-nest
+    container_name: gdash-api
+    environment:
+      - MONGO_URL=mongodb://root:root@mongodb:27017/gdash?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-changeme}
+      - PORT=3000
+    depends_on:
+      - mongodb
+    networks:
+      - gdash-network
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build: ./frontend-react
+    container_name: gdash-frontend
+    environment:
+      - VITE_API_URL=http://localhost:3000/api/v1
+    depends_on:
+      - api
+    networks:
+      - gdash-network
+    ports:
+      - "5173:5173"
 
 networks:
   gdash-network:

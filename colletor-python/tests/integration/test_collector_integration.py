@@ -59,7 +59,7 @@ class TestCollectorIntegration:
         import json
         message_value = json.loads(messages[-1].value.decode("utf-8"))
         
-        assert message_value["source"] == "openweather"
+        assert message_value["source"] == "openmeteo"
         assert message_value["city"] == "Coronel Fabriciano"
         assert "payload" in message_value
         assert len(message_value["payload"]) > 0

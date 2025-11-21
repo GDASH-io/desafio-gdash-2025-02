@@ -8,8 +8,8 @@
 - [x] Branch base criada
 - [x] Estrutura inicial definida
 
-### Fase 1 - Collector (Open-Meteo) - Coronel Fabriciano ✅ CONCLUÍDA
-- [x] Criar branch: `feature/collector-openmeteo-coronel-fabriciano`
+### Fase 1 - Collector (Open-Meteo) - Coronel Fabriciano ✅ CONCLUÍDA E REVISADA
+- [x] Criar branch: `wilker-junio-coelho-pimenta` (conforme README)
 - [x] Adicionar `.env.example` com variáveis necessárias
 - [x] Implementar client Open-Meteo (API gratuita, sem necessidade de chave)
 - [x] Implementar handler para hourly e daily (parametrizável)
@@ -20,6 +20,9 @@
 - [x] Testes de integração local
 - [x] Documentação (README.md)
 - [x] Migração de OpenWeather para Open-Meteo (API gratuita)
+- [x] Docker Compose atualizado (removida OPENWEATHER_API_KEY)
+- [x] Testes corrigidos (source: "openmeteo")
+- [x] Documentação atualizada
 
 ### Fase 2 - Paginação ANA (Hidrologia) ⏳ PENDENTE
 - [ ] Criar branch: `feature/collector-ana-pagination`
@@ -28,15 +31,17 @@
 - [ ] Normalizar dados em contrato `ana.hydro.readings`
 - [ ] Testes com mock da API ANA
 
-### Fase 3 - Worker (Go) ⏳ PENDENTE
-- [ ] Criar branch: `feature/worker-processing`
-- [ ] Implementar consumer robusto (ack/nack, retry 3x)
+### Fase 3 - Worker (Go) 🔄 PRÓXIMA PRIORIDADE
+- [ ] Estrutura base do projeto Go (Clean Architecture)
+- [ ] Implementar consumer Kafka robusto (ack/nack, retry 3x)
 - [ ] Implementar idempotência (messageId/checksum)
 - [ ] Separar validação, transformação e publicação (Clean Architecture)
 - [ ] Calcular métricas PV: estimated_irradiance, temp_effect_factor, soiling_risk, wind_derating_flag
 - [ ] Publicar em `ana.processed.readings`
 - [ ] POST para API NestJS `/api/v1/weather/logs`
 - [ ] Healthcheck e métricas
+- [ ] Dockerfile para worker
+- [ ] Testes unitários e integração
 
 ### Fase 4 - API NestJS (Persistência & Endpoints) ⏳ PENDENTE
 - [ ] Criar branch: `feature/api-weather-logs`

@@ -1,6 +1,6 @@
-# Collector OpenWeather - Coronel Fabriciano
+# Collector Open-Meteo - Coronel Fabriciano
 
-Serviço Python responsável por coletar dados climáticos da API OpenWeather OneCall para Coronel Fabriciano, MG, e publicar no Kafka topic `ana.raw.readings`.
+Serviço Python responsável por coletar dados climáticos da API Open-Meteo (gratuita) para Coronel Fabriciano, MG, e publicar no Kafka topic `ana.raw.readings`.
 
 ## Arquitetura
 
@@ -31,12 +31,9 @@ Principais variáveis:
 - `KAFKA_BOOTSTRAP_SERVERS`: Servidores Kafka (padrão: kafka:9092)
 - `KAFKA_TOPIC_RAW`: Tópico Kafka para mensagens raw (padrão: ana.raw.readings)
 
-### Obter Chave OpenWeather
+### API Open-Meteo
 
-1. Acesse https://openweathermap.org/api
-2. Crie uma conta gratuita
-3. Gere uma API key
-4. Adicione no arquivo `.env`
+A API Open-Meteo é totalmente gratuita e não requer chave de API. O collector está configurado para usar esta API automaticamente.
 
 ## Execução Local
 
@@ -166,7 +163,7 @@ As mensagens publicadas no Kafka seguem o seguinte formato:
 
 ```json
 {
-  "source": "openweather",
+  "source": "openmeteo",
   "city": "Coronel Fabriciano",
   "country": "BR",
   "coords": {
@@ -221,9 +218,9 @@ Os logs são estruturados em formato JSON (quando `LOG_FORMAT=json`):
 
 ## Troubleshooting
 
-### Erro: "OPENWEATHER_API_KEY não configurada"
+### Erro: "Kafka não está conectado"
 
-Verifique se o arquivo `.env` existe e contém a chave da API.
+Verifique se o Kafka está rodando e se `KAFKA_BOOTSTRAP_SERVERS` está correto.
 
 ### Erro: "Kafka não está conectado"
 

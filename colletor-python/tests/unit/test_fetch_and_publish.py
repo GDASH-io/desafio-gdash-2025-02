@@ -100,7 +100,7 @@ class TestFetchAndPublishUseCase:
         
         message = use_case._build_message(readings, "hourly")
         
-        assert message["source"] == "openweather"
+        assert message["source"] == "openmeteo"
         assert message["city"] == "Coronel Fabriciano"
         assert message["country"] == "BR"
         assert message["interval"] == "hourly"
