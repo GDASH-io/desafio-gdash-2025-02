@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  
+  mongodb:
+    image: mongo:7.0
+    container_name: weather_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: weather_db
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongodb/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - weather_network
+
+  
+  redis:
+    image: redis:7.2-alpine
+    container_name: weather_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - weather_network
+
+  
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: weather_backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/weather_db?authSource=admin
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-super-secret-jwt-key-here
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - weather_network
+
+  
+  python-collector:
+    build:
+      context: ./python-collector
+      dockerfile: Dockerfile
+    container_name: weather_python_collector
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OPENWEATHER_API_KEY=your-openweather-api-key-here
+      - CITY_NAME=São Paulo
+      - COLLECTION_INTERVAL=3600
+    depends_on:
+      - redis
+    networks:
+      - weather_network
+
+  
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: weather_go_worker
+    restart: unless-stopped
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - API_URL=http://backend:3000/api
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - weather_network
+
+ 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: weather_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - weather_network
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  weather_network:
+    driver: bridge

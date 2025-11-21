@@ -1,0 +1,5 @@
+requests==2.31.0
+pandas==2.1.0
+redis==5.0.1
+python-dotenv==1.0.0
+schedule==1.2.0
