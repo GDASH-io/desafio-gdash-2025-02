@@ -12,6 +12,7 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const mongoose_1 = require("@nestjs/mongoose");
 const weather_module_1 = require("./weather/weather.module");
+const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -20,6 +21,9 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/gdash'),
             weather_module_1.WeatherModule,
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+            }),
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

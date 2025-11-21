@@ -4,6 +4,7 @@ export declare class Weather {
     temperature: number;
     humidity: number;
     windSpeed: number;
+    insight: string;
 }
 export declare const WeatherSchema: import("mongoose").Schema<Weather, import("mongoose").Model<Weather, any, any, any, import("mongoose").Document<unknown, any, Weather, any, {}> & Weather & {
     _id: import("mongoose").Types.ObjectId;

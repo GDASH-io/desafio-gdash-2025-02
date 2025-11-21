@@ -15,6 +15,7 @@ let Weather = class Weather {
     temperature;
     humidity;
     windSpeed;
+    insight;
 };
 exports.Weather = Weather;
 __decorate([
@@ -29,6 +30,10 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
 ], Weather.prototype, "windSpeed", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", String)
+], Weather.prototype, "insight", void 0);
 exports.Weather = Weather = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Weather);

@@ -62,7 +62,7 @@ func main() {
 		log.Fatalf("Failed to register a consumer: %v", err)
 	}
 
-	log.Println("🚀 Worker rodando e esperando mensagens...")
+	log.Println("Worker rodando e esperando mensagens...")
 
 	for d := range msgs {
 		var input WeatherInput
@@ -84,7 +84,7 @@ func main() {
 		if err != nil {
 			log.Printf("Erro ao enviar para API: %v", err)
 		} else {
-			log.Printf("✅ Dados enviados para API! Status: %s", resp.Status)
+			log.Printf("Dados enviados para API! Status: %s", resp.Status)
 			resp.Body.Close()
 		}
 
