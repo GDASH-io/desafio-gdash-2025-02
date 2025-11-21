@@ -5,31 +5,20 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "@tanstack/react-router";
+import { useLogin } from "@/hooks/useAuth";
 
 export function Login() {
+  const { login, loading, error } = useLogin();
   const navigate = useNavigate();
   const [email, setEmail] = useState("admin@gdash.com"); 
   const [password, setPassword] = useState("admin123");
-  const [loading, setLoading] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-
+    e.preventDefault()
     try {
-      const response = await api.post("/auth/login", { email, password });
-      const { access_token } = response.data;
-
-      // Salva o token no navegador
-      localStorage.setItem("gdash_token", access_token);
-      
-      // Redireciona para o Dashboard
-      navigate({ to: '/dashboard' });
-    } catch (error) {
-      alert("Falha no login! Verifique suas credenciais.");
-      console.error(error);
-    } finally {
-      setLoading(false);
+        await login({ email, password });
+    } catch (err) {
+        console.error("Falha no login");
     }
   }
 
@@ -42,6 +31,11 @@ export function Login() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+                <div className="text-red-500 text-sm bg-red-50 p-2 rounded">
+                    {error}
+                </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">E-mail</Label>
               <Input 
