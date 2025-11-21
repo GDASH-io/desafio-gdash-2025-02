@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+yarn-error.log
+dist
+.env
+.vite
+bin
+*.exe
+*.out
+*.log
+__pycache__/
+*.pyc
+.env
+.git
+.gitignore
+.DS_Store
