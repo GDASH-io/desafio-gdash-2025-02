@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  python-producer:
+    build: ./python-producer
+    container_name: python-producer
+    environment:
+      LATITUDE: -23.0336
+      LONGITUDE: -45.5619
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_QUEUE: weather.data
+      COLLECTION_INTERVAL_MINUTES: 60
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./python-producer/logs:/logs
+    restart: always
