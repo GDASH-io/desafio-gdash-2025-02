@@ -49,7 +49,7 @@ def sendToQueue(data):
         )
         channel = connection.channel()
 
-        channel.queue_declare(queue=QUEUE_NAME)
+        channel.queue_declare(queue=QUEUE_NAME, durable=True)
         message_body = json.dumps(data)
 
         channel.basic_publish(exchange="", routing_key=QUEUE_NAME, body=message_body)
