@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo-data:/data/db
+    ports: ["27017:27017"]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports: ["5672:5672", "15672:15672"]
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  api:
+    build:
+      context: ./services/api-nestjs
+      dockerfile: Dockerfile
+    ports: ["3000:3000"]
+    depends_on: ["mongo","rabbitmq"]
+
+  python-collector:
+    build:
+      context: ./services/python-collector
+      dockerfile: Dockerfile
+    depends_on: ["rabbitmq"]
+
+  go-worker:
+    build:
+      context: ./services/go-worker
+      dockerfile: Dockerfile
+    depends_on: ["rabbitmq","api"]
+
+volumes:
+  mongo-data:
