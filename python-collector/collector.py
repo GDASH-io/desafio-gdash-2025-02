@@ -3,20 +3,18 @@ import time
 import json
 import requests
 import pika
+from datetime import datetime
 
-# RabbitMQ connection details
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
 RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', '5672'))
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'guest')
 QUEUE_NAME = 'weather_data'
 
-# Open-Meteo API details
 OPEN_METEO_API_URL = os.getenv('OPEN_METEO_API_URL', 'https://api.open-meteo.com/v1/forecast')
-LATITUDE = os.getenv('LATITUDE', '-23.5505') # São Paulo latitude
-LONGITUDE = os.getenv('LONGITUDE', '-46.6333') # São Paulo longitude
+LATITUDE = os.getenv('LATITUDE', '-12.9714')
+LONGITUDE = os.getenv('LONGITUDE', '-38.5014')
 
-# Collection interval in seconds (e.g., 3600 for 1 hour)
 COLLECTION_INTERVAL = int(os.getenv('COLLECTION_INTERVAL', '3600'))
 
 def get_weather_data():
@@ -26,14 +24,14 @@ def get_weather_data():
             'longitude': LONGITUDE,
             'current_weather': 'true',
             'hourly': 'temperature_2m,relativehumidity_2m,windspeed_10m,weathercode,precipitation_probability',
-            'timezone': 'America/Sao_Paulo'
+            'timezone': 'America/Bahia'
         }
         response = requests.get(OPEN_METEO_API_URL, params=params)
-        response.raise_for_status() # Raise an exception for HTTP errors
+        response.raise_for_status()
         data = response.json()
         return data
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching weather data: {e}")
+        print(f"Erro ao buscar dados de clima: {e}")
         return None
 
 def normalize_weather_data(data):
@@ -41,8 +39,12 @@ def normalize_weather_data(data):
         return None
 
     current_weather = data['current_weather']
+    
+    current_dt = datetime.fromisoformat(current_weather['time'])
+    rounded_dt = current_dt.replace(minute=0, second=0, microsecond=0)
+    
     normalized_data = {
-        'timestamp': current_weather['time'],
+        'timestamp': rounded_dt.isoformat(),
         'latitude': data['latitude'],
         'longitude': data['longitude'],
         'temperature': current_weather['temperature'],
@@ -51,19 +53,21 @@ def normalize_weather_data(data):
         'is_day': current_weather['is_day']
     }
 
-    # Try to get humidity and precipitation from hourly data, if available
     if 'hourly' in data and data['hourly']['time']:
-        # Find the index for the current time in hourly data
-        current_time_str = current_weather['time']
+        hourly_time_target_str = rounded_dt.strftime('%Y-%m-%dT%H:00')
+        
         try:
-            current_time_index = data['hourly']['time'].index(current_time_str)
-            if 'relativehumidity_2m' in data['hourly']:
-                normalized_data['humidity'] = data['hourly']['relativehumidity_2m'][current_time_index]
-            if 'precipitation_probability' in data['hourly']:
-                normalized_data['precipitation_probability'] = data['hourly']['precipitation_probability'][current_time_index]
-        except ValueError:
-            print("Current time not found in hourly data, some fields might be missing.")
-
+            if hourly_time_target_str in data['hourly']['time']:
+                current_time_index = data['hourly']['time'].index(hourly_time_target_str)
+                if 'relativehumidity_2m' in data['hourly']:
+                    normalized_data['humidity'] = data['hourly']['relativehumidity_2m'][current_time_index]
+                if 'precipitation_probability' in data['hourly']:
+                    normalized_data['precipitation_probability'] = data['hourly']['precipitation_probability'][current_time_index]
+            else:
+                print(f"[{datetime.now()}] Dados horários para {hourly_time_target_str} não encontrados, alguns campos podem estar faltando.")
+        except ValueError as e:
+            print(f"[{datetime.now()}] Erro ao analisar o tempo do current_weather: {e}, alguns campos podem estar faltando.")
+    
     return normalized_data
 
 def publish_to_rabbitmq(message):
@@ -81,19 +85,32 @@ def publish_to_rabbitmq(message):
                 delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
             )
         )
-        print(f" [x] Sent {message}")
+        print(f" [x] Enviado {message}")
         connection.close()
     except pika.exceptions.AMQPConnectionError as e:
-        print(f"Error connecting to RabbitMQ: {e}")
+        print(f"Erro ao conectar ao RabbitMQ: {e}")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"Ocorreu um erro inesperado: {e}")
 
 if __name__ == "__main__":
-    print("Starting weather data collector...")
+    print("Iniciando coletor de dados de clima...")
+    print("INTERVALO_COLETA:", COLLECTION_INTERVAL)
+    print("LATITUDE:", LATITUDE)
+    print("LONGITUDE:", LONGITUDE)
+
     while True:
+        print(f"[{datetime.now()}] Tentando buscar dados de clima...")
         weather_data = get_weather_data()
         if weather_data:
+            print(f"[{datetime.now()}] Dados buscados, normalizando...")
             normalized_data = normalize_weather_data(weather_data)
             if normalized_data:
+                print(f"[{datetime.now()}] Dados normalizados, publicando no RabbitMQ...")
                 publish_to_rabbitmq(normalized_data)
+            else:
+                print(f"[{datetime.now()}] Falha ao normalizar dados.")
+        else:
+            print(f"[{datetime.now()}] Falha ao buscar dados de clima.")
+
+        print(f"[{datetime.now()}] Dormindo por {COLLECTION_INTERVAL} segundos...")
         time.sleep(COLLECTION_INTERVAL)
