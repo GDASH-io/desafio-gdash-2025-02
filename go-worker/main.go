@@ -24,15 +24,15 @@ const (
 )
 
 type WeatherData struct {
-	Timestamp           string  `json:"timestamp"`
-	Latitude            float64 `json:"latitude"`
-	Longitude           float64 `json:"longitude"`
-	Temperature         float64 `json:"temperature"`
-	Windspeed           float64 `json:"windspeed"`
-	Weathercode         int     `json:"weathercode"`	
-	IsDay               int     `json:"is_day"`
-	Humidity            int     `json:"humidity,omitempty"`
-	PrecipitationProbability int `json:"precipitation_probability,omitempty"`
+	Timestamp                string  `json:"timestamp"`
+	Latitude                 float64 `json:"latitude"`
+	Longitude                float64 `json:"longitude"`
+	Temperature              float64 `json:"temperature"`
+	Windspeed                float64 `json:"windspeed"`
+	Weathercode              int     `json:"weathercode"`
+	IsDay                    int     `json:"is_day"`
+	Humidity                 int     `json:"humidity,omitempty"`
+	PrecipitationProbability int     `json:"precipitation_probability,omitempty"`
 }
 
 func failOnError(err error, msg string) {
@@ -59,55 +59,54 @@ func main() {
 	rabbitMQConnStr := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitMQUser, rabbitMQPass, rabbitMQHost, rabbitMQPort)
 
 	conn, err := amqp.Dial(rabbitMQConnStr)
-	failOnError(err, "Failed to connect to RabbitMQ")
+	failOnError(err, "Falha ao conectar ao RabbitMQ")
 	defer conn.Close()
 
 	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	failOnError(err, "Falha ao abrir um canal")
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		queueName, // name
-		true,      // durable
-		false,     // delete when unused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
+		queueName,
+		true,
+		false,
+		false,
+		false,
+		nil,
 	)
-	failOnError(err, "Failed to declare a queue")
+	failOnError(err, "Falha ao declarar uma fila")
 
 	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		false,  // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		q.Name,
+		"",
+		false,
+		false,
+		false,
+		false,
+		nil,
 	)
-	failOnError(err, "Failed to register a consumer")
+	failOnError(err, "Falha ao registrar um consumidor")
 
 	forever := make(chan bool)
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Printf("Mensagem recebida: %s", d.Body)
 
 			var weatherData WeatherData
 			err := json.Unmarshal(d.Body, &weatherData)
 			if err != nil {
-				log.Printf("Error unmarshaling JSON: %v, Nacking message", err)
+				log.Printf("Erro ao decodificar JSON: %v, Rejeitando mensagem", err)
 				d.Nack(false, false)
 				continue
 			}
 
-			// Send data to NestJS API with retry logic
 			retries := 0
 			success := false
 			for retries < maxRetries {
 				err = sendToNestJSAPI(weatherData, nestjsAPIURL)
 				if err != nil {
-					log.Printf("Error sending to NestJS API: %v, Retrying in %v", err, retryDelay)
+					log.Printf("Erro ao enviar para a API NestJS: %v, Tentando novamente em %v", err, retryDelay)
 					retries++
 					time.Sleep(retryDelay)
 				} else {
@@ -117,33 +116,33 @@ func main() {
 			}
 
 			if success {
-				log.Printf("Successfully processed message and sent to NestJS API. Acking message.")
+				log.Printf("Mensagem processada com sucesso e enviada para a API NestJS. Confirmando mensagem.")
 				d.Ack(false)
 			} else {
-				log.Printf("Failed to send message to NestJS API after %d retries. Nacking message.", maxRetries)
-				d.Nack(false, true) // Requeue the message
+				log.Printf("Falha ao enviar mensagem para a API NestJS após %d tentativas. Rejeitando mensagem.", maxRetries)
+				d.Nack(false, true)
 			}
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Printf(" [*] Aguardando mensagens. Para sair pressione CTRL+C")
 	<-forever
 }
 
 func sendToNestJSAPI(data WeatherData, apiURL string) error {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("error marshaling weather data to JSON: %w", err)
+		return fmt.Errorf("erro ao codificar dados de clima para JSON: %w", err)
 	}
 
 	resp, err := http.Post(fmt.Sprintf("%s/api/weather/logs", apiURL), "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
-		return fmt.Errorf("error sending data to NestJS API: %w", err)
+		return fmt.Errorf("erro ao enviar dados para a API NestJS: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code from NestJS API: %d", resp.StatusCode)
+		return fmt.Errorf("código de status inesperado da API NestJS: %d", resp.StatusCode)
 	}
 
 	return nil
