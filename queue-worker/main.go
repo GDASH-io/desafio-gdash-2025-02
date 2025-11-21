@@ -39,7 +39,7 @@ func main() {
 	
 	apiURL := os.Getenv("API_URL")
 	if apiURL == "" {
-		apiURL = "http://localhost:3000/weather/logs"
+		apiURL = "http://localhost:8080/weather/logs"
 	}
 
 	var conn *amqp.Connection
