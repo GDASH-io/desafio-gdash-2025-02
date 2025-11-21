@@ -79,13 +79,23 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
       - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW:-ana.raw.readings}
       - KAFKA_TOPIC_PROCESSED=${KAFKA_TOPIC_PROCESSED:-ana.processed.readings}
+      - KAFKA_GROUP_ID=${KAFKA_GROUP_ID:-gdash-worker-group}
       - API_URL=http://api:3000
-      - MAX_RETRIES=${WORKER_MAX_RETRIES:-3}
+      - API_TIMEOUT_SECONDS=${API_TIMEOUT_SECONDS:-10}
+      - API_MAX_RETRIES=${API_MAX_RETRIES:-3}
+      - WORKER_MAX_RETRIES=${WORKER_MAX_RETRIES:-3}
+      - WORKER_BATCH_SIZE=${WORKER_BATCH_SIZE:-10}
+      - WORKER_PROCESSING_INTERVAL_MS=${WORKER_PROCESSING_INTERVAL_MS:-1000}
+      - HEALTHCHECK_PORT=${WORKER_HEALTHCHECK_PORT:-8081}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
     depends_on:
       - kafka
       - api
     networks:
       - gdash-network
+    ports:
+      - "8081:8081"
 
   api:
     build: ./api-nest
@@ -102,16 +112,17 @@ services:
       - "3000:3000"
 
   frontend:
-    build: ./frontend-react
+    build:
+      context: ./frontend-react
+      args:
+        - VITE_API_URL=http://localhost:3000/api/v1
     container_name: gdash-frontend
-    environment:
-      - VITE_API_URL=http://localhost:3000/api/v1
     depends_on:
       - api
     networks:
       - gdash-network
     ports:
-      - "5173:5173"
+      - "5173:80"
 
 networks:
   gdash-network:
