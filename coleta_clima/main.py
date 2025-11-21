@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path="../.env")
 
 
-RABBIT_HOST = 'localhost'
+RABBIT_HOST = '127.0.0.1'
 RABBIT_PORT = int(os.getenv('RABBIT_PORT', 5672))
 RABBIT_USER = os.getenv('RABBIT_USER', 'guest')
 RABBIT_PASS = os.getenv('RABBIT_PASS', 'guest')
@@ -26,7 +26,7 @@ def conectar_rabbitmq():
 
     try:
         connection = pika.BlockingConnection(parameters)
-        channel = connection, channel()
+        channel = connection.channel()
 
         channel.queue_declare(queue=QUEUE_NAME, durable=True)
         print("Conectado ao RabbitMQ com sucesso!")
@@ -45,9 +45,9 @@ def buscar_clima():
             clima_atual = {
                 "latitude": dados.get("latitude"),
                 "longitude": dados.get("longitude"),
-                "temperatura": dados["current"]["temperatura_2m"],
+                "temperatura": dados["current"]["temperature_2m"],
                 "umidade": dados["current"]["relative_humidity_2m"],
-                "chuva": dados["current"]["precioitation"],
+                "chuva": dados["current"]["precipitation"],
                 "eh_dia": bool(dados["current"]["is_day"]),
                 "timestamp": time.strftime('%Y-%m-%d %H:%M:%S')
             }
