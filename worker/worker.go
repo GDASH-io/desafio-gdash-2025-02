@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/rabbitmq/amqp091-go"
 )
@@ -24,7 +26,27 @@ type WeatherPayload struct {
 }
 
 func main() {
-	conn, err := amqp091.Dial("amqp://guest:guest@localhost:5672/")
+	// Get environment variables
+	rabbitmqHost := os.Getenv("RABBITMQ_HOST")
+	if rabbitmqHost == "" {
+		rabbitmqHost = "localhost"
+	}
+	rabbitmqUser := os.Getenv("RABBITMQ_USER")
+	if rabbitmqUser == "" {
+		rabbitmqUser = "guest"
+	}
+	rabbitmqPassword := os.Getenv("RABBITMQ_PASSWORD")
+	if rabbitmqPassword == "" {
+		rabbitmqPassword = "guest"
+	}
+	backendURL := os.Getenv("BACKEND_URL")
+	if backendURL == "" {
+		backendURL = "http://localhost:3000"
+	}
+
+	// Connect to RabbitMQ
+	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:5672/", rabbitmqUser, rabbitmqPassword, rabbitmqHost)
+	conn, err := amqp091.Dial(amqpURL)
 	if err != nil {
 		log.Fatalf("❌ Falha ao conectar RabbitMQ: %v", err)
 	}
@@ -39,7 +61,7 @@ func main() {
 
 	_, err = ch.QueueDeclare(
 		"weather_data",
-		false,
+		true, // durable - deve ser true como no producer
 		false,
 		false,
 		false,
@@ -79,7 +101,7 @@ func main() {
 		}
 
 		payloadBytes, _ := json.Marshal(payload)
-		resp, err := http.Post("http://localhost:3000/weather", "application/json", bytes.NewBuffer(payloadBytes))
+		resp, err := http.Post(backendURL+"/weather", "application/json", bytes.NewBuffer(payloadBytes))
 
 		if err != nil {
 			log.Printf("❌ Erro ao enviar para API: %v", err)

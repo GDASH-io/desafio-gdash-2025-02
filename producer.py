@@ -13,7 +13,7 @@ class Producer:
         self.base_url = "https://api.open-meteo.com/v1/forecast?latitude=-15.79&longitude=-47.88&current=temperature_2m,relative_humidity_2m,wind_speed_10m"
         self.connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='weather_data')
+        self.channel.queue_declare(queue='weather_data', durable=True)
         logging.info("✅ Producer conectado ao RabbitMQ")
 
     def get_data(self):
