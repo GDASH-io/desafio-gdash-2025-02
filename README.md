@@ -13,7 +13,7 @@ Sistema full-stack desenvolvido para coletar, processar e exibir dados climátic
 
 ## 🎥 Vídeo Explicativo
 
-**Link do vídeo:** [clique aqui](https://youtu.be/ynks-AOpCho)
+**Link do vídeo:** [CLIQUE AQUI](https://youtu.be/ynks-AOpCho)
 
 > 📝 **Roteiro completo do vídeo:** Consulte o arquivo [`VIDEO_ROTEIRO.md`](./VIDEO_ROTEIRO.md) para o roteiro detalhado de até 5 minutos.
 
@@ -271,7 +271,7 @@ go run main.go
 
 ## 🎥 Vídeo Explicativo
 
-**Link do vídeo:** [clique aqui](https://youtu.be/ynks-AOpCho)
+**Link do vídeo:** [CLIQUE AQUI](https://youtu.be/ynks-AOpCho)
 
 ---
 
