@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+npm-debug.log
+yarn-error.log
+bin/
+*.exe
+*.out
+__pycache__/
+*.pyc
+.env
+.vite
+*.log
+.DS_Store
+.idea/
+.vscode/
