@@ -33,7 +33,10 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 ### Testes e Implementação
 
 - **[TESTE_SISTEMA.md](./TESTE_SISTEMA.md)** - Guia completo de teste do sistema
+- **[TESTE_SISTEMA_COMPLETO.md](./TESTE_SISTEMA_COMPLETO.md)** - Testes completos após melhorias do dashboard
 - **[IMPLEMENTACAO_COMPLETA.md](./IMPLEMENTACAO_COMPLETA.md)** - Resumo da implementação da Fase 6
+- **[IMPLEMENTACAO_FLUXO_123.md](./IMPLEMENTACAO_FLUXO_123.md)** - Implementação das melhorias do dashboard (Fluxo 1, 2, 3)
+- **[DASHBOARD_ENHANCEMENTS.md](./DASHBOARD_ENHANCEMENTS.md)** - Análise e recomendações de melhorias no dashboard
 - **[test-system.sh](./test-system.sh)** - Script automatizado de testes
 
 ### Planos de Fase

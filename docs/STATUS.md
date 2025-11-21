@@ -1,6 +1,6 @@
 # Status do Projeto - GDASH Challenge 2025/02
 
-**Última atualização:** 21/11/2025 - Fase 6 (IA/Insights) concluída
+**Última atualização:** 21/11/2025 - Melhorias no Dashboard (Fluxo 1, 2, 3) implementadas
 
 ## Visão Geral
 
@@ -32,8 +32,9 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - Healthcheck endpoint
 - Testes unitários e de integração
 - Dockerização completa
+- **Novo:** Coleta de parâmetros adicionais: `wind_direction_10m`, `wind_gusts_10m`, `precipitation_probability`, `pressure_msl`, `uv_index`, `visibility`
 
-**Status:** Funcionando e coletando dados automaticamente a cada 1 hora.
+**Status:** Funcionando e coletando dados automaticamente a cada 1 hora com novos parâmetros.
 
 ### Fase 3 - Worker (Go)
 - Consumer Kafka robusto com retry
@@ -56,8 +57,11 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - Seed de usuário admin
 - Dockerização completa
 - Testes unitários e integração (pendente)
+- **Novo:** Endpoint GET `/api/v1/weather/precipitation/24h` (chuva acumulada 24h)
+- **Novo:** Endpoint GET `/api/v1` (informações da API)
+- **Novo:** Campos opcionais: `uv_index`, `pressure_hpa`, `visibility_m`, `wind_direction_10m`, `wind_gusts_10m`, `precipitation_probability`
 
-**Status:** Funcionando. API recebendo dados do Worker e expondo endpoints REST.
+**Status:** Funcionando. API recebendo dados do Worker e expondo endpoints REST com novos recursos.
 
 ### Fase 5 - Frontend React
 - Estrutura Vite + React + TypeScript
@@ -71,8 +75,13 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - Testes unitários básicos
 - Dockerização com Nginx
 - Seção de Insights de IA integrada
+- **Novo:** Card de Condições Climáticas
+- **Novo:** Gráfico de Tendência Barométrica
+- **Novo:** Cards de UV, Pressão, Visibilidade
+- **Novo:** Cards de Direção Vento, Rajadas, Prob. Chuva
+- **Novo:** Cards de Sensação Térmica, Ponto de Orvalho, Chuva 24h
 
-**Status:** Funcionando. Frontend conectado à API e exibindo dados e insights.
+**Status:** Funcionando. Frontend conectado à API e exibindo dados e insights com melhorias visuais.
 
 ---
 

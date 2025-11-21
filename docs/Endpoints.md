@@ -2,7 +2,7 @@
 
 Este documento descreve todos os endpoints da aplicação, incluindo os já implementados e os que serão desenvolvidos nas próximas fases.
 
-**Última atualização:** 21/11/2025 - Fases 1, 3, 4, 5 e 6 concluídas
+**Última atualização:** 21/11/2025 - Melhorias no Dashboard (Fluxo 1, 2, 3) implementadas
 
 ---
 
@@ -263,6 +263,55 @@ curl -X GET "http://localhost:3000/api/v1/weather/logs?page=1&limit=10&start=202
 
 ---
 
+#### ✅ GET `/api/v1`
+
+**Status:** Implementado
+
+**Descrição:** Retorna informações sobre a API e seus endpoints disponíveis.
+
+**Autenticação:** Não requerida (público)
+
+**Método:** `GET`
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "name": "GDASH API",
+  "version": "1.0.0",
+  "description": "API para sistema de monitoramento climático e energia solar",
+  "endpoints": {
+    "health": "/api/v1/weather/health",
+    "auth": {
+      "login": "/api/v1/auth/login",
+      "register": "/api/v1/auth/register"
+    },
+    "weather": {
+      "logs": "/api/v1/weather/logs",
+      "latest": "/api/v1/weather/logs/latest",
+      "precipitation24h": "/api/v1/weather/precipitation/24h",
+      "insights": "/api/v1/weather/insights",
+      "export": {
+        "csv": "/api/v1/weather/export.csv",
+        "xlsx": "/api/v1/weather/export.xlsx"
+      }
+    },
+    "users": "/api/v1/users"
+  }
+}
+```
+
+**Exemplo de Requisição:**
+```bash
+curl -X GET http://localhost:3000/api/v1
+```
+
+---
+
 #### ✅ GET `/api/v1/weather/logs/latest`
 
 **Status:** Implementado (Fase 4)
@@ -297,6 +346,12 @@ Content-Type: application/json
   "weather_code": 801,
   "estimated_irradiance_w_m2": 420.0,
   "temp_effect_factor": 0.98,
+  "uv_index": 5.2,
+  "pressure_hpa": 1013.5,
+  "visibility_m": 10000,
+  "wind_direction_10m": 180,
+  "wind_gusts_10m": 3.5,
+  "precipitation_probability": 20,
   "soiling_risk": "low",
   "wind_derating_flag": false,
   "pv_derating_pct": 2.0,
@@ -316,6 +371,41 @@ Content-Type: application/json
 **Exemplo de Requisição:**
 ```bash
 curl -X GET http://localhost:3000/api/v1/weather/logs/latest \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### ✅ GET `/api/v1/weather/precipitation/24h`
+
+**Status:** Implementado
+
+**Descrição:** Retorna a precipitação acumulada das últimas 24 horas.
+
+**Autenticação:** Requerida (JWT)
+
+**Método:** `GET`
+
+**Query Parameters:**
+- `city` (opcional): Filtrar por cidade
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "accumulated_mm": 12.5,
+  "count": 24
+}
+```
+
+**Exemplo de Requisição:**
+```bash
+curl -X GET "http://localhost:3000/api/v1/weather/precipitation/24h" \
   -H "Authorization: Bearer <token>"
 ```
 

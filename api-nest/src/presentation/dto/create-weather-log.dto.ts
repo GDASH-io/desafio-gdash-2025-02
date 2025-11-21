@@ -48,5 +48,29 @@ export class CreateWeatherLogDto {
   @IsNumber()
   @IsOptional()
   pv_derating_pct?: number;
+
+  @IsNumber()
+  @IsOptional()
+  uv_index?: number;
+
+  @IsNumber()
+  @IsOptional()
+  pressure_hpa?: number;
+
+  @IsNumber()
+  @IsOptional()
+  visibility_m?: number;
+
+  @IsNumber()
+  @IsOptional()
+  wind_direction_10m?: number;
+
+  @IsNumber()
+  @IsOptional()
+  wind_gusts_10m?: number;
+
+  @IsNumber()
+  @IsOptional()
+  precipitation_probability?: number;
 }
 

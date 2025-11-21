@@ -46,6 +46,24 @@ export class WeatherLog {
 
   @Prop({ type: Number })
   pv_derating_pct?: number;
+
+  @Prop({ type: Number })
+  uv_index?: number;
+
+  @Prop({ type: Number })
+  pressure_hpa?: number;
+
+  @Prop({ type: Number })
+  visibility_m?: number;
+
+  @Prop({ type: Number })
+  wind_direction_10m?: number;
+
+  @Prop({ type: Number })
+  wind_gusts_10m?: number;
+
+  @Prop({ type: Number })
+  precipitation_probability?: number;
 }
 
 export const WeatherLogSchema = SchemaFactory.createForClass(WeatherLog);

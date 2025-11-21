@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { InsightsModule } from './modules/insights/insights.module';
 import { JwtAuthGuard } from './infra/auth/jwt-auth.guard';
+import { AppController } from './presentation/controllers/app.controller';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from './infra/auth/jwt-auth.guard';
     UsersModule,
     InsightsModule,
   ],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,

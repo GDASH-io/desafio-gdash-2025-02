@@ -55,9 +55,15 @@ class FetchAndPublishUseCase:
         temperatures = hourly.get("temperature_2m", [])
         humidities = hourly.get("relative_humidity_2m", [])
         precipitations = hourly.get("precipitation", [])
+        precipitation_probs = hourly.get("precipitation_probability", [])
         wind_speeds = hourly.get("wind_speed_10m", [])
+        wind_directions = hourly.get("wind_direction_10m", [])
+        wind_gusts = hourly.get("wind_gusts_10m", [])
         cloud_covers = hourly.get("cloud_cover", [])
         weather_codes = hourly.get("weather_code", [])
+        pressures = hourly.get("pressure_msl", [])
+        uv_indices = hourly.get("uv_index", [])
+        visibilities = hourly.get("visibility", [])
         
         for i in range(len(times)):
             try:

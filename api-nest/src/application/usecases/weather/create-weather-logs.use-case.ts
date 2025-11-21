@@ -26,6 +26,12 @@ export class CreateWeatherLogsUseCase {
       soiling_risk: log.soiling_risk,
       wind_derating_flag: log.wind_derating_flag || false,
       pv_derating_pct: log.pv_derating_pct,
+      uv_index: log.uv_index,
+      pressure_hpa: log.pressure_hpa,
+      visibility_m: log.visibility_m,
+      wind_direction_10m: log.wind_direction_10m,
+      wind_gusts_10m: log.wind_gusts_10m,
+      precipitation_probability: log.precipitation_probability,
     }));
 
     const created = await this.weatherLogRepository.createMany(weatherLogs);

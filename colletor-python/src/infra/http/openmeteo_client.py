@@ -57,7 +57,7 @@ class OpenMeteoClient:
     
     def fetch_forecast(
         self,
-        hourly_params: str = "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,cloud_cover,weather_code",
+        hourly_params: str = "temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_direction_10m,wind_gusts_10m,cloud_cover,weather_code,pressure_msl,uv_index,visibility",
         daily_params: str = "temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,cloud_cover_mean,weather_code",
         forecast_days: int = 7,
     ) -> Dict[str, Any]:

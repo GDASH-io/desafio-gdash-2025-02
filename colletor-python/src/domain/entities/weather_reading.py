@@ -20,6 +20,9 @@ class WeatherReading:
     pressure_hpa: Optional[float] = None
     uv_index: Optional[float] = None
     visibility_m: Optional[int] = None
+    wind_direction_10m: Optional[int] = None
+    wind_gusts_10m: Optional[float] = None
+    precipitation_probability: Optional[int] = None
     
     def to_dict(self) -> dict:
         """Converte a entidade para dicionário."""
@@ -41,6 +44,15 @@ class WeatherReading:
         
         if self.visibility_m is not None:
             data["visibility_m"] = self.visibility_m
+        
+        if self.wind_direction_10m is not None:
+            data["wind_direction_10m"] = self.wind_direction_10m
+        
+        if self.wind_gusts_10m is not None:
+            data["wind_gusts_10m"] = self.wind_gusts_10m
+        
+        if self.precipitation_probability is not None:
+            data["precipitation_probability"] = self.precipitation_probability
         
         return data
 

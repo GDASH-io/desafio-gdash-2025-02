@@ -81,22 +81,44 @@ func (uc *ProcessReadingUseCase) Process(rawMessage []byte) error {
 	// Converter para formato esperado pela API
 	apiLogs := make([]interface{}, len(processedReadings))
 	for i, pr := range processedReadings {
-		apiLogs[i] = map[string]interface{}{
-			"timestamp":            pr.Timestamp.Format(time.RFC3339),
-			"city":                 pr.City,
-			"source":               pr.Source,
-			"temperature_c":        pr.TemperatureC,
-			"relative_humidity":    pr.RelativeHumidity,
-			"precipitation_mm":     pr.PrecipitationMM,
-			"wind_speed_m_s":       pr.WindSpeedMS,
-			"clouds_percent":       pr.CloudsPercent,
-			"weather_code":         pr.WeatherCode,
+		apiLog := map[string]interface{}{
+			"timestamp":                 pr.Timestamp.Format(time.RFC3339),
+			"city":                      pr.City,
+			"source":                    pr.Source,
+			"temperature_c":             pr.TemperatureC,
+			"relative_humidity":         pr.RelativeHumidity,
+			"precipitation_mm":          pr.PrecipitationMM,
+			"wind_speed_m_s":            pr.WindSpeedMS,
+			"clouds_percent":            pr.CloudsPercent,
+			"weather_code":              pr.WeatherCode,
 			"estimated_irradiance_w_m2": pr.EstimatedIrradianceW,
-			"temp_effect_factor":   pr.TempEffectFactor,
-			"soiling_risk":         pr.SoilingRisk,
-			"wind_derating_flag":   pr.WindDeratingFlag,
-			"pv_derating_pct":      pr.PVDeratingPct,
+			"temp_effect_factor":        pr.TempEffectFactor,
+			"soiling_risk":              pr.SoilingRisk,
+			"wind_derating_flag":        pr.WindDeratingFlag,
+			"pv_derating_pct":           pr.PVDeratingPct,
 		}
+
+		// Adicionar campos opcionais se disponíveis
+		if pr.PressureHpa != nil {
+			apiLog["pressure_hpa"] = *pr.PressureHpa
+		}
+		if pr.UvIndex != nil {
+			apiLog["uv_index"] = *pr.UvIndex
+		}
+		if pr.VisibilityM != nil {
+			apiLog["visibility_m"] = *pr.VisibilityM
+		}
+		if pr.WindDirection10m != nil {
+			apiLog["wind_direction_10m"] = *pr.WindDirection10m
+		}
+		if pr.WindGusts10m != nil {
+			apiLog["wind_gusts_10m"] = *pr.WindGusts10m
+		}
+		if pr.PrecipitationProbability != nil {
+			apiLog["precipitation_probability"] = *pr.PrecipitationProbability
+		}
+
+		apiLogs[i] = apiLog
 	}
 	
 	// Enviar para API com retry

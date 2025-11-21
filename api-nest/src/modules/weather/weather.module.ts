@@ -6,6 +6,7 @@ import { CreateWeatherLogsUseCase } from '../../application/usecases/weather/cre
 import { GetWeatherLogsUseCase } from '../../application/usecases/weather/get-weather-logs.use-case';
 import { GetLatestWeatherLogUseCase } from '../../application/usecases/weather/get-latest-weather-log.use-case';
 import { ExportWeatherLogsUseCase } from '../../application/usecases/weather/export-weather-logs.use-case';
+import { GetPrecipitation24hUseCase } from '../../application/usecases/weather/get-precipitation-24h.use-case';
 import { WeatherLogsController } from '../../presentation/controllers/weather-logs.controller';
 
 @Module({
@@ -22,6 +23,7 @@ import { WeatherLogsController } from '../../presentation/controllers/weather-lo
     GetWeatherLogsUseCase,
     GetLatestWeatherLogUseCase,
     ExportWeatherLogsUseCase,
+    GetPrecipitation24hUseCase,
   ],
   exports: ['IWeatherLogRepository'],
 })
