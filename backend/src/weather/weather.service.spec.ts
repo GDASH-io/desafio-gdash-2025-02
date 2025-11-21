@@ -66,4 +66,21 @@ describe('WeatherService', () => {
     const mockSort = model.find().sort;
     expect(mockSort).toHaveBeenCalledWith({ createdAt: -1 });
   });
+
+  describe('Exportação Xlsx', () => {
+    it('generateCsv() deve retornar uma string formatada', async () => {
+      const csv = await service.generateCsv();
+
+      expect(typeof csv).toBe('string');
+      expect(csv).toContain(
+        'Data/Hora,Temperatura (C),Umidade (%),Vento (km/h)',
+      );
+      expect(csv).toContain('25');
+    });
+
+    it('generateXlsx() deve retornar um Buffer', async () => {
+      const buffer = await service.generateXlsx();
+      expect(buffer).toBeInstanceOf(Buffer);
+    });
+  });
 });

@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Response } from 'express';
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
@@ -12,7 +13,14 @@ describe('WeatherController', () => {
       .fn()
       .mockImplementation((dto) => Promise.resolve({ _id: '1', ...dto })),
     findAll: jest.fn().mockResolvedValue([{ temperature: 25 }]),
+    generateCsv: jest.fn().mockResolvedValue('header\ndado'),
+    generateXlsx: jest.fn().mockResolvedValue(Buffer.from('fake-excel')),
   };
+
+  const mockResponse = {
+    set: jest.fn(),
+    send: jest.fn(),
+  } as unknown as Response;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +35,8 @@ describe('WeatherController', () => {
 
     controller = module.get<WeatherController>(WeatherController);
     service = module.get<WeatherService>(WeatherService);
+
+    jest.clearAllMocks();
   });
 
   it('deve estar definido', () => {
@@ -63,5 +73,30 @@ describe('WeatherController', () => {
     };
 
     await expect(controller.create(dto)).rejects.toThrow(errorMessage);
+  });
+
+  describe('Downloads', () => {
+    it('exportCsv() deve definir headers e enviar arquivo', async () => {
+      await controller.exportCsv(mockResponse);
+
+      expect(service.generateCsv).toHaveBeenCalled();
+      expect(mockResponse.set).toHaveBeenCalledWith('Content-Type', 'text/csv');
+      expect(mockResponse.set).toHaveBeenCalledWith(
+        'Content-Disposition',
+        expect.stringContaining('attachment'),
+      );
+      expect(mockResponse.send).toHaveBeenCalledWith('header\ndado');
+    });
+
+    it('exportXlsx() deve definir headers e enviar buffer', async () => {
+      await controller.exportXlsx(mockResponse);
+
+      expect(service.generateXlsx).toHaveBeenCalled();
+      expect(mockResponse.set).toHaveBeenCalledWith(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      expect(mockResponse.send).toHaveBeenCalledWith(expect.any(Buffer));
+    });
   });
 });
