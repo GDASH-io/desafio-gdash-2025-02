@@ -1,6 +1,6 @@
 # GDASH Challenge 2025/02 - Documentação de Implementação
 
-Este documento contém as instruções completas para executar a aplicação desenvolvida para o desafio GDASH 2025/02.
+<img src='./thumbnail.png'/>
 
 ## 📋 Visão Geral
 
