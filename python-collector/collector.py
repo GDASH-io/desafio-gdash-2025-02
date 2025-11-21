@@ -4,6 +4,7 @@ import json
 import requests
 import pika
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
 RABBITMQ_PORT = int(os.getenv('RABBITMQ_PORT', '5672'))
@@ -24,7 +25,8 @@ def get_weather_data():
             'longitude': LONGITUDE,
             'current_weather': 'true',
             'hourly': 'temperature_2m,relativehumidity_2m,windspeed_10m,weathercode,precipitation_probability',
-            'timezone': 'America/Bahia'
+            'timezone': 'America/Bahia',
+            'windspeed_unit': 'kmh'
         }
         response = requests.get(OPEN_METEO_API_URL, params=params)
         response.raise_for_status()
@@ -40,7 +42,7 @@ def normalize_weather_data(data):
 
     current_weather = data['current_weather']
     
-    current_dt = datetime.fromisoformat(current_weather['time'])
+    current_dt = datetime.fromisoformat(current_weather['time']).replace(tzinfo=ZoneInfo("America/Bahia"))
     rounded_dt = current_dt.replace(minute=0, second=0, microsecond=0)
     
     normalized_data = {
