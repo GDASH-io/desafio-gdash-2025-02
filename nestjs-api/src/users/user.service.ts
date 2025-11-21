@@ -12,7 +12,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.userModel.findOne({ email: createUserDto.email }).exec();
     if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+      throw new ConflictException('Já existe um usuário com este e-mail');
     }
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const createdUser = new this.userModel({
@@ -29,7 +29,7 @@ export class UserService {
   async findOne(id: string): Promise<User> {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
+      throw new NotFoundException(`Usuário com ID "${id}" não encontrado`);
     }
     return user;
   }
@@ -44,7 +44,7 @@ export class UserService {
     }
     const existingUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true }).exec();
     if (!existingUser) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
+      throw new NotFoundException(`Usuário com ID "${id}" não encontrado`);
     }
     return existingUser;
   }
@@ -52,7 +52,7 @@ export class UserService {
   async remove(id: string): Promise<void> {
     const result = await this.userModel.deleteOne({ _id: id }).exec();
     if (result.deletedCount === 0) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
+      throw new NotFoundException(`Usuário com ID "${id}" não encontrado`);
     }
   }
 }

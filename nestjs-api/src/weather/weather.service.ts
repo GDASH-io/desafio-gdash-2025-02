@@ -29,17 +29,17 @@ export class WeatherService {
     if (result.length > 0) {
       return result[0].averageTemperature;
     }
-    return 0; 
+    return 0;
   }
 
   async getTemperatureTrend(): Promise<string> {
     const latestLogs = await this.weatherLogModel.find()
       .sort({ timestamp: -1 })
-      .limit(5) 
+      .limit(5)
       .exec();
 
     if (latestLogs.length < 2) {
-      return "Not enough data to determine trend.";
+      return "Dados insuficientes para determinar a tendência.";
     }
 
     let increasing = 0;
@@ -53,18 +53,18 @@ export class WeatherService {
     }
 
     if (increasing > decreasing) {
-      return "Temperature is trending upwards.";
+      return "A temperatura está em tendência de alta.";
     } else if (decreasing > increasing) {
-      return "Temperature is trending downwards.";
+      return "A temperatura está em tendência de baixa.";
     } else {
-      return "Temperature is relatively stable.";
+      return "A temperatura está relativamente estável.";
     }
   }
 
   async exportCsv(): Promise<string> {
     const logs = await this.findAll();
     const columns = [
-      'timestamp', 'latitude', 'longitude', 'temperature', 'windspeed', 'weathercode', 'is_day', 'humidity', 'precipitation_probability',
+      'carimbo_de_tempo', 'latitude', 'longitude', 'temperatura', 'velocidade_do_vento', 'codigo_do_clima', 'eh_dia', 'umidade', 'probabilidade_de_precipitacao',
     ];
     const data = logs.map(log => columns.map(col => log[col]));
 
@@ -82,15 +82,15 @@ export class WeatherService {
     const worksheet = workbook.addWorksheet('Weather Logs');
 
     worksheet.columns = [
-      { header: 'Timestamp', key: 'timestamp', width: 20 },
+      { header: 'Carimbo de Tempo', key: 'timestamp', width: 20 },
       { header: 'Latitude', key: 'latitude', width: 15 },
       { header: 'Longitude', key: 'longitude', width: 15 },
-      { header: 'Temperature', key: 'temperature', width: 15 },
-      { header: 'Windspeed', key: 'windspeed', width: 15 },
-      { header: 'Weather Code', key: 'weathercode', width: 15 },
-      { header: 'Is Day', key: 'is_day', width: 10 },
-      { header: 'Humidity', key: 'humidity', width: 10 },
-      { header: 'Precipitation Probability', key: 'precipitation_probability', width: 25 },
+      { header: 'Temperatura', key: 'temperature', width: 15 },
+      { header: 'Velocidade do Vento', key: 'windspeed', width: 15 },
+      { header: 'Código do Clima', key: 'weathercode', width: 15 },
+      { header: 'É Dia', key: 'is_day', width: 10 },
+      { header: 'Umidade', key: 'humidity', width: 10 },
+      { header: 'Probabilidade de Precipitação', key: 'precipitation_probability', width: 25 },
     ];
 
     logs.forEach(log => {

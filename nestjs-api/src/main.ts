@@ -3,12 +3,22 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { UserService } from './users/user.service';
 import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors(); 
-  app.setGlobalPrefix('api'); 
+  app.enableCors();
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
+
+  const config = new DocumentBuilder()
+    .setTitle('API de Coleta de Dados Climáticos')
+    .setDescription('Documentação da API para coleta e gerenciamento de dados climáticos.')
+    .setVersion('1.0')
+    .addTag('clima')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
 
   const userService = app.get(UserService);
   const configService = app.get(ConfigService);
@@ -24,9 +34,9 @@ async function bootstrap() {
         password: defaultAdminPassword,
         roles: 'admin',
       });
-      console.log('Default admin user created.');
+      console.log('Usuário administrador padrão criado.');
     } else {
-      console.log('Default admin user already exists.');
+      console.log('Usuário administrador padrão já existe.');
     }
   }
 
