@@ -1,18 +1,13 @@
-# Python
 venv/
 .venv/
 __pycache__/
 *.pyc
 
-# Node
 node_modules/
 
-# Env files
 .env
 .env.*
 
-# VSCode
 .vscode/
 
-# Outros
 *.log

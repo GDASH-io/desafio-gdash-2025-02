@@ -1,8 +1,6 @@
-# Configuration for go-worker (placeholder)
 rabbitmq:
-  url: "amqp://rabbitmq:5672/"
-api:
-  url: "http://api:3000/api/weather/logs"
+  URL: "amqp://admin:admin@rabbitmq:5672/"
+  EXCHANGE: "weather_exchange"
 worker:
   retries: 3
   interval_seconds: 3600

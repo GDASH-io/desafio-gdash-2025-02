@@ -1,5 +1,4 @@
 import requests
-from src.ssl_verified import get_ssl_unverified_context
 from geopy.geocoders import Nominatim
 
 
@@ -29,7 +28,7 @@ def get_coordinates():
     global COORDINATES_EXISTING
     geolocator = Nominatim(user_agent="coordenadas_teresina")
     cidade = "Teresina, Piauí, Brasil"
-    if COORDINATES_EXISTING == {}: # 
+    if COORDINATES_EXISTING == {}:
         location = geolocator.geocode(cidade, timeout=20)
         try:
             if location is None:
@@ -48,7 +47,6 @@ def get_coordinates():
             return None, None
     else:
         return COORDINATES_EXISTING
-#    return {"latitude": -5.0892, "longitude": -42.8016}
     # alteração feita para evitar fazer múltiplas requisições para o mesmo local em teste
 
 
@@ -72,23 +70,13 @@ def search_forecast(lat: float, lon: float, tz: str):
 
 def get_time_info():
     try:
-        get_ssl_unverified_context()
-    except Exception as e:
-        print(f"Erro ao configurar o contexto SSL: {e}")
-    try:
         cordinates = get_coordinates()
         forecast = search_forecast(cordinates["latitude"], cordinates["longitude"], "America/Fortaleza")
         data = extract_data(forecast)
         formatted_data = format_data(**data)
         print(formatted_data)
         return formatted_data
-    # o retorno será mais ou menos assim: {
-    # "temperatura": 30,
-    # "umidade": 70, 
-    # "vento": 15, 
-    # "condicao": "Céu limpo", 
-    # "probabilidade_chuva": 10
-    # }. Para acessar na publicação na fila, basta fazer data['temperatura'].
+    
     except Exception as e:
         print(f"Erro ao obter as coordenadas: {e}")
 
