@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
+import type { User } from "@/hooks/useUsers"
 
 interface UsersTableProps {
   users: { id: string; name: string; email: string; createdAt: string }[] | any
@@ -28,7 +29,7 @@ export function UsersTable({ users, loading, onDelete, deleting }: UsersTablePro
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-10 text-muted-foreground">Carregando usuários...</TableCell>
               </TableRow>
-            ) : users?.map((user) => (
+            ) : users?.map((user: User) => (
               <TableRow key={user.id} className="hover:bg-muted/50 border-border">
                 <TableCell className="font-medium text-foreground pl-6">
                   <div className="flex items-center gap-3">
