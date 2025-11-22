@@ -25,16 +25,16 @@ export function Dashboard() {
   }))
 
   if (loadingLogs) return (
-    <div className="h-screen w-full flex items-center justify-center bg-slate-950 text-white">
+    <div className="h-screen w-full flex items-center justify-center bg-background text-foreground">
       <div className="animate-pulse flex flex-col items-center gap-4">
-        <CloudSun className="h-12 w-12 text-blue-500" />
+        <CloudSun className="h-12 w-12 text-primary" />
         <span className="text-lg font-medium">Carregando satélites...</span>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex">
+    <div className="min-h-screen bg-background text-foreground flex">
       {/* Sidebar */}
       <SideBar />
 
@@ -43,10 +43,10 @@ export function Dashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
               Monitoramento Climático
             </h1>
-            <p className="text-slate-400 mt-1">Acompanhamento em tempo real da sua usina.</p>
+            <p className="text-muted-foreground mt-1">Acompanhamento em tempo real da sua usina.</p>
           </div>
           <HeaderActions exportLogs={exportLogs} loadingExport={loadingExport} />
         </div>

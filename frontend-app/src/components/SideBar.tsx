@@ -1,10 +1,13 @@
-import { CloudSun, LayoutDashboard, LogOut, Rocket, User } from "lucide-react"
+import { CloudSun, LayoutDashboard, LogOut, Moon, Rocket, Sun, User } from "lucide-react"
 import { Button } from "./ui/button"
 import { useLocation, useNavigate } from "@tanstack/react-router"
+import { useTheme } from "@/hooks/useTheme"
 
 export const SideBar = () => {
     const navigate = useNavigate()
     const location = useLocation();
+    const { theme, toggleTheme } = useTheme()
+
     const handleLogout = () => {
         localStorage.removeItem('gdash_token')
         navigate({ to: '/auth/login' })
@@ -13,13 +16,13 @@ export const SideBar = () => {
      const getButtonClass = (path: string) => {
         const isActive = location.pathname === path
         return isActive
-          ? "w-full justify-start bg-slate-800 text-blue-400 hover:text-blue-400 hover:bg-slate-800 cursor-pointer"
-          : "w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100 cursor-pointer"
+          ? "w-full justify-start bg-muted text-primary hover:text-primary hover:bg-muted cursor-pointer"
+          : "w-full justify-start text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
       }
     return (
-        <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col">
-        <div className="p-6 flex items-center gap-2 border-b border-slate-800">
-          <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+        <aside className="w-64 bg-sidebar border-r border-sidebar-border hidden md:flex flex-col">
+        <div className="p-6 flex items-center gap-2 border-b border-sidebar-border">
+          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
             <CloudSun className="text-white h-5 w-5" />
           </div>
           <span className="font-bold text-xl tracking-tight">GDASH</span>
@@ -49,8 +52,12 @@ export const SideBar = () => {
           </Button>
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
-          <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-950/30" onClick={handleLogout}>
+        <div className="p-4 border-t border-sidebar-border space-y-2">
+          <Button variant="ghost" className="w-full justify-start" onClick={toggleTheme}>
+            {theme === 'light' ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
+            <span>{theme === 'light' ? 'Light' : 'Dark'} Mode</span>
+          </Button>
+          <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-950/30" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" /> Sair do Sistema
           </Button>
         </div>

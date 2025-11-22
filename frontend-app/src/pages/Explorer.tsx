@@ -8,13 +8,13 @@ export const Explorer = () => {
   const { data, loading, page, setPage } = usePlanets()
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex">
+    <div className="min-h-screen bg-background text-foreground flex">
       <SideBar />
       <main className="flex-1 p-8 overflow-auto">
         <ExplorerHeader />
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="text-white flex justify-between">
+            <CardTitle className="text-foreground flex justify-between">
               <span>Planetas Conhecidos</span>
               <Badge variant="outline" className="text-yellow-400 border-yellow-400/30">Página {page}</Badge>
             </CardTitle>
@@ -22,7 +22,7 @@ export const Explorer = () => {
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="p-10 text-center text-slate-400 animate-pulse">Viajando na velocidade da luz...</div>
+              <div className="p-10 text-center text-muted-foreground animate-pulse">Viajando na velocidade da luz...</div>
             ) : (
               <PlanetsTable planets={data?.results || []} />
             )}

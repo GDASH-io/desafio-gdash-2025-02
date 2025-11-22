@@ -22,13 +22,13 @@ export const Users = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex">
+    <div className="min-h-screen bg-background text-foreground flex">
       <SideBar />
       <main className="flex-1 p-8 overflow-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">Gerenciamento de Usuários</h1>
-            <p className="text-slate-400 mt-1">Administre quem tem acesso ao sistema.</p>
+            <h1 className="text-3xl font-bold text-foreground">Gerenciamento de Usuários</h1>
+            <p className="text-muted-foreground mt-1">Administre quem tem acesso ao sistema.</p>
           </div>
           <UserCreateDialog onCreate={handleCreate} loading={loadingCreate} />
         </div>
