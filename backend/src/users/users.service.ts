@@ -13,7 +13,9 @@ export class UsersService implements OnModuleInit {
 
   async onModuleInit() {
     const adminEmail = 'admin@example.com';
-    const adminExists = await this.userModel.findOne({ email: adminEmail });
+    const adminExists = await this.userModel
+      .findOne({ email: adminEmail })
+      .exec();
 
     if (!adminExists) {
       this.logger.log('🌱 Criando usuário Admin padrão...');

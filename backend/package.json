@@ -90,7 +90,8 @@
       ".module.ts",
       "main.ts",
       ".dto.ts",
-      ".schema.ts"
+      ".schema.ts",
+      ".strategy.ts"
     ]
   }
 }

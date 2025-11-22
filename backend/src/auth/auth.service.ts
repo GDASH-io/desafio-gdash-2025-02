@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import { User } from 'src/users/schemas/user.schema';
-import { UsersService } from 'src/users/users.service';
+import { User } from '../users/schemas/user.schema';
+import { UsersService } from '../users/users.service';
 
 export type SafeUserProps = Omit<User, 'password'> & { _id: any };
 

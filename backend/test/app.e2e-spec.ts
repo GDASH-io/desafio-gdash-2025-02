@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './../src/app.module';
 import { WeatherService } from './../src/weather/weather.service';
 
+import { AuthGuard } from '@nestjs/passport';
 import * as request from 'supertest';
 
 describe('AppController (e2e)', () => {
@@ -21,12 +22,16 @@ describe('AppController (e2e)', () => {
     }),
   };
 
+  const mockAuthGuard = { canActivate: jest.fn(() => true) };
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
       .overrideProvider(WeatherService)
       .useValue(mockWeatherService)
+      .overrideGuard(AuthGuard('jwt'))
+      .useValue(mockAuthGuard)
       .compile();
 
     app = moduleFixture.createNestApplication();
