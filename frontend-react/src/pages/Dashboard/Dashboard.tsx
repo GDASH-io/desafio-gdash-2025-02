@@ -3,6 +3,7 @@ import Layout from '../../components/Layout';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import LineChart from '../../components/Chart/LineChart';
 import InsightsSection from '../../components/Insights/InsightsSection';
+import Forecast7Days from '../../components/Forecast/Forecast7Days';
 import { usePolling } from '../../hooks/usePolling';
 import api from '../../app/api';
 import { getWeatherCondition, getSeverityColor, getSeverityTextColor } from '../../utils/weather-condition';
@@ -48,6 +49,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [precipitation24h, setPrecipitation24h] = useState<number | null>(null);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   const fetchLatest = async () => {
     try {
@@ -85,6 +87,13 @@ export default function Dashboard() {
     fetchLatest();
     fetchChartData();
     fetchPrecipitation24h();
+    
+    // Atualizar data e hora a cada segundo
+    const dateTimeInterval = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+    
+    return () => clearInterval(dateTimeInterval);
   }, []);
 
   usePolling(fetchLatest, 30000, true);
@@ -147,6 +156,16 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold">Dashboard de Clima</h1>
           <p className="text-muted-foreground">Dados em tempo real de Coronel Fabriciano, MG</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Data e Hora atual: {currentDateTime.toLocaleString('pt-BR', { 
+              day: '2-digit', 
+              month: '2-digit', 
+              year: 'numeric', 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit' 
+            })}
+          </p>
         </div>
 
         {error && (
@@ -418,6 +437,8 @@ export default function Dashboard() {
               </div>
             </CardContent>
           </Card>
+
+          <Forecast7Days />
 
           {pressureData.length > 0 && (
             <Card>
