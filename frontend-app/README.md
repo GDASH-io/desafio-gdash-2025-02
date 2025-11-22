@@ -29,6 +29,9 @@ npm run test
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
+## Theming
+
+This project supports dark and light modes. The theme is automatically applied based on your system preferences, and you can toggle it using the button in the sidebar. The theme is persisted in your local storage.
 
 ## Linting & Formatting
 
