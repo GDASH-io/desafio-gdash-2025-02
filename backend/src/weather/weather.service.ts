@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as Mongoose from 'mongoose';
 import { Model } from 'mongoose';
 
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
@@ -36,7 +37,11 @@ export class WeatherService {
     return createdLog.save();
   }
 
-  async findAll(): Promise<WeatherLog[]> {
+  async findAll(search?: string): Promise<WeatherLog[]> {
+    const query: Mongoose.QueryFilter<WeatherLog> = {};
+    if (search) {
+      query.timestamp = { $regex: search, $options: 'i' };
+    }
     return this.weatherModel.find().sort({ createdAt: -1 }).exec();
   }
 
