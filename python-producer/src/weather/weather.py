@@ -59,7 +59,5 @@ def get_weather(lat, lon):
         "wind_speed": round(wind_speed_kmh, 1),
         "weather_description": weather_description,
         "rain_probability": daily["precipitation_probability_max"][0] if daily.get("precipitation_probability_max") else 0,
-        "fetched_at": now_br.strftime("%d/%m/%Y %H:%M:%S"),
-        "fetched_at_iso": now_br.isoformat(),
+        "fetched_at": now_br.isoformat(),
     }
-
