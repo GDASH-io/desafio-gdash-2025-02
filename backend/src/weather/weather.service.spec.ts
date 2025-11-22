@@ -15,7 +15,7 @@ describe('WeatherService', () => {
     wind_speed: 10.5,
     weather_description: 'overcast',
     rain_probability: 10,
-    fetched_at: new Date('2025-01-01T00:00:00Z'),
+    fetched_at: '2025-01-01T00:00:00Z',
     save: jest.fn(),
   } as unknown as WeatherDocument;
 
@@ -26,7 +26,7 @@ describe('WeatherService', () => {
     wind_speed: 15.2,
     weather_description: 'cloudy',
     rain_probability: 30,
-    fetched_at: new Date('2025-01-02T00:00:00Z'),
+    fetched_at: '2025-01-02T00:00:00Z',
   } as unknown as WeatherDocument;
 
   beforeEach(async () => {
@@ -85,7 +85,7 @@ describe('WeatherService', () => {
 
       expect(weatherModel).toHaveBeenCalledWith({
         ...weatherData,
-        fetched_at: new Date(weatherData.fetched_at),
+        fetched_at: weatherData.fetched_at,
       });
       expect(mockInstance.save).toHaveBeenCalled();
       expect(result).toEqual(mockWeatherDocument);
@@ -112,7 +112,7 @@ describe('WeatherService', () => {
 
       expect(weatherModel).toHaveBeenCalledWith({
         ...weatherData,
-        fetched_at: expect.any(Date),
+        fetched_at: '2025-01-01T00:00:00.000Z',
       });
       expect(mockInstance.save).toHaveBeenCalled();
       expect(result).toEqual(mockWeatherDocument);
@@ -175,8 +175,8 @@ describe('WeatherService', () => {
 
       expect(weatherModel.find).toHaveBeenCalledWith({
         fetched_at: {
-          $gte: new Date(filters.startDate),
-          $lte: new Date(filters.endDate),
+          $gte: filters.startDate,
+          $lte: filters.endDate,
         },
       });
       expect(result).toEqual({
