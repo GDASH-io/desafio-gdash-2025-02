@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
+  YAxis,
 } from "recharts";
 import type { WeatherLog } from "../../services/api";
 
@@ -16,6 +17,11 @@ interface Props {
 }
 
 export function MainWeatherCard({ current, logs }: Props) {
+  const formatXAxis = (tickItem: string) => {
+    const date = new Date(tickItem);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <div className="col-span-12 lg:col-span-8 flex flex-col gap-6">
       <div className="bg-dashboard-card rounded-[2rem] p-6 md:p-8 flex flex-col md:flex-row justify-between items-center relative overflow-hidden border border-white/5 text-center md:text-left gap-6 md:gap-0 shadow-2xl">
@@ -62,7 +68,6 @@ export function MainWeatherCard({ current, logs }: Props) {
         </div>
       </div>
 
-      {/* GRÁFICO */}
       <div className="bg-dashboard-card rounded-[2rem] p-6 flex-1 border border-white/5 min-h-[300px]">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-bold text-white">Histórico Recente</h3>
@@ -89,7 +94,26 @@ export function MainWeatherCard({ current, logs }: Props) {
                   stroke="#343946"
                   vertical={false}
                 />
-                <XAxis dataKey="timestamp" tick={false} axisLine={false} />
+                <XAxis
+                  dataKey="timestamp"
+                  tickFormatter={formatXAxis}
+                  stroke="#5C9CE5"
+                  tick={{ fill: "#9399A2", fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                  padding={{ left: 20, right: 20 }}
+                />
+
+                <YAxis
+                  stroke="#5C9CE5"
+                  tick={{ fill: "#9399A2", fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  domain={["dataMin - 5", "dataMax + 5"]}
+                  orientation="right"
+                  width={40}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#23304D",
@@ -106,6 +130,7 @@ export function MainWeatherCard({ current, logs }: Props) {
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorTemp)"
+                  dot={{ stroke: "#50E3C2", strokeWidth: 2, r: 3 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
