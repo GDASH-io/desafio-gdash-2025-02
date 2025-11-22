@@ -37,4 +37,9 @@ export class WeatherController {
     res.set('Content-Disposition', 'attachment; filename=clima_gdash.xlsx');
     res.send(buffer);
   }
+
+  @Get('insights')
+  getInsights() {
+    return this.service.generateInsights();
+  }
 }
