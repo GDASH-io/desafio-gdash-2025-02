@@ -1,12 +1,15 @@
 import { SideBar } from "@/components/SideBar"
-import { MetricCard } from "@/components/dashboard/MetricCard"
-import { InsightsCard } from "@/components/dashboard/InsightsCard"
-import { LogsTable } from "@/components/dashboard/LogsTable"
 import { Thermometer, Droplets, Wind } from "lucide-react"
 import { useWeatherLogs, useExportLogs, useInsights } from "@/hooks/useWeather"
 import { CloudSun } from "lucide-react"
-import { HeaderActions } from "@/components/dashboard/HeaderActions"
-import { TemperatureChart } from "@/components/dashboard/TemperatureChart"
+import { 
+  HeaderActions, 
+  TemperatureChart, 
+  MetricCard, 
+  InsightsCard, 
+  LogsTable 
+} from "@/components/dashboard"
+
 
 export function Dashboard() {
   const { logs, loading: loadingLogs } = useWeatherLogs()

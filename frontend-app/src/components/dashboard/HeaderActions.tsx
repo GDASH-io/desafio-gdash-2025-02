@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Download } from "lucide-react"
 
 export function HeaderActions({ exportLogs, loadingExport }: { 
-  exportLogs: (type: string) => void, 
+  exportLogs: (type: string | any) => void, 
   loadingExport: boolean 
 }) {
   return (
