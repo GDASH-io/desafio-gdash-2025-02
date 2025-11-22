@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
   Download, Wind, Droplets, Thermometer, LogOut, Sparkles, 
-  LayoutDashboard, CloudSun, User, Menu 
+  LayoutDashboard, CloudSun, User, Menu, 
+  Rocket
 } from "lucide-react"
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer 
@@ -59,6 +60,13 @@ export function Dashboard() {
           </Button>
           <Button variant="ghost" className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100">
             <User className="mr-2 h-4 w-4" /> Usuários
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+            onClick={() => navigate({ to: '/explorer' })} // <--- AQUI
+          >
+            <Rocket className="mr-2 h-4 w-4" /> Explorador (Bônus)
           </Button>
         </nav>
 

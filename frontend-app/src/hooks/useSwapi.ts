@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/service/api';
+import { api } from '@/service/api'; 
 import { useState } from 'react';
 
 export const usePlanets = () => {
@@ -9,12 +9,13 @@ export const usePlanets = () => {
         queryKey: ['planets', page],
         queryFn: async () => {
             const { data } = await api.get(`/swapi/planets?page=${page}`);
-            return data;
+            return data; 
         },
         staleTime: 60000, 
     });
 
     return {
+        data: query.data,
         loading: query.isLoading,
         page,
         setPage,
