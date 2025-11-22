@@ -1,13 +1,21 @@
 import { CloudSun, LayoutDashboard, LogOut, Rocket, User } from "lucide-react"
 import { Button } from "./ui/button"
-import { useNavigate } from "@tanstack/react-router"
+import { useLocation, useNavigate } from "@tanstack/react-router"
 
 export const SideBar = () => {
     const navigate = useNavigate()
+    const location = useLocation();
     const handleLogout = () => {
         localStorage.removeItem('gdash_token')
         navigate({ to: '/auth/login' })
     }
+
+     const getButtonClass = (path: string) => {
+        const isActive = location.pathname === path
+        return isActive
+          ? "w-full justify-start bg-slate-800 text-blue-400 hover:text-blue-400 hover:bg-slate-800 cursor-pointer"
+          : "w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100 cursor-pointer"
+      }
     return (
         <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col">
         <div className="p-6 flex items-center gap-2 border-b border-slate-800">
@@ -18,20 +26,24 @@ export const SideBar = () => {
         </div>
         
         <nav className="flex-1 p-4 space-y-2">
-          <Button variant="ghost" className="w-full justify-start bg-slate-800 text-blue-400 hover:bg-slate-800 hover:text-blue-400">
+          <Button 
+              variant="ghost" 
+              className={getButtonClass('/dashboard')}
+              onClick={() => navigate({ to: '/dashboard' })}
+              >
             <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
           </Button>
           <Button 
               variant="ghost" 
-              className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+              className={getButtonClass('/users')}
               onClick={() => navigate({ to: '/users' })}
           >
             <User className="mr-2 h-4 w-4" /> Usuários
           </Button>
           <Button 
             variant="ghost" 
-            className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100"
-            onClick={() => navigate({ to: '/explorer' })} // <--- AQUI
+            className={getButtonClass('/explorer')}
+            onClick={() => navigate({ to: '/explorer' })} 
           >
             <Rocket className="mr-2 h-4 w-4" /> Explorador (Bônus)
           </Button>
