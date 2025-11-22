@@ -1,3 +1,4 @@
+import type React from "react"
 import {
   CircleCheckIcon,
   InfoIcon,
@@ -5,15 +6,13 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      position="top-center"   // topo-central
+      richColors              // habilita cores por tipo (success, error etc.)
       className="toaster group"
       icons={{
         success: <CircleCheckIcon className="size-4" />,
@@ -28,6 +27,16 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
+
+          // 🔹 cores específicas para SUCCESS (quando usa toast.success)
+          "--success-bg": "hsl(142 76% 36%)",   // verde forte
+          "--success-border": "hsl(142 76% 32%)",
+          "--success-text": "white",
+
+          // opcional: deixar erro mais forte também
+          "--error-bg": "hsl(0 72% 45%)",
+          "--error-border": "hsl(0 72% 40%)",
+          "--error-text": "white",
         } as React.CSSProperties
       }
       {...props}

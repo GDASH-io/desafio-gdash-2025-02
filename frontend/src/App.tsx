@@ -14,7 +14,7 @@ const App: React.FC = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} /> 
       </Routes>
-       <Toaster />
+       <Toaster position="top-center"/>
     </BrowserRouter>
   );
 };
