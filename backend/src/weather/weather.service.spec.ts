@@ -13,7 +13,7 @@ describe('WeatherService', () => {
     temperature: 22.5,
     humidity: 50,
     wind_speed: 10.5,
-    weather_description: 'sunny',
+    weather_description: 'overcast',
     rain_probability: 10,
     fetched_at: new Date('2025-01-01T00:00:00Z'),
     save: jest.fn(),
@@ -69,7 +69,7 @@ describe('WeatherService', () => {
         temperature: 22.5,
         humidity: 50,
         wind_speed: 10.5,
-        weather_description: 'sunny',
+        weather_description: 'overcast',
         rain_probability: 10,
         fetched_at: '2025-01-01T00:00:00Z',
       };
@@ -96,7 +96,7 @@ describe('WeatherService', () => {
         temperature: 22.5,
         humidity: 50,
         wind_speed: 10.5,
-        weather_description: 'sunny',
+        weather_description: 'overcast',
         rain_probability: 10,
         fetched_at: new Date('2025-01-01T00:00:00Z'),
       };

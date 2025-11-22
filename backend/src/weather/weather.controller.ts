@@ -4,12 +4,15 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   NotFoundException,
   Param,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { WeatherService } from './weather.service';
 import {
   ApiOperation,
@@ -28,6 +31,9 @@ import {
 } from './dto/get-weather.dto';
 import { PaginationQueryDto } from '../utils/pagination-query.dto';
 import { FilterWeatherDto } from './dto/filter-weather.dto';
+import { json2csv } from 'json-2-csv';
+import jsonAsXlsx from 'json-as-xlsx';
+import { translateWeatherDescription } from '../utils/translate-weather-description';
 
 @ApiTags('Weather')
 @Controller('weather')
@@ -121,6 +127,228 @@ export class WeatherController {
     );
 
     return weather;
+  }
+
+  @Get('export-csv')
+  @UseGuards(JwtAuthGuard)
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="weather.csv"')
+  @ApiOperation({
+    summary: 'Export weather records to CSV with pagination and filters',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'CSV file with weather records',
+    content: {
+      'text/csv': {
+        schema: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'itemsPerPage',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date (ISO string)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date (ISO string)',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async exportWeatherToCsv(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query() filterQuery: FilterWeatherDto,
+    @Res() res: Response,
+  ) {
+    const page =
+      paginationQuery.page !== undefined ? Number(paginationQuery.page) : 1;
+    const itemsPerPage =
+      paginationQuery.itemsPerPage !== undefined
+        ? Number(paginationQuery.itemsPerPage)
+        : 10;
+
+    if (page < 1) {
+      throw new BadRequestException('Page must be greater than 0');
+    }
+
+    if (itemsPerPage < 1) {
+      throw new BadRequestException('ItemsPerPage must be greater than 0');
+    }
+
+    const filters: FilterWeatherDto = {};
+    if (filterQuery.startDate) filters.startDate = filterQuery.startDate;
+    if (filterQuery.endDate) filters.endDate = filterQuery.endDate;
+
+    const weatherResult = await this.weatherService.getWeatherPaginated(
+      page,
+      itemsPerPage,
+      Object.keys(filters).length > 0 ? filters : undefined,
+    );
+
+    const csvData = weatherResult.data.map((item) => ({
+      ID: item._id.toString(),
+      'Temperatura (°C)': item.temperature,
+      'Umidade (%)': item.humidity,
+      'Velocidade do vento (km/h)': item.wind_speed,
+      'Descrição do tempo': translateWeatherDescription(
+        item.weather_description,
+      ),
+      'Probabilidade de chuva (%)': item.rain_probability,
+      'Data de captura': item.fetched_at.toISOString(),
+    }));
+
+    try {
+      const csv = json2csv(csvData);
+      res.send(csv);
+    } catch {
+      throw new BadRequestException('Error generating CSV file');
+    }
+  }
+
+  @Get('export-xlsx')
+  @UseGuards(JwtAuthGuard)
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  @Header('Content-Disposition', 'attachment; filename="weather.xlsx"')
+  @ApiOperation({
+    summary: 'Export weather records to XLSX with pagination and filters',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'XLSX file with weather records',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'itemsPerPage',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'Start date (ISO string)',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'End date (ISO string)',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async exportWeatherToXlsx(
+    @Query() paginationQuery: PaginationQueryDto,
+    @Query() filterQuery: FilterWeatherDto,
+    @Res({ passthrough: false }) res: Response,
+  ) {
+    const page =
+      paginationQuery.page !== undefined ? Number(paginationQuery.page) : 1;
+    const itemsPerPage =
+      paginationQuery.itemsPerPage !== undefined
+        ? Number(paginationQuery.itemsPerPage)
+        : 10;
+
+    if (page < 1) {
+      throw new BadRequestException('Page must be greater than 0');
+    }
+
+    if (itemsPerPage < 1) {
+      throw new BadRequestException('ItemsPerPage must be greater than 0');
+    }
+
+    const filters: FilterWeatherDto = {};
+    if (filterQuery.startDate) filters.startDate = filterQuery.startDate;
+    if (filterQuery.endDate) filters.endDate = filterQuery.endDate;
+
+    const weatherResult = await this.weatherService.getWeatherPaginated(
+      page,
+      itemsPerPage,
+      Object.keys(filters).length > 0 ? filters : undefined,
+    );
+
+    const xlsxData = weatherResult.data.map((item) => ({
+      id: item._id.toString(),
+      temperatura: item.temperature,
+      umidade: item.humidity,
+      velocidadeVento: item.wind_speed,
+      descricaoTempo: translateWeatherDescription(item.weather_description),
+      probabilidadeChuva: item.rain_probability,
+      dataCaptura: item.fetched_at.toISOString(),
+    }));
+
+    if (xlsxData.length === 0) {
+      throw new BadRequestException('No data to export');
+    }
+
+    try {
+      const data = [
+        {
+          sheet: 'Dados do Tempo',
+          columns: [
+            { label: 'ID', value: 'id' },
+            { label: 'Temperatura (°C)', value: 'temperatura' },
+            { label: 'Umidade (%)', value: 'umidade' },
+            { label: 'Velocidade do vento (km/h)', value: 'velocidadeVento' },
+            { label: 'Descrição do tempo', value: 'descricaoTempo' },
+            {
+              label: 'Probabilidade de chuva (%)',
+              value: 'probabilidadeChuva',
+            },
+            { label: 'Data de captura', value: 'dataCaptura' },
+          ],
+          content: xlsxData,
+        },
+      ];
+
+      const settings = {
+        fileName: 'weather',
+        extraLength: 3,
+        writeMode: 'write' as const,
+        writeOptions: {
+          type: 'buffer' as const,
+        },
+      };
+
+      const buffer = jsonAsXlsx(data, settings);
+
+      if (!buffer || !Buffer.isBuffer(buffer)) {
+        throw new Error(
+          `Invalid buffer returned. Type: ${typeof buffer}, Value: ${buffer}`,
+        );
+      }
+
+      res.send(buffer);
+    } catch (error) {
+      console.error('Error generating XLSX:', error);
+      throw new BadRequestException(
+        `Error generating XLSX file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   }
 
   @Delete(':id')

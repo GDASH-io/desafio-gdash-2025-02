@@ -29,6 +29,8 @@
     "@nestjs/swagger": "^11.2.3",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "json-2-csv": "^5.5.10",
+    "json-as-xlsx": "^2.5.6",
     "mongoose": "^8.20.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",

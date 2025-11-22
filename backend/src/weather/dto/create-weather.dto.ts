@@ -22,7 +22,7 @@ export class CreateWeatherDto {
 
   @ApiProperty({
     description: 'Weather description',
-    example: 'sunny',
+    example: 'overcast',
   })
   weather_description: string;
 

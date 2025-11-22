@@ -15,7 +15,7 @@ describe('WeatherController', () => {
     temperature: 22.5,
     humidity: 50,
     wind_speed: 10.5,
-    weather_description: 'sunny',
+    weather_description: 'overcast',
     rain_probability: 10,
     fetched_at: new Date('2025-01-01T00:00:00Z'),
   } as unknown as WeatherDocument;
@@ -34,7 +34,7 @@ describe('WeatherController', () => {
     temperature: 22.5,
     humidity: 50,
     wind_speed: 10.5,
-    weather_description: 'sunny',
+    weather_description: 'overcast',
     rain_probability: 10,
     fetched_at: '2025-01-01T00:00:00Z',
   };
@@ -82,10 +82,10 @@ describe('WeatherController', () => {
 
     it('should throw BadRequestException when validation fails', async () => {
       const invalidWeatherDto = {
-        temperature: 150, // invalid - should be between -100 and 100
+        temperature: 150,
         humidity: 50,
         wind_speed: 10.5,
-        weather_description: 'sunny',
+        weather_description: 'overcast',
         rain_probability: 10,
         fetched_at: '2025-01-01T00:00:00Z',
       };
@@ -99,10 +99,10 @@ describe('WeatherController', () => {
 
     it('should throw BadRequestException when temperature is out of range', async () => {
       const invalidWeatherDto = {
-        temperature: -150, // invalid - below -100
+        temperature: -150,
         humidity: 50,
         wind_speed: 10.5,
-        weather_description: 'sunny',
+        weather_description: 'overcast',
         rain_probability: 10,
         fetched_at: '2025-01-01T00:00:00Z',
       };
@@ -117,9 +117,9 @@ describe('WeatherController', () => {
     it('should throw BadRequestException when humidity is out of range', async () => {
       const invalidWeatherDto = {
         temperature: 22.5,
-        humidity: 150, // invalid - above 100
+        humidity: 150,
         wind_speed: 10.5,
-        weather_description: 'sunny',
+        weather_description: 'overcast',
         rain_probability: 10,
         fetched_at: '2025-01-01T00:00:00Z',
       };
@@ -134,7 +134,6 @@ describe('WeatherController', () => {
     it('should throw BadRequestException when required fields are missing', async () => {
       const invalidWeatherDto = {
         temperature: 22.5,
-        // missing other required fields
       } as CreateWeatherDto;
 
       await expect(() =>
