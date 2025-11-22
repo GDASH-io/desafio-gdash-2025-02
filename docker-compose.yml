@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: gdash
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" # painel de administração
+    # Para adicionar usuário/senha depois: environment: RABBITMQ_DEFAULT_USER / RABBITMQ_DEFAULT_PASS
+
+  api:
+    build: ./backend
+    container_name: api
+    depends_on:
+      - mongo
+      - rabbitmq
+    env_file: .env.example
+    environment:
+      # Override se necessário; usando variáveis do env file
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    # command: ["sh","-c","npm run start:dev"]  # será ajustado após bootstrap NestJS
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    depends_on:
+      - api
+    env_file: .env.example
+    ports:
+      - "5173:5173"
+    # command: ["sh","-c","npm run dev -- --host"]  # ajustaremos após criar projeto
+
+  python_collector:
+    build: ./python-collector
+    container_name: python_collector
+    depends_on:
+      - rabbitmq
+    env_file: .env.example
+    # command: ["python","main.py"]  # definiremos depois
+    restart: unless-stopped
+
+  go_worker:
+    build: ./go-worker
+    container_name: go_worker
+    depends_on:
+      - rabbitmq
+      - api
+    env_file: .env.example
+    # command: ["/app/worker"]  # ajustaremos depois
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
