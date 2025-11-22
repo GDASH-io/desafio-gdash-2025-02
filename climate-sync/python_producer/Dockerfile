@@ -10,4 +10,5 @@ COPY . .
 
 RUN mkdir -p /logs
 
-CMD ["python", "scheduler.py"]
+CMD ["python", "-u", "scheduler.py"]
+

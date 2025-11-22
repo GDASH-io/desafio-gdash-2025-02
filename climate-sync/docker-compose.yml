@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -7,27 +5,43 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
     healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      retries: 20
-    restart: always
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - climate-sync
 
   python-producer:
-    build: ./python-producer
-    container_name: python-producer
-    environment:
-      LATITUDE: -23.0336
-      LONGITUDE: -45.5619
-      RABBITMQ_HOST: rabbitmq
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USER: guest
-      RABBITMQ_PASS: guest
-      RABBITMQ_QUEUE: weather.data
-      COLLECTION_INTERVAL_MINUTES: 60
+    build:
+      context: ./python_producer
+    container_name: climate-sync-python-producer
+    env_file:
+      - ./.env
     depends_on:
       rabbitmq:
         condition: service_healthy
-    volumes:
-      - ./python-producer/logs:/logs
-    restart: always
+    restart: on-failure
+    networks:
+      - climate-sync
+
+  go-worker:
+    build:
+      context: ./go-worker
+    container_name: climate-sync-go-worker
+    env_file:
+      - ./.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - climate-sync
+
+networks:
+  climate-sync:
+    driver: bridge

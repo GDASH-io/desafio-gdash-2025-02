@@ -20,6 +20,7 @@ class WeatherScheduler:
             print("⚠️ Failed to fetch weather data")
     
     def run(self):
+        print("🔵 Iniciando o scheduler...")
         print(f"🚀 Weather Producer started at {self.config.LATITUDE},{self.config.LONGITUDE}")
         self.collect_and_publish()
         schedule.every(self.config.COLLECTION_INTERVAL_MINUTES).minutes.do(self.collect_and_publish)
