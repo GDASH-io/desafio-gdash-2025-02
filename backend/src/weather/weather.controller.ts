@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { WeatherService } from './weather.service';
 
 @Controller('weather')
+@UseGuards(AuthGuard('jwt'))
 export class WeatherController {
   constructor(private readonly service: WeatherService) {}
 
