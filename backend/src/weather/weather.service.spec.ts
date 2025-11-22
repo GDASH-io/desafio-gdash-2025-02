@@ -85,6 +85,7 @@ describe('WeatherService', () => {
 
       expect(weatherModel).toHaveBeenCalledWith({
         ...weatherData,
+        weather_description: 'Encoberto',
         fetched_at: weatherData.fetched_at,
       });
       expect(mockInstance.save).toHaveBeenCalled();
@@ -112,6 +113,7 @@ describe('WeatherService', () => {
 
       expect(weatherModel).toHaveBeenCalledWith({
         ...weatherData,
+        weather_description: 'Encoberto',
         fetched_at: '2025-01-01T00:00:00.000Z',
       });
       expect(mockInstance.save).toHaveBeenCalled();

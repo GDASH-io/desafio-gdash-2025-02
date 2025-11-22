@@ -4,6 +4,7 @@ import { Weather, WeatherDocument } from './schemas/weather.schema';
 import { Model, FilterQuery } from 'mongoose';
 import { PaginatedResponseDto } from '../utils/paginated-response.dto';
 import { FilterWeatherDto } from './dto/filter-weather.dto';
+import { translateWeatherDescription } from '../utils/translate-weather-description';
 
 @Injectable()
 export class WeatherService {
@@ -21,6 +22,9 @@ export class WeatherService {
 
     const weatherData: Weather = {
       ...weather,
+      weather_description: translateWeatherDescription(
+        weather.weather_description,
+      ),
       fetched_at: fetchedAtString,
     };
     const newWeather = new this.weatherModel(weatherData);

@@ -35,7 +35,6 @@ import { PaginationQueryDto } from '../utils/pagination-query.dto';
 import { FilterWeatherDto } from './dto/filter-weather.dto';
 import { json2csv } from 'json-2-csv';
 import jsonAsXlsx from 'json-as-xlsx';
-import { translateWeatherDescription } from '../utils/translate-weather-description';
 
 @ApiTags('Weather')
 @Controller('weather')
@@ -222,9 +221,7 @@ export class WeatherController {
       'Temperatura (°C)': item.temperature,
       'Umidade (%)': item.humidity,
       'Velocidade do vento (km/h)': item.wind_speed,
-      'Descrição do tempo': translateWeatherDescription(
-        item.weather_description,
-      ),
+      'Descrição do tempo': item.weather_description,
       'Probabilidade de chuva (%)': item.rain_probability,
       'Data de captura': item.fetched_at,
     }));
@@ -311,7 +308,7 @@ export class WeatherController {
       temperatura: item.temperature,
       umidade: item.humidity,
       velocidadeVento: item.wind_speed,
-      descricaoTempo: translateWeatherDescription(item.weather_description),
+      descricaoTempo: item.weather_description,
       probabilidadeChuva: item.rain_probability,
       dataCaptura: item.fetched_at,
     }));
