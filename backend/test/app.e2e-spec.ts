@@ -1,8 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
+
 import { AppModule } from './../src/app.module';
 import { WeatherService } from './../src/weather/weather.service';
+
+import * as request from 'supertest';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -10,6 +12,13 @@ describe('AppController (e2e)', () => {
   const mockWeatherService = {
     findAll: jest.fn().mockReturnValue([{ temperature: 99, humidity: 99 }]),
     create: jest.fn().mockImplementation((dto) => ({ _id: 'uuid', ...dto })),
+    generateCsv: jest.fn().mockResolvedValue('header\ndado'),
+    generateXlsx: jest.fn().mockResolvedValue(Buffer.from('fake-excel')),
+    generateInsights: jest.fn().mockResolvedValue({
+      summary: 'E2E Test AI',
+      trend: 'stable',
+      averageTemp: 25,
+    }),
   };
 
   beforeAll(async () => {
@@ -54,6 +63,32 @@ describe('AppController (e2e)', () => {
       });
   });
 
+  it('/api/weather/export/csv (GET) - Deve baixar CSV', () => {
+    return request(app.getHttpServer())
+      .get('/api/weather/export/csv')
+      .expect(200)
+      .expect('Content-Type', /text\/csv/)
+      .expect('Content-Disposition', /attachment/);
+  });
+
+  it('/api/weather/export/xlsx (GET) - Deve baixar Excel', () => {
+    return request(app.getHttpServer())
+      .get('/api/weather/export/xlsx')
+      .expect(200)
+      .expect('Content-Type', /spreadsheetml/)
+      .expect('Content-Disposition', /attachment/);
+  });
+
+  it('/api/weather/insights (GET) - Deve retornar IA', () => {
+    return request(app.getHttpServer())
+      .get('/api/weather/insights')
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.summary).toBe('E2E Test AI');
+        expect(res.body.trend).toBe('stable');
+      });
+  });
+
   it('/api/weather/logs (POST) - Validação de Erro', () => {
     return request(app.getHttpServer())
       .post('/api/weather/logs')
@@ -69,7 +104,7 @@ describe('AppController (e2e)', () => {
     it('Deve rejeitar payload vazio (400)', () => {
       return request(app.getHttpServer())
         .post('/api/weather/logs')
-        .send({}) // Enviando nada
+        .send({})
         .expect(400)
         .expect((res) => {
           expect(res.body.message).toBeInstanceOf(Array);

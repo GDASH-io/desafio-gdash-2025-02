@@ -15,6 +15,12 @@ describe('WeatherController', () => {
     findAll: jest.fn().mockResolvedValue([{ temperature: 25 }]),
     generateCsv: jest.fn().mockResolvedValue('header\ndado'),
     generateXlsx: jest.fn().mockResolvedValue(Buffer.from('fake-excel')),
+
+    generateInsights: jest.fn().mockResolvedValue({
+      summary: 'Teste de IA',
+      trend: 'stable',
+      averageTemp: 25,
+    }),
   };
 
   const mockResponse = {
@@ -58,6 +64,14 @@ describe('WeatherController', () => {
   it('deve retornar array de logs', async () => {
     await controller.findAll();
     expect(service.findAll).toHaveBeenCalled();
+  });
+
+  it('getInsights() deve retornar dados de inteligência', async () => {
+    const result = await controller.getInsights();
+
+    expect(service.generateInsights).toHaveBeenCalled();
+    expect(result).toHaveProperty('summary');
+    expect(result.trend).toBe('stable');
   });
 
   it('deve tratar erros do service (Simulação de DB fora do ar)', async () => {

@@ -79,7 +79,9 @@
     "coveragePathIgnorePatterns": [
       "node_modules",
       ".module.ts",
-      "main.ts"
+      "main.ts",
+      ".dto.ts",
+      ".schema.ts"
     ]
   }
 }
