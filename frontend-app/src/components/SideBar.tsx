@@ -35,15 +35,15 @@ export const SideBar = () => {
           </Button>
           <Button 
               variant="ghost" 
-              className={getButtonClass('/users')}
-              onClick={() => navigate({ to: '/users' })}
+              className={getButtonClass('/dashboard/users')}
+              onClick={() => navigate({ to: '/dashboard/users' })}
           >
             <User className="mr-2 h-4 w-4" /> Usuários
           </Button>
           <Button 
             variant="ghost" 
-            className={getButtonClass('/explorer')}
-            onClick={() => navigate({ to: '/explorer' })} 
+            className={getButtonClass('/dashboard/explorer')}
+            onClick={() => navigate({ to: '/dashboard/explorer' })} 
           >
             <Rocket className="mr-2 h-4 w-4" /> Explorador (Bônus)
           </Button>
