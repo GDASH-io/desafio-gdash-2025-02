@@ -1,10 +1,16 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { WeatherDashboard } from "./components/WeatherDashboard";
+import { Login } from "./pages/Login";
 import "./styles/index.css";
 
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello World</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<WeatherDashboard />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
