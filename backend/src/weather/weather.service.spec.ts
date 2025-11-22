@@ -119,34 +119,6 @@ describe('WeatherService', () => {
     });
   });
 
-  describe('getWeather', () => {
-    it('should return all weather records', async () => {
-      const mockWeatherList = [mockWeatherDocument, mockWeatherDocument2];
-
-      const mockQuery = {
-        exec: jest.fn().mockResolvedValue(mockWeatherList),
-      };
-      weatherModel.find = jest.fn().mockReturnValue(mockQuery as any);
-
-      const result = await service.getWeather();
-
-      expect(weatherModel.find).toHaveBeenCalledWith();
-      expect(result).toEqual(mockWeatherList);
-    });
-
-    it('should return empty array when no weather records exist', async () => {
-      const mockQuery = {
-        exec: jest.fn().mockResolvedValue([]),
-      };
-      weatherModel.find = jest.fn().mockReturnValue(mockQuery as any);
-
-      const result = await service.getWeather();
-
-      expect(weatherModel.find).toHaveBeenCalledWith();
-      expect(result).toEqual([]);
-    });
-  });
-
   describe('getWeatherPaginated', () => {
     it('should return paginated weather records without filters', async () => {
       const mockWeatherList = [mockWeatherDocument, mockWeatherDocument2];

@@ -77,8 +77,9 @@ export class UsersController {
   async getUsers(
     @Query() query: PaginationQueryDto,
   ): Promise<PaginatedResponseDto<UserDocument>> {
-    const page = query.page ? Number(query.page) : 1;
-    const itemsPerPage = query.itemsPerPage ? Number(query.itemsPerPage) : 10;
+    const page = query.page !== undefined ? Number(query.page) : 1;
+    const itemsPerPage =
+      query.itemsPerPage !== undefined ? Number(query.itemsPerPage) : 10;
 
     if (page < 1) {
       throw new BadRequestException('Page must be greater than 0');

@@ -95,10 +95,12 @@ export class WeatherController {
     @Query() paginationQuery: PaginationQueryDto,
     @Query() filterQuery: FilterWeatherDto,
   ) {
-    const page = paginationQuery.page ? Number(paginationQuery.page) : 1;
-    const itemsPerPage = paginationQuery.itemsPerPage
-      ? Number(paginationQuery.itemsPerPage)
-      : 10;
+    const page =
+      paginationQuery.page !== undefined ? Number(paginationQuery.page) : 1;
+    const itemsPerPage =
+      paginationQuery.itemsPerPage !== undefined
+        ? Number(paginationQuery.itemsPerPage)
+        : 10;
 
     if (page < 1) {
       throw new BadRequestException('Page must be greater than 0');

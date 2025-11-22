@@ -22,10 +22,6 @@ export class WeatherService {
     return newWeather.save();
   }
 
-  async getWeather() {
-    return this.weatherModel.find().exec();
-  }
-
   async getWeatherPaginated(
     page: number = 1,
     itemsPerPage: number = 10,

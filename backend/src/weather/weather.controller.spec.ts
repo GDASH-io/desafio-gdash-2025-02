@@ -42,7 +42,6 @@ describe('WeatherController', () => {
   beforeEach(async () => {
     const mockWeatherService = {
       createWeather: jest.fn(),
-      getWeather: jest.fn(),
       getWeatherPaginated: jest.fn(),
       deleteWeather: jest.fn(),
     };
@@ -225,21 +224,21 @@ describe('WeatherController', () => {
     });
 
     it('should throw BadRequestException when page is less than 1', async () => {
-      await expect(() =>
-        controller.getWeather({ page: 0 }, {}),
-      ).rejects.toThrow(BadRequestException);
-      await expect(() =>
-        controller.getWeather({ page: 0 }, {}),
-      ).rejects.toThrow('Page must be greater than 0');
+      await expect(controller.getWeather({ page: 0 }, {})).rejects.toThrow(
+        BadRequestException,
+      );
+      await expect(controller.getWeather({ page: 0 }, {})).rejects.toThrow(
+        'Page must be greater than 0',
+      );
 
       expect(weatherService.getWeatherPaginated).not.toHaveBeenCalled();
     });
 
     it('should throw BadRequestException when itemsPerPage is less than 1', async () => {
-      await expect(() =>
+      await expect(
         controller.getWeather({ itemsPerPage: 0 }, {}),
       ).rejects.toThrow(BadRequestException);
-      await expect(() =>
+      await expect(
         controller.getWeather({ itemsPerPage: 0 }, {}),
       ).rejects.toThrow('ItemsPerPage must be greater than 0');
 
