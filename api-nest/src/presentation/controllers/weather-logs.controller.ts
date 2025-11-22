@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Query,
+  Param,
   Res,
   HttpStatus,
   UseGuards,
@@ -14,6 +15,8 @@ import { GetWeatherLogsUseCase } from '../../application/usecases/weather/get-we
 import { GetLatestWeatherLogUseCase } from '../../application/usecases/weather/get-latest-weather-log.use-case';
 import { ExportWeatherLogsUseCase } from '../../application/usecases/weather/export-weather-logs.use-case';
 import { GetPrecipitation24hUseCase } from '../../application/usecases/weather/get-precipitation-24h.use-case';
+import { GetForecast7DaysUseCase } from '../../application/usecases/weather/get-forecast-7days.use-case';
+import { GetForecastDayDetailsUseCase } from '../../application/usecases/weather/get-forecast-day-details.use-case';
 import { CreateWeatherLogDto } from '../dto/create-weather-log.dto';
 import { GetWeatherLogsQueryDto } from '../dto/get-weather-logs-query.dto';
 import { JwtAuthGuard } from '../../infra/auth/jwt-auth.guard';
@@ -28,6 +31,8 @@ export class WeatherLogsController {
     private readonly getLatestWeatherLogUseCase: GetLatestWeatherLogUseCase,
     private readonly exportWeatherLogsUseCase: ExportWeatherLogsUseCase,
     private readonly getPrecipitation24hUseCase: GetPrecipitation24hUseCase,
+    private readonly getForecast7DaysUseCase: GetForecast7DaysUseCase,
+    private readonly getForecastDayDetailsUseCase: GetForecastDayDetailsUseCase,
   ) {}
 
   @Post('logs')
@@ -156,6 +161,31 @@ export class WeatherLogsController {
   @UseGuards(JwtAuthGuard)
   async getPrecipitation24h(@Query('city') city?: string) {
     return this.getPrecipitation24hUseCase.execute(city);
+  }
+
+  @Get('forecast/7days')
+  @UseGuards(JwtAuthGuard)
+  async getForecast7Days() {
+    try {
+      const forecast = await this.getForecast7DaysUseCase.execute();
+      return forecast;
+    } catch (error: any) {
+      // Retornar array vazio em caso de erro para não quebrar o frontend
+      console.error('Erro no controller ao buscar previsão:', error);
+      return [];
+    }
+  }
+
+  @Get('forecast/day/:date')
+  @UseGuards(JwtAuthGuard)
+  async getForecastDayDetails(@Param('date') date: string) {
+    try {
+      const details = await this.getForecastDayDetailsUseCase.execute(date);
+      return details;
+    } catch (error: any) {
+      console.error('Erro no controller ao buscar detalhes do dia:', error);
+      return [];
+    }
   }
 
   @Get('health')
