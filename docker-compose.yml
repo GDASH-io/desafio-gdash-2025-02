@@ -45,6 +45,12 @@ services:
       - ./backend:/app
     networks:
       - weather-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${BACKEND_PORT}/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
   mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -66,7 +72,7 @@ services:
       rabbitmq:
         condition: service_healthy
       backend:
-        condition: service_started
+        condition: service_healthy
     env_file:
       - .env
     networks:
