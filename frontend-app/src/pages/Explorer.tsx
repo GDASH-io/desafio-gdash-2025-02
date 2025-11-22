@@ -4,14 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Globe, ChevronLeft, ChevronRight, Rocket } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { SideBar } from '@/components/SideBar'
 
 export const Explorer = () =>  {
   const { data, loading, page, setPage } = usePlanets()
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 p-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        
+    <div className="min-h-screen bg-slate-950 text-slate-50 flex">
+       <SideBar/>
+      <main className="flex-1 p-8 overflow-auto">
         <div className="flex items-center gap-4 mb-8">
             <div className="h-12 w-12 bg-yellow-500/20 rounded-xl flex items-center justify-center border border-yellow-500/50">
                 <Rocket className="h-6 w-6 text-yellow-400" />
@@ -85,7 +86,7 @@ export const Explorer = () =>  {
                 </div>
             </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   )
 }

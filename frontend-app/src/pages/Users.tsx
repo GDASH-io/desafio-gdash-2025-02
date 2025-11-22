@@ -1,7 +1,7 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import {  useNavigate } from '@tanstack/react-router'
 import { useState } from "react"
 import { useUsers, useCreateUser, useDeleteUser } from "@/hooks/useUsers"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent} from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,9 +10,9 @@ import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription 
 } from "@/components/ui/dialog"
 import { 
-    LayoutDashboard, User, LogOut, Plus, Trash2, CloudSun 
+    Plus, Trash2 
 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { SideBar } from '@/components/SideBar'
 
 export const Users = () => {
     const navigate = useNavigate()
@@ -25,17 +25,12 @@ export const Users = () => {
   const [newEmail, setNewEmail] = useState("")
   const [newPassword, setNewPassword] = useState("")
 
-  const handleLogout = () => {
-    localStorage.removeItem('gdash_token')
-    navigate({ to: '/auth/login' })
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
         await createUser({ name: newName, email: newEmail, password: newPassword })
         setIsOpen(false) // Fecha modal
-        setNewName(""); setNewEmail(""); setNewPassword(""); // Limpa form
+        setNewName(""); setNewEmail(""); setNewPassword(""); 
     } catch (error) {
         alert("Erro ao criar usuário")
     }
@@ -49,31 +44,7 @@ export const Users = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 flex">
-      
-      {/* --- SIDEBAR (Mesma do Dashboard) --- */}
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 hidden md:flex flex-col">
-        <div className="p-6 flex items-center gap-2 border-b border-slate-800">
-          <div className="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <CloudSun className="text-white h-5 w-5" />
-          </div>
-          <span className="font-bold text-xl tracking-tight">GDASH</span>
-        </div>
-        
-        <nav className="flex-1 p-4 space-y-2">
-          <Button variant="ghost" className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100" onClick={() => navigate({ to: '/dashboard' })}>
-            <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
-          </Button>
-          <Button variant="ghost" className="w-full justify-start bg-slate-800 text-blue-400 hover:bg-slate-800 hover:text-blue-400">
-            <User className="mr-2 h-4 w-4" /> Usuários
-          </Button>
-        </nav>
-
-        <div className="p-4 border-t border-slate-800">
-          <Button variant="ghost" className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-950/30" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" /> Sair
-          </Button>
-        </div>
-      </aside>
+      <SideBar/>
 
       {/* --- MAIN CONTENT --- */}
       <main className="flex-1 p-8 overflow-auto">

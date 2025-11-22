@@ -18,6 +18,7 @@ export const useWeatherLogs = () => {
                 const { data } = await api.get<WeatherLog[]>('/weather/logs');
                 return data;
             } catch (error: any) {
+                if(error?.status === 401) throw localStorage.removeItem('gdash_token')
                 throw new Error(error.response?.data?.message || "Erro ao buscar dados climáticos");
             }
         },
