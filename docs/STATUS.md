@@ -1,6 +1,6 @@
 # Status do Projeto - GDASH Challenge 2025/02
 
-**Última atualização:** 21/11/2025 - Melhorias no Dashboard (Fluxo 1, 2, 3) implementadas
+**Última atualização:** 21/11/2025 - Previsão 7 dias e melhorias no Dashboard implementadas
 
 ## Visão Geral
 
@@ -59,6 +59,8 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - Testes unitários e integração (pendente)
 - **Novo:** Endpoint GET `/api/v1/weather/precipitation/24h` (chuva acumulada 24h)
 - **Novo:** Endpoint GET `/api/v1` (informações da API)
+- **Novo:** Endpoint GET `/api/v1/weather/forecast/7days` (previsão 7 dias)
+- **Novo:** Endpoint GET `/api/v1/weather/forecast/day/:date` (previsão horária detalhada)
 - **Novo:** Campos opcionais: `uv_index`, `pressure_hpa`, `visibility_m`, `wind_direction_10m`, `wind_gusts_10m`, `precipitation_probability`
 
 **Status:** Funcionando. API recebendo dados do Worker e expondo endpoints REST com novos recursos.
@@ -80,8 +82,11 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - **Novo:** Cards de UV, Pressão, Visibilidade
 - **Novo:** Cards de Direção Vento, Rajadas, Prob. Chuva
 - **Novo:** Cards de Sensação Térmica, Ponto de Orvalho, Chuva 24h
+- **Novo:** Card de Previsão 7 Dias com modal de detalhes horários
+- **Novo:** Exibição de data e hora atual no dashboard
+- **Novo:** Filtro de dados futuros no collector (apenas dados passados/atuais)
 
-**Status:** Funcionando. Frontend conectado à API e exibindo dados e insights com melhorias visuais.
+**Status:** Funcionando. Frontend conectado à API e exibindo dados, insights e previsão com melhorias visuais.
 
 ---
 
@@ -141,7 +146,8 @@ Open-Meteo API → Collector (Python) → Kafka → Worker (Go) → API NestJS �
 - **Registros no banco:** 336+ (dados coletados e processados)
 - **Cidade monitorada:** Coronel Fabriciano, MG
 - **Frequência de coleta:** A cada 1 hora (3600 segundos)
-- **Dados coletados:** 168 leituras por coleta (7 dias de previsão horária)
+- **Dados coletados:** Apenas dados passados/atuais (filtro de 1 hora no futuro)
+- **Previsão:** Integração com Open-Meteo para previsão de 7 dias e detalhes horários
 
 ---
 

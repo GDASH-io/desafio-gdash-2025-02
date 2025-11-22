@@ -9,6 +9,7 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 - **[system-architecture.md](./system-architecture.md)** - Arquitetura completa do sistema
 - **[uml-diagram.md](./uml-diagram.md)** - Diagramas UML da aplicação
 - **[STATUS.md](./STATUS.md)** - Status atual do projeto, progresso por fase e métricas
+- **[RESUMO_IMPLEMENTACOES.md](./RESUMO_IMPLEMENTACOES.md)** - Resumo das implementações recentes e próximos passos
 
 ### Documentação por Fase
 
@@ -105,4 +106,4 @@ Open-Meteo API → Collector (Python) → Kafka → Worker (Go) → API NestJS �
 
 ---
 
-**Última atualização:** 21/11/2025
+**Última atualização:** 21/11/2025 - Previsão 7 dias e melhorias no Dashboard

@@ -2,7 +2,7 @@
 
 **Data:** 21/11/2025
 
-## 📝 Atualizações Realizadas
+## Atualizações Realizadas
 
 ### Arquivos Atualizados
 
@@ -56,7 +56,7 @@
 7. **FASE2_PLAN.md** - Plano da fase opcional
 8. **initial_project_files_gdash_challenge.md** - Referência histórica
 
-## 📊 Estado Atual da Documentação
+## Estado Atual da Documentação
 
 ### Estrutura Final
 
@@ -88,6 +88,36 @@ docs/
 - ✅ README raiz não foi alterado (conforme solicitado)
 
 ---
+
+---
+
+## Atualizações de 21/11/2025 (Previsão 7 Dias)
+
+### Arquivos Atualizados
+
+1. **Endpoints.md**
+   - Adicionados endpoints GET `/api/v1/weather/forecast/7days` (previsão 7 dias)
+   - Adicionados endpoints GET `/api/v1/weather/forecast/day/:date` (previsão horária detalhada)
+   - Atualizado endpoint GET `/api/v1` para incluir novos endpoints de forecast
+   - Atualizada data de última atualização
+
+2. **STATUS.md**
+   - Adicionados novos endpoints de forecast na seção Fase 4 (API NestJS)
+   - Adicionadas melhorias no Frontend: card de previsão 7 dias, modal de detalhes, data/hora atual
+   - Atualizada informação sobre dados coletados (filtro de dados futuros)
+   - Atualizada data de última atualização
+
+3. **NEXT_STEPS.md**
+   - Removidos emojis do documento
+   - Mantida estrutura de prioridades
+
+### Funcionalidades Implementadas
+
+- Previsão do tempo para 7 dias (integração com Open-Meteo)
+- Previsão horária detalhada por dia (modal no frontend)
+- Exibição de data e hora atual no dashboard
+- Filtro de dados futuros no collector (apenas dados passados/atuais)
+- Tratamento robusto de erros de conexão/timeout na API Open-Meteo
 
 **Última atualização:** 21/11/2025
 

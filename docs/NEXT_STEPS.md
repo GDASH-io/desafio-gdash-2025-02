@@ -2,7 +2,7 @@
 
 **Última atualização:** 21/11/2025
 
-## 🎯 Prioridades
+## Prioridades
 
 ### 1. Testes (Média Prioridade)
 
@@ -71,7 +71,7 @@ Implementar coletor para dados hidrológicos da ANA.
 
 ---
 
-## 📊 Métricas de Sucesso
+## Métricas de Sucesso
 
 Os testes serão considerados concluídos quando:
 
@@ -83,7 +83,7 @@ Os testes serão considerados concluídos quando:
 
 ---
 
-## 🔗 Referências
+## Referências
 
 - [Estratégia de IA/Insights](./IA_INSIGHTS_STRATEGY.md)
 - [Documentação de Endpoints](./Endpoints.md)
@@ -93,7 +93,7 @@ Os testes serão considerados concluídos quando:
 
 ---
 
-## 📌 Notas Importantes
+## Notas Importantes
 
 1. **Fase 6 está completa** - O sistema de insights de IA está implementado e funcionando
 2. **Testes são importantes** - Mesmo que não sejam obrigatórios, demonstram qualidade do código

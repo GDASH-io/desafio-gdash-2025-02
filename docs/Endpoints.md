@@ -2,7 +2,7 @@
 
 Este documento descreve todos os endpoints da aplicação, incluindo os já implementados e os que serão desenvolvidos nas próximas fases.
 
-**Última atualização:** 21/11/2025 - Melhorias no Dashboard (Fluxo 1, 2, 3) implementadas
+**Última atualização:** 21/11/2025 - Previsão 7 dias e melhorias no Dashboard implementadas
 
 ---
 
@@ -294,6 +294,10 @@ Content-Type: application/json
       "logs": "/api/v1/weather/logs",
       "latest": "/api/v1/weather/logs/latest",
       "precipitation24h": "/api/v1/weather/precipitation/24h",
+      "forecast": {
+        "7days": "/api/v1/weather/forecast/7days",
+        "day": "/api/v1/weather/forecast/day/:date"
+      },
       "insights": "/api/v1/weather/insights",
       "export": {
         "csv": "/api/v1/weather/export.csv",
@@ -406,6 +410,115 @@ Content-Type: application/json
 **Exemplo de Requisição:**
 ```bash
 curl -X GET "http://localhost:3000/api/v1/weather/precipitation/24h" \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### ✅ GET `/api/v1/weather/forecast/7days`
+
+**Status:** Implementado
+
+**Descrição:** Retorna previsão do tempo para os próximos 7 dias da API Open-Meteo.
+
+**Autenticação:** Requerida (JWT)
+
+**Método:** `GET`
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Resposta de Sucesso (200):**
+```json
+[
+  {
+    "date": "2025-11-22",
+    "temperature_max": 32.0,
+    "temperature_min": 18.0,
+    "precipitation": 0.5,
+    "wind_speed_max": 8.2,
+    "cloud_cover": 45,
+    "weather_code": 61
+  },
+  {
+    "date": "2025-11-23",
+    "temperature_max": 34.0,
+    "temperature_min": 20.0,
+    "precipitation": 0.2,
+    "wind_speed_max": 7.5,
+    "cloud_cover": 30,
+    "weather_code": 61
+  }
+]
+```
+
+**Resposta de Erro (200 com array vazio):**
+Em caso de erro de conexão ou timeout com a API Open-Meteo, retorna um array vazio para não quebrar o frontend.
+
+**Exemplo de Requisição:**
+```bash
+curl -X GET "http://localhost:3000/api/v1/weather/forecast/7days" \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### ✅ GET `/api/v1/weather/forecast/day/:date`
+
+**Status:** Implementado
+
+**Descrição:** Retorna previsão horária detalhada para um dia específico da API Open-Meteo.
+
+**Autenticação:** Requerida (JWT)
+
+**Método:** `GET`
+
+**Path Parameters:**
+- `date` (obrigatório): Data no formato YYYY-MM-DD (ex: 2025-11-22)
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Resposta de Sucesso (200):**
+```json
+[
+  {
+    "time": "2025-11-22T00:00",
+    "temperature": 20.5,
+    "humidity": 75,
+    "precipitation": 0.0,
+    "wind_speed": 5.2,
+    "cloud_cover": 30,
+    "weather_code": 0,
+    "pressure": 1013.2,
+    "uv_index": 0
+  },
+  {
+    "time": "2025-11-22T01:00",
+    "temperature": 19.8,
+    "humidity": 78,
+    "precipitation": 0.0,
+    "wind_speed": 4.8,
+    "cloud_cover": 25,
+    "weather_code": 0,
+    "pressure": 1013.5,
+    "uv_index": 0
+  }
+]
+```
+
+**Resposta de Erro (200 com array vazio):**
+Em caso de erro de conexão ou timeout com a API Open-Meteo, retorna um array vazio para não quebrar o frontend.
+
+**Exemplo de Requisição:**
+```bash
+curl -X GET "http://localhost:3000/api/v1/weather/forecast/day/2025-11-22" \
   -H "Authorization: Bearer <token>"
 ```
 
