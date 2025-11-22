@@ -16,6 +16,17 @@ func Load() *Config {
 	_ = godotenv.Load()
 
 	rabbitMQ := os.Getenv("RABBITMQ_URL")
+	if rabbitMQ == "" {
+		user := os.Getenv("RABBITMQ_USER")
+		pass := os.Getenv("RABBITMQ_PASS")
+		host := os.Getenv("RABBITMQ_HOST")
+		port := os.Getenv("RABBITMQ_PORT")
+
+		if user != "" && pass != "" && host != "" && port != "" {
+			rabbitMQ = "amqp://" + user + ":" + pass + "@" + host + ":" + port + "/"
+		}
+	}
+
 	queue := os.Getenv("RABBITMQ_QUEUE")
 
 	if rabbitMQ == "" {

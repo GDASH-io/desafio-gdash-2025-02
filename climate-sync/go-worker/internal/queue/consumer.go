@@ -29,6 +29,18 @@ func (c *Consumer) Start() error {
 		return err
 	}
 
+	_, err = ch.QueueDeclare(
+		c.cfg.QueueName, // name
+		true,            // durable
+		false,           // delete when unused
+		false,           // exclusive
+		false,           // no-wait
+		nil,             // arguments
+	)
+	if err != nil {
+		return err
+	}
+
 	msgs, err := ch.Consume(
 		c.cfg.QueueName,
 		"go-worker",
