@@ -4,6 +4,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WeatherModule } from './weather/weather.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { WeatherModule } from './weather/weather.module';
       'mongodb://admin:password123@localhost:27017/gdash?authSource=admin',
     ),
     WeatherModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
