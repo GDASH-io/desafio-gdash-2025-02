@@ -42,6 +42,7 @@ describe('UsersController', () => {
       createUser: jest.fn(),
       findUserByEmail: jest.fn(),
       findAllUsers: jest.fn(),
+      findUsersPaginated: jest.fn(),
       findUserById: jest.fn(),
       updateUser: jest.fn(),
       deleteUser: jest.fn(),
@@ -151,22 +152,55 @@ describe('UsersController', () => {
   });
 
   describe('getUsers', () => {
-    it('should return all users', async () => {
-      usersService.findAllUsers.mockResolvedValue(mockUsersList);
+    it('should return paginated users', async () => {
+      const mockPaginatedResponse = {
+        data: mockUsersList,
+        page: 1,
+        itemsPerPage: 10,
+        totalPages: 1,
+        totalItems: 2,
+      };
 
-      const result = await controller.getUsers();
+      usersService.findUsersPaginated.mockResolvedValue(mockPaginatedResponse);
 
-      expect(usersService.findAllUsers).toHaveBeenCalled();
-      expect(result).toEqual(mockUsersList);
+      const result = await controller.getUsers({});
+
+      expect(usersService.findUsersPaginated).toHaveBeenCalledWith(1, 10);
+      expect(result).toEqual(mockPaginatedResponse);
     });
 
-    it('should return empty array when no users exist', async () => {
-      usersService.findAllUsers.mockResolvedValue([]);
+    it('should return paginated users with custom pagination', async () => {
+      const mockPaginatedResponse = {
+        data: mockUsersList,
+        page: 2,
+        itemsPerPage: 5,
+        totalPages: 1,
+        totalItems: 2,
+      };
 
-      const result = await controller.getUsers();
+      usersService.findUsersPaginated.mockResolvedValue(mockPaginatedResponse);
 
-      expect(usersService.findAllUsers).toHaveBeenCalled();
-      expect(result).toEqual([]);
+      const result = await controller.getUsers({
+        page: 2,
+        itemsPerPage: 5,
+      });
+
+      expect(usersService.findUsersPaginated).toHaveBeenCalledWith(2, 5);
+      expect(result).toEqual(mockPaginatedResponse);
+    });
+
+    it('should throw BadRequestException when page is less than 1', async () => {
+      await expect(() => controller.getUsers({ page: 0 })).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(usersService.findUsersPaginated).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequestException when itemsPerPage is less than 1', async () => {
+      await expect(() =>
+        controller.getUsers({ itemsPerPage: 0 }),
+      ).rejects.toThrow(BadRequestException);
+      expect(usersService.findUsersPaginated).not.toHaveBeenCalled();
     });
   });
 

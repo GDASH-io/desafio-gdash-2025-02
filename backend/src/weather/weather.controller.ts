@@ -26,7 +26,7 @@ import {
   WeatherResponseDto,
   PaginatedWeatherResponseDto,
 } from './dto/get-weather.dto';
-import { PaginationQueryDto } from 'src/utils/pagination-query.dto';
+import { PaginationQueryDto } from '../utils/pagination-query.dto';
 import { FilterWeatherDto } from './dto/filter-weather.dto';
 
 @ApiTags('Weather')

@@ -71,7 +71,10 @@ describe('AuthController', () => {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         },
       );
-      expect(result).toEqual({ user: mockLoginResult.user });
+      expect(result).toEqual({
+        access_token: 'jwt-token',
+        user: mockLoginResult.user,
+      });
     });
 
     it('should throw UnauthorizedException when credentials are invalid', async () => {
