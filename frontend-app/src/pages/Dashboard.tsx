@@ -58,7 +58,11 @@ export function Dashboard() {
           <Button variant="ghost" className="w-full justify-start bg-slate-800 text-blue-400 hover:bg-slate-800 hover:text-blue-400">
             <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100">
+          <Button 
+              variant="ghost" 
+              className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+              onClick={() => navigate({ to: '/users' })}
+          >
             <User className="mr-2 h-4 w-4" /> Usuários
           </Button>
           <Button 
