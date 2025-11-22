@@ -40,6 +40,29 @@ import { translateWeatherDescription } from '../utils/translate-weather-descript
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
+  @Post('internal')
+  @ApiOperation({
+    summary: 'Create a new weather record (internal - no auth required)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Weather record successfully created',
+    type: WeatherResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - validation failed or weather already exists',
+  })
+  async createWeatherInternal(@Body() weatherData: CreateWeatherDto) {
+    const result = createWeatherSchema.safeParse(weatherData);
+
+    if (!result.success) {
+      throw new BadRequestException(z.treeifyError(result.error));
+    }
+
+    return this.weatherService.createWeather(weatherData);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new weather record' })
@@ -211,7 +234,7 @@ export class WeatherController {
         item.weather_description,
       ),
       'Probabilidade de chuva (%)': item.rain_probability,
-      'Data de captura': item.fetched_at.toISOString(),
+      'Data de captura': item.fetched_at,
     }));
 
     try {
@@ -298,7 +321,7 @@ export class WeatherController {
       velocidadeVento: item.wind_speed,
       descricaoTempo: translateWeatherDescription(item.weather_description),
       probabilidadeChuva: item.rain_probability,
-      dataCaptura: item.fetched_at.toISOString(),
+      dataCaptura: item.fetched_at,
     }));
 
     if (xlsxData.length === 0) {

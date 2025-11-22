@@ -20,8 +20,8 @@ export class Weather {
   @Prop({ required: true })
   rain_probability: number;
 
-  @Prop({ required: true, type: Date })
-  fetched_at: Date;
+  @Prop({ required: true, type: String })
+  fetched_at: string;
 }
 
 export const WeatherSchema = SchemaFactory.createForClass(Weather);

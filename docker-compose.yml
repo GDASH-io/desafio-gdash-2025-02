@@ -57,6 +57,21 @@ services:
       - mongodb_data:/data/db
     networks:
       - weather-network
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: go-worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    env_file:
+      - .env
+    networks:
+      - weather-network
+    restart: unless-stopped
 
 networks:
   weather-network:

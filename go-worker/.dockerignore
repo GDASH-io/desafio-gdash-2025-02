@@ -1,0 +1,35 @@
+# Binários
+worker
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Teste binário
+*.test
+
+# Arquivos de output
+*.out
+
+# Go workspace file
+go.work
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Documentação
+README.md
+*.md
+
+# Logs
+*.log
+

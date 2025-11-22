@@ -14,9 +14,14 @@ export class WeatherService {
   async createWeather(
     weather: Omit<Weather, 'fetched_at'> & { fetched_at: Date | string },
   ): Promise<WeatherDocument> {
+    const fetchedAtString: string =
+      typeof weather.fetched_at === 'string'
+        ? weather.fetched_at
+        : weather.fetched_at.toISOString();
+
     const weatherData: Weather = {
       ...weather,
-      fetched_at: new Date(weather.fetched_at),
+      fetched_at: fetchedAtString,
     };
     const newWeather = new this.weatherModel(weatherData);
     return newWeather.save();
@@ -34,10 +39,10 @@ export class WeatherService {
       if (filters.startDate || filters.endDate) {
         query.fetched_at = {};
         if (filters.startDate) {
-          query.fetched_at.$gte = new Date(filters.startDate);
+          query.fetched_at.$gte = filters.startDate;
         }
         if (filters.endDate) {
-          query.fetched_at.$lte = new Date(filters.endDate);
+          query.fetched_at.$lte = filters.endDate;
         }
       }
     }
