@@ -43,8 +43,8 @@ func (c *Consumer) Start() error {
 
 	msgs, err := ch.Consume(
 		c.cfg.QueueName,
-		"go-worker",
-		true,   // auto-ack
+		"",     // consumerTag vazio (evita conflito ao reiniciar)
+		false,  // auto-ack DESATIVADO
 		false,  // not exclusive
 		false,
 		false,
@@ -56,16 +56,23 @@ func (c *Consumer) Start() error {
 
 	log.Printf("📡 Listening queue: %s", c.cfg.QueueName)
 
-	processor := processor.NewWeatherProcessor()
+	// Instância correta do processor
+	weatherProcessor := processor.NewWeatherProcessor()
 
 	for msg := range msgs {
 		var payload map[string]interface{}
+
 		if err := json.Unmarshal(msg.Body, &payload); err != nil {
 			log.Println("❌ Failed to parse message:", err)
+			msg.Nack(false, false) // descarta mensagem inválida
 			continue
 		}
 
-		processor.Handle(context.Background(), payload)
+		// Processa
+		weatherProcessor.Handle(context.Background(), payload)
+
+		// Confirma processamento ao Rabbit
+		msg.Ack(false)
 	}
 
 	return nil
