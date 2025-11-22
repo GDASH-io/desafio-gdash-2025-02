@@ -12,6 +12,7 @@ class Config:
     RABBITMQ_USER = os.getenv("RABBITMQ_USER", "guest")
     RABBITMQ_PASS = os.getenv("RABBITMQ_PASS", "guest")
     RABBITMQ_QUEUE = os.getenv("RABBITMQ_QUEUE", "weather.data")
+    RABBITMQ_VHOST = os.getenv("RABBITMQ_VHOST", "/")
     
     # Schedule
     COLLECTION_INTERVAL_MINUTES = int(os.getenv("COLLECTION_INTERVAL_MINUTES", "60"))

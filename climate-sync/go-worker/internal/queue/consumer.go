@@ -29,23 +29,16 @@ func (c *Consumer) Start() error {
 		return err
 	}
 
-	_, err = ch.QueueDeclare(
-		c.cfg.QueueName, // name
-		true,            // durable
-		false,           // delete when unused
-		false,           // exclusive
-		false,           // no-wait
-		nil,             // arguments
-	)
-	if err != nil {
-		return err
-	}
+	exchangeName := "weather.exchange"
+	routingKey := "weather.data"
+	queueName := "weather.go.queue"
 
-	msgs, err := ch.Consume(
-		c.cfg.QueueName,
-		"",     // consumerTag vazio (evita conflito ao reiniciar)
-		false,  // auto-ack DESATIVADO
-		false,  // not exclusive
+	// Criar exchange enterprise
+	err = ch.ExchangeDeclare(
+		exchangeName,
+		"topic",
+		true,  // durable
+		false, // auto-delete
 		false,
 		false,
 		nil,
@@ -54,25 +47,63 @@ func (c *Consumer) Start() error {
 		return err
 	}
 
-	log.Printf("📡 Listening queue: %s", c.cfg.QueueName)
+	// Criar fila exclusiva do Go Worker
+	_, err = ch.QueueDeclare(
+		queueName,
+		true,  // durable
+		false, // auto-delete
+		false, // exclusive
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
 
-	// Instância correta do processor
-	weatherProcessor := processor.NewWeatherProcessor()
+	// Bind da fila ao exchange + routing key
+	err = ch.QueueBind(
+		queueName,
+		routingKey,
+		exchangeName,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("📡 Go Worker listening → exchange: %s | queue: %s | key: %s",
+		exchangeName, queueName, routingKey)
+
+	msgs, err := ch.Consume(
+		queueName,
+		"go-worker",
+		false, // manual ACK
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	processor := processor.NewWeatherProcessor()
 
 	for msg := range msgs {
 		var payload map[string]interface{}
 
 		if err := json.Unmarshal(msg.Body, &payload); err != nil {
 			log.Println("❌ Failed to parse message:", err)
-			msg.Nack(false, false) // descarta mensagem inválida
+			msg.Nack(false, false) // descarta sem requeue
 			continue
 		}
 
-		// Processa
-		weatherProcessor.Handle(context.Background(), payload)
+		log.Println("🌦️ Received weather payload:")
 
-		// Confirma processamento ao Rabbit
-		msg.Ack(false)
+		processor.Handle(context.Background(), payload)
+
+		msg.Ack(false) // Confirma processamento
 	}
 
 	return nil

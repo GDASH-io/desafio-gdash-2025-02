@@ -8,11 +8,13 @@ class QueuePublisher:
         self.config = Config()
         self.connection = None
         self.channel = None
+        self.exchange = "weather.exchange"
+        self.routing_key = "weather.data"
         self._connect()
     
     def _connect(self):
         """
-        Estabelece conexão com RabbitMQ
+        Estabelece conexão com RabbitMQ usando exchange enterprise
         """
         try:
             credentials = pika.PlainCredentials(
@@ -23,6 +25,7 @@ class QueuePublisher:
             parameters = pika.ConnectionParameters(
                 host=self.config.RABBITMQ_HOST,
                 port=self.config.RABBITMQ_PORT,
+                virtual_host=self.config.RABBITMQ_VHOST,
                 credentials=credentials,
                 heartbeat=600,
                 blocked_connection_timeout=300
@@ -31,13 +34,18 @@ class QueuePublisher:
             self.connection = pika.BlockingConnection(parameters)
             self.channel = self.connection.channel()
             
-            # Declara a fila (idempotente)
-            self.channel.queue_declare(
-                queue=self.config.RABBITMQ_QUEUE,
-                durable=True
+            # Declarar exchange durável
+            self.channel.exchange_declare(
+                exchange=self.exchange,
+                exchange_type="topic",
+                durable=True,
+                arguments={
+        "x-expires": 86400000,   # 24h – fila só some depois disso
+        "x-message-ttl": 86400000  # 24h – mensagens persistem por mais tempo
+    }
             )
             
-            print(f"✅ Connected to RabbitMQ at {self.config.RABBITMQ_HOST}")
+            print(f"✅ Connected to RabbitMQ via exchange '{self.exchange}'")
             
         except Exception as e:
             print(f"❌ Failed to connect to RabbitMQ: {e}")
@@ -45,14 +53,14 @@ class QueuePublisher:
     
     def publish(self, data: Dict) -> bool:
         """
-        Publica mensagem na fila
+        Publica mensagem na exchange enterprise
         """
         try:
             message = json.dumps(data)
-            
+
             self.channel.basic_publish(
-                exchange='',
-                routing_key=self.config.RABBITMQ_QUEUE,
+                exchange=self.exchange,
+                routing_key=self.routing_key,
                 body=message,
                 properties=pika.BasicProperties(
                     delivery_mode=2,  # Mensagem persistente
@@ -60,7 +68,7 @@ class QueuePublisher:
                 )
             )
             
-            print(f"📤 Published weather data: {data['data']['temperature']}°C at {data['timestamp']}")
+            print(f"📤 Published weather data: {data['data']['temperature']}°C → {self.exchange}:{self.routing_key}")
             return True
             
         except Exception as e:
