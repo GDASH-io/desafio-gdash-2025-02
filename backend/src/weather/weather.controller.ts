@@ -20,8 +20,10 @@ import {
   ApiTags,
   ApiQuery,
   ApiParam,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { createWeatherSchema } from './validation/create-weather.schema';
 import { z } from 'zod';
@@ -40,19 +42,9 @@ import { translateWeatherDescription } from '../utils/translate-weather-descript
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
+  @ApiExcludeEndpoint()
   @Post('internal')
-  @ApiOperation({
-    summary: 'Create a new weather record (internal - no auth required)',
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Weather record successfully created',
-    type: WeatherResponseDto,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request - validation failed or weather already exists',
-  })
+  @UseGuards(ApiKeyGuard)
   async createWeatherInternal(@Body() weatherData: CreateWeatherDto) {
     const result = createWeatherSchema.safeParse(weatherData);
 

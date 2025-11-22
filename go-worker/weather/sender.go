@@ -43,6 +43,10 @@ func NewSender(logger Logger) *Sender {
 	}
 }
 
+func (s *Sender) GetAPIKey() string {
+	return os.Getenv("WORKER_API_KEY")
+}
+
 func (s *Sender) Send(data map[string]interface{}) error {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -58,6 +62,11 @@ func (s *Sender) Send(data map[string]interface{}) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	
+	apiKey := s.GetAPIKey()
+	if apiKey != "" {
+		req.Header.Set("X-API-Key", apiKey)
+	}
 
 	resp, err := s.client.Do(req)
 	if err != nil {
