@@ -8,6 +8,8 @@ describe('UsersController', () => {
 
   const mockUsersService = {
     create: jest.fn().mockResolvedValue({ email: 'test@test.com' }),
+    update: jest.fn().mockResolvedValue({ name: 'Updated' }),
+    remove: jest.fn().mockResolvedValue({ _id: 'deleted' }),
   };
 
   beforeEach(async () => {
@@ -36,5 +38,22 @@ describe('UsersController', () => {
     const req = { user: { userId: '1', email: 'test@test.com' } };
     const result = controller.getProfile(req);
     expect(result).toEqual(req.user);
+  });
+
+  it('update() deve atualizar o usuário logado', async () => {
+    const req = { user: { userId: '1' } };
+    const body = { name: 'New Name' };
+
+    await controller.update(req, body);
+
+    expect(usersService.update).toHaveBeenCalledWith('1', body);
+  });
+
+  it('remove() deve deletar o usuário logado', async () => {
+    const req = { user: { userId: '1' } };
+
+    await controller.remove(req);
+
+    expect(usersService.remove).toHaveBeenCalledWith('1');
   });
 });

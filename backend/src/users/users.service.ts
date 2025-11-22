@@ -40,4 +40,17 @@ export class UsersService implements OnModuleInit {
   async findOne(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
+
+  async update(id: string, data: any): Promise<UserDocument | null> {
+    if (data.password) {
+      const salt = await bcrypt.genSalt();
+      data.password = await bcrypt.hash(data.password, salt);
+    }
+
+    return this.userModel.findByIdAndUpdate(id, data, { new: true }).exec();
+  }
+
+  async remove(id: string): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
+  }
 }

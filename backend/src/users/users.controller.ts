@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -23,5 +25,17 @@ export class UsersController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Put('profile')
+  update(@Request() req, @Body() body: any) {
+    return this.usersService.update(req.user.userId, body);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('profile')
+  remove(@Request() req) {
+    return this.usersService.remove(req.user.userId);
   }
 }

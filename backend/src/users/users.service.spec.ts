@@ -1,8 +1,10 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as bcrypt from 'bcrypt';
+
 import { User } from './schemas/user.schema';
 import { UsersService } from './users.service';
+
+import * as bcrypt from 'bcrypt';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -94,6 +96,43 @@ describe('UsersService', () => {
 
       expect(model.findOne).toHaveBeenCalledWith({ email: 'busca@teste.com' });
       expect(result).toEqual(mockUser);
+    });
+  });
+
+  describe('update', () => {
+    it('deve atualizar o usuário e hash a senha se fornecida', async () => {
+      const hashSpy = jest
+        .spyOn(bcrypt, 'hash')
+        .mockImplementation(() => 'new_hashed');
+      model.findByIdAndUpdate = jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue({ name: 'Updated' }),
+      });
+
+      const result = await service.update('id1', {
+        name: 'New Name',
+        password: 'newpass',
+      });
+
+      expect(hashSpy).toHaveBeenCalled();
+      expect(model.findByIdAndUpdate).toHaveBeenCalledWith(
+        'id1',
+        expect.objectContaining({ password: 'new_hashed' }),
+        { new: true },
+      );
+      expect(result).toEqual({ name: 'Updated' });
+    });
+  });
+
+  describe('delete', () => {
+    it('deve deletar o usuário', async () => {
+      model.findByIdAndDelete = jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue({ _id: 'deleted' }),
+      });
+
+      const result = await service.remove('id1');
+
+      expect(model.findByIdAndDelete).toHaveBeenCalledWith('id1');
+      expect(result).toEqual({ _id: 'deleted' });
     });
   });
 });
