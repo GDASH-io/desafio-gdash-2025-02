@@ -2,7 +2,7 @@
 Use case para buscar dados climáticos (Open-Meteo) e publicar no Kafka.
 """
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Dict, Any, Union
 import pytz
 from src.domain.entities.weather_reading import WeatherReading
@@ -65,13 +65,33 @@ class FetchAndPublishUseCase:
         uv_indices = hourly.get("uv_index", [])
         visibilities = hourly.get("visibility", [])
         
+        # Obter data/hora atual no timezone local para filtrar apenas dados passados/atuais
+        now = datetime.now(self.timezone)
+        
         for i in range(len(times)):
             try:
                 # Converter timestamp ISO para datetime
                 dt_str = times[i]
-                dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
-                if dt.tzinfo is None:
+                # A API Open-Meteo retorna timestamps no timezone especificado
+                if "T" in dt_str:
+                    # Formato ISO com timezone
+                    if dt_str.endswith("Z"):
+                        dt = datetime.fromisoformat(dt_str.replace("Z", "+00:00"))
+                        # Converter de UTC para timezone local
+                        dt = dt.astimezone(self.timezone)
+                    else:
+                        dt = datetime.fromisoformat(dt_str)
+                        if dt.tzinfo is None:
+                            dt = self.timezone.localize(dt)
+                else:
+                    # Formato apenas data, assumir meia-noite no timezone local
+                    dt = datetime.fromisoformat(dt_str)
                     dt = self.timezone.localize(dt)
+                
+                # Filtrar apenas dados passados ou atuais (não futuros)
+                # Permitir até 1 hora no futuro para compensar diferenças de relógio
+                if dt > now + timedelta(hours=1):
+                    continue
                 
                 reading = WeatherReading(
                     timestamp=dt,

@@ -52,7 +52,27 @@ def main():
             retry_backoff_base=Config.HTTP_RETRY_BACKOFF_BASE,
         )
         
-        kafka_producer = KafkaProducerImpl()
+        # Inicializar Kafka Producer com retry
+        logger.info("Tentando conectar ao Kafka...")
+        kafka_producer = None
+        max_kafka_retries = 10
+        kafka_retry_delay = 3
+        
+        for attempt in range(max_kafka_retries):
+            try:
+                kafka_producer = KafkaProducerImpl()
+                logger.info("Kafka Producer conectado com sucesso")
+                break
+            except Exception as e:
+                if attempt < max_kafka_retries - 1:
+                    logger.warning(
+                        f"Tentativa {attempt + 1}/{max_kafka_retries} de conectar ao Kafka falhou: {e}. "
+                        f"Aguardando {kafka_retry_delay}s antes de tentar novamente..."
+                    )
+                    time.sleep(kafka_retry_delay)
+                else:
+                    logger.error(f"Falha ao conectar ao Kafka após {max_kafka_retries} tentativas: {e}")
+                    raise
         
         # Inicializar use case
         fetch_and_publish = FetchAndPublishUseCase(
