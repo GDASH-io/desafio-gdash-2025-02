@@ -26,19 +26,19 @@ export class UsersService {
     itemsPerPage: number = 10,
   ): Promise<PaginatedResponseDto<UserDocument>> {
     const skip = (page - 1) * itemsPerPage;
-    const [data, total] = await Promise.all([
+    const [data, totalItems] = await Promise.all([
       this.userModel.find().skip(skip).limit(itemsPerPage).exec(),
       this.userModel.countDocuments().exec(),
     ]);
 
-    const totalPages = Math.ceil(total / itemsPerPage);
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     return {
       data,
       page,
       itemsPerPage,
       totalPages,
-      total,
+      totalItems,
     };
   }
 

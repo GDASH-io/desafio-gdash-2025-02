@@ -11,13 +11,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiCookieAuth,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDocument } from './schemas/user.schema';
 import { hashPassword } from '../utils/hash-password';
@@ -73,7 +67,6 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('access_token')
   @ApiOperation({ summary: 'Get all users with pagination' })
   @ApiResponse({
     status: 200,
@@ -100,7 +93,6 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('access_token')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({
@@ -120,7 +112,6 @@ export class UsersController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('access_token')
   @ApiOperation({ summary: 'Update user by ID' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({
@@ -157,7 +148,6 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiCookieAuth('access_token')
   @ApiOperation({ summary: 'Delete user by ID' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({

@@ -14,5 +14,5 @@ export class PaginatedResponseDto<T> {
   totalPages: number;
 
   @ApiProperty({ description: 'Total number of items', example: 50 })
-  total: number;
+  totalItems: number;
 }

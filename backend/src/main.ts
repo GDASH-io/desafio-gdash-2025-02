@@ -13,11 +13,26 @@ async function bootstrap() {
     .setTitle('GDash API')
     .setDescription('API for weather monitoring system')
     .setVersion('1.0')
-    .addCookieAuth('access_token')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  const document = SwaggerModule.createDocument(app, config, {
+    ignoreGlobalPrefix: false,
+  });
+
+  if (document.components?.securitySchemes) {
+    delete document.components.securitySchemes;
+  }
+  if (document.security) {
+    document.security = [];
+  }
+
+  SwaggerModule.setup('api/docs', app, document, {
+    swaggerOptions: {
+      persistAuthorization: false,
+      withCredentials: true,
+    },
+    customSiteTitle: 'GDash API Documentation',
+  });
 
   await app.listen(process.env.BACKEND_PORT ?? 3001);
 }
