@@ -220,5 +220,25 @@ describe('WeatherService', () => {
 
       expect(insights.alert).toContain('Calor extremo');
     });
+
+    it('Deve retornar dados do CACHE na segunda chamada (sem bater no banco/IA)', async () => {
+      model
+        .find()
+        .sort()
+        .limit()
+        .exec.mockResolvedValueOnce([
+          { temperature: 26, humidity: 60, wind_speed: 10, timestamp: 'now' },
+          { temperature: 25, humidity: 60, wind_speed: 10, timestamp: 'old' },
+        ]);
+
+      await service.generateInsights();
+      jest.clearAllMocks();
+
+      const cachedResult = await service.generateInsights();
+
+      expect(cachedResult).toBeDefined();
+      expect(cachedResult.summary).toBe('Resumo gerado pela IA Mockada');
+      expect(model.find).not.toHaveBeenCalled();
+    });
   });
 });
