@@ -40,7 +40,10 @@ export function WeatherDashboard() {
       </div>
 
       <main className="flex-1 p-4 md:p-8 pb-20 space-y-6 md:space-y-8 overflow-y-auto w-full">
-        <DashboardHeader />
+        <DashboardHeader
+          title="Visão Geral"
+          subtitle="Monitoramento em tempo real"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto">
           <MainWeatherCard current={logs[0]} logs={logs} />

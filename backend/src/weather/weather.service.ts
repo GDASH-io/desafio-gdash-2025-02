@@ -17,6 +17,10 @@ export class WeatherService {
   private genAI: GoogleGenerativeAI;
   private readonly logger = new Logger(WeatherService.name);
 
+  private lastInsight: WeatherInsightsDto | null = null;
+  private lastInsightTime: number = 0;
+  private readonly CACHE_TTL = 5 * 60 * 1000;
+
   constructor(
     @InjectModel(WeatherLog.name)
     private weatherModel: Model<WeatherLogDocument>,
@@ -80,23 +84,34 @@ export class WeatherService {
   }
 
   async generateInsights(): Promise<WeatherInsightsDto> {
+    const now = Date.now();
+    if (this.lastInsight && now - this.lastInsightTime < this.CACHE_TTL) {
+      this.logger.log('🔄 Retornando insight do cache (economizando API)');
+      return this.lastInsight;
+    }
+
     const logs = await this.weatherModel
       .find()
       .sort({ createdAt: -1 })
       .limit(20)
       .exec();
-
-    if (logs.length === 0) {
+    if (logs.length === 0)
       return { summary: 'Sem dados.', trend: 'stable', averageTemp: 0 };
-    }
 
     const current = logs[0];
     const totalTemp = logs.reduce((acc, log) => acc + log.temperature, 0);
     const avgTemp = parseFloat((totalTemp / logs.length).toFixed(1));
 
+    let result: WeatherInsightsDto;
+
     if (this.genAI) {
       try {
-        return await this.generateGeminiInsights(logs, current, avgTemp);
+        result = await this.generateGeminiInsights(logs, current, avgTemp);
+
+        this.lastInsight = result;
+        this.lastInsightTime = now;
+
+        return result;
       } catch (error) {
         this.logger.error(
           'Falha na IA (Gemini), usando heurística local.',
@@ -107,7 +122,6 @@ export class WeatherService {
 
     return this.generateHeuristicInsights(logs, current, avgTemp);
   }
-
   private async generateGeminiInsights(
     logs: WeatherLog[],
     current: WeatherLog,

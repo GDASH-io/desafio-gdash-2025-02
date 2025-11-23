@@ -49,6 +49,12 @@ export interface SpacexResponse {
   };
 }
 
+export interface UserProfile {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 export const getWeatherLogs = async (): Promise<WeatherLog[]> => {
   const response = await api.get<WeatherLog[]>("/weather/logs");
   return response.data;
@@ -66,5 +72,10 @@ export const getSpacexLaunches = async (
   const response = await api.get<SpacexResponse>("/spacex/launches", {
     params: { page, limit },
   });
+  return response.data;
+};
+
+export const getUserProfile = async (): Promise<UserProfile> => {
+  const response = await api.get<UserProfile>("/users/profile");
   return response.data;
 };

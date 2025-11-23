@@ -45,25 +45,19 @@ export function SpacexDashboard() {
       </div>
 
       <main className="flex-1 p-4 md:p-8 pb-20 space-y-6 md:space-y-8 overflow-y-auto w-full">
-        {/* Header Reutilizado (Mas poderíamos customizar o título se passássemos props) */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+        <DashboardHeader
+          title={
+            <>
+              <Rocket className="h-6 w-6 text-dashboard-highlight" />
               Lançamentos SpaceX
-            </h1>
-            <p className="text-sm text-dashboard-muted">
-              Histórico de missões espaciais
-            </p>
-          </div>
-          {/* Placeholder para manter alinhamento com o Header original se necessário, ou importe o DashboardHeader se ele for genérico o suficiente */}
-          <DashboardHeader />
-        </div>
+            </>
+          }
+          subtitle="Histórico de missões espaciais"
+        />
 
-        {/* GRID DE LANÇAMENTOS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading
-            ? // SKELETONS
-              Array.from({ length: 9 }).map((_, i) => (
+            ? Array.from({ length: 9 }).map((_, i) => (
                 <div
                   key={i}
                   className="h-48 bg-dashboard-card rounded-3xl animate-pulse border border-white/5"
@@ -126,7 +120,6 @@ export function SpacexDashboard() {
               ))}
         </div>
 
-        {/* PAGINAÇÃO */}
         <div className="flex justify-center items-center gap-4 pt-8">
           <Button
             variant="outline"
