@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+  # -------------------------------------
+  # 1. Banco de Dados (MongoDB)
+  # -------------------------------------
+  mongodb:
+    image: mongo:latest
+    container_name: gdash_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    volumes:
+      - mongo_data:/data/db
+
+  # -------------------------------------
+  # 2. Fila (RabbitMQ)
+  # -------------------------------------
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: gdash_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password123
+
+  # -------------------------------------
+  # 3. Backend (NestJS)
+  # -------------------------------------
+  backend:
+    container_name: gdash_backend
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+    environment:
+      MONGODB_URL: mongodb://admin:password123@mongodb:27017/gdash?authSource=admin
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    env_file:
+      - ./backend/.env
+    restart: always
+
+  # -------------------------------------
+  # 4. Worker (Go)
+  # -------------------------------------
+  worker:
+    container_name: gdash_worker
+    build: ./worker-go
+    depends_on:
+      - rabbitmq
+      - backend
+    environment:
+      # Conecta no RabbitMQ interno
+      RABBITMQ_URL: amqp://user:password123@rabbitmq:5672/
+      # Conecta no Backend interno
+      API_URL: http://backend:3000/api/weather/logs
+    restart: always
+
+  # -------------------------------------
+  # 5. Coletor (Python)
+  # -------------------------------------
+  collector:
+    container_name: gdash_collector
+    build: ./collector-python
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: user
+      RABBITMQ_PASS: password123
+    restart: always
+
+  # -------------------------------------
+  # 6. Frontend (React)
+  # -------------------------------------
+  frontend:
+    container_name: gdash_frontend
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  mongo_data:
