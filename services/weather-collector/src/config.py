@@ -32,6 +32,17 @@ class Config:
         for var_name, var_value in required_vars:
             if var_value is None:
                 raise ValueError(f"Variável obrigatória não encontrada: {var_name}")
+            
+        if not (-90 <= cls.LOCATION_LATITUDE <= 90):
+            raise ValueError(f"Latitude inválida: {cls.LOCATION_LATITUDE}")
+        if not (-180 <= cls.LOCATION_LONGITUDE <= 180):
+            raise ValueError(f"Longitude inválida: {cls.LOCATION_LONGITUDE}")
+        
+        if cls.COLLECTION_INTERVAL_MINUTES <= 0:
+            raise ValueError("COLLECTION_INTERVAL_MINUTES deve ser maior que zero")
+        
+        if cls.LOCATION_CITY is None or cls.LOCATION_STATE is None:
+            raise ValueError("LOCATION_CITY e LOCATION_STATE devem ser definidas")
         
         print(f"Config OK: {cls.LOCATION_CITY} ({cls.LOCATION_LATITUDE}, {cls.LOCATION_LONGITUDE})")
         print(f"Intervalo de coleta: {cls.COLLECTION_INTERVAL_MINUTES}min")

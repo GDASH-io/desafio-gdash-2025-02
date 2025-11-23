@@ -65,6 +65,11 @@ class WeatherAPIClient:
         weather_code = current.get('weather_code', 0)
         condition = self._map_weather_code(weather_code)
         
+        # Validar campos obrigatórios
+        temperature = current.get('temperature_2m')
+        if temperature is None:
+            raise ValueError("API não retornou temperatura")
+        
         return {
             'timestamp': current.get('time', datetime.utcnow().isoformat()),
             'location': {

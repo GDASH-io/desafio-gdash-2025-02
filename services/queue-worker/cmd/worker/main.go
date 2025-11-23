@@ -20,19 +20,26 @@ func main() {
 	if err != nil {
 		log.Fatalf("Erro ao criar consumer: %v", err)
 	}
-	defer cons.Close()
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	done := make(chan bool, 1)
 
 	go func() {
 		<-sigChan
 		log.Println("\nEncerrando...")
 		cons.Close()
-		os.Exit(0)
+		done <- true
 	}()
 
-	if err := cons.Start(); err != nil {
-		log.Fatalf("Erro ao iniciar consumer: %v", err)
-	}
+	go func() {
+		if err := cons.Start(); err != nil {
+			log.Printf("Erro no consumer: %v", err)
+			done <- true
+		}
+	}()
+
+	<-done
+	log.Println("Worker encerrado")
 }

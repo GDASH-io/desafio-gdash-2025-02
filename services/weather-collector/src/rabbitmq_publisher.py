@@ -1,5 +1,6 @@
 import pika
 import json
+import time
 from typing import Dict
 from config import Config
 
@@ -8,6 +9,7 @@ class RabbitMQPublisher:
     def __init__(self):
         self.connection = None
         self.channel = None
+        self.max_retries = 3
         self._connect()
     
     def _connect(self):
@@ -36,6 +38,10 @@ class RabbitMQPublisher:
             raise
     
     def publish(self, weather_data: Dict) -> bool:
+        if not weather_data:
+            print("Erro: dados vazios não podem ser publicados")
+            return False
+
         try:
             if self.connection is None or self.connection.is_closed:
                 print("Reconectando...")
