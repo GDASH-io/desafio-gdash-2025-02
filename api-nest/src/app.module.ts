@@ -6,6 +6,7 @@ import { WeatherModule } from './modules/weather/weather.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { InsightsModule } from './modules/insights/insights.module';
+import { NasaModule } from './modules/nasa/nasa.module';
 import { JwtAuthGuard } from './infra/auth/jwt-auth.guard';
 import { AppController } from './presentation/controllers/app.controller';
 
@@ -19,6 +20,7 @@ import { AppController } from './presentation/controllers/app.controller';
     AuthModule,
     UsersModule,
     InsightsModule,
+    NasaModule,
   ],
   controllers: [AppController],
   providers: [
