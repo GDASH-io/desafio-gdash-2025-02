@@ -1,14 +1,15 @@
 import datetime
 import json
+import os  #
 import time
 
 import pika
 import requests
 
-RABBITMQ_HOST = "localhost"
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 QUEUE_NAME = "weather_data"
-RABBITMQ_USER = "user"
-RABBITMQ_PASS = "password123"
+RABBITMQ_USER = os.getenv("RABBITMQ_USER", "user")
+RABBITMQ_PASS = os.getenv("RABBITMQ_PASS", "password123")
 
 API_URL = "https://api.open-meteo.com/v1/forecast?latitude=-22.9064&longitude=-43.1822&hourly=temperature_2m&current=temperature_2m,relative_humidity_2m,wind_speed_10m"
 

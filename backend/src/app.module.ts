@@ -14,7 +14,8 @@ import { WeatherModule } from './weather/weather.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(
-      'mongodb://admin:password123@localhost:27017/gdash?authSource=admin',
+      process.env.MONGODB_URL ||
+        'mongodb://admin:password123@localhost:27017/gdash?authSource=admin',
     ),
     WeatherModule,
     UsersModule,

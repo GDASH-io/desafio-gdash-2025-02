@@ -28,6 +28,10 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideProvider('DatabaseConnection')
+      .useValue({
+        model: jest.fn(),
+      })
       .overrideProvider(WeatherService)
       .useValue(mockWeatherService)
       .overrideGuard(AuthGuard('jwt'))

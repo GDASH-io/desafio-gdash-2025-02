@@ -5,16 +5,16 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-const (
-	RabbitMQURL = "amqp://user:password123@localhost:5672/"
-	QueueName   = "weather_data"
-	// api
-	ApiURL      = "http://localhost:3000/api/weather/logs"
+// --- Configurações Globais ---
+var (
+	QueueName = "weather_data"
+	ApiURL string
 )
 
 type WeatherData struct {
@@ -25,16 +25,44 @@ type WeatherData struct {
 }
 
 func main() {
-	// Connection
-	conn, err := amqp.Dial(RabbitMQURL)
-	failOnError(err, "Falha ao conectar no RabbitMQ")
+	// 1. Configuração via Variáveis de Ambiente (Docker)
+	rabbitURL := os.Getenv("RABBITMQ_URL")
+	if rabbitURL == "" {
+		rabbitURL = "amqp://user:password123@localhost:5672/"
+	}
+
+	ApiURL = os.Getenv("API_URL")
+	if ApiURL == "" {
+		ApiURL = "http://localhost:3000/api/weather/logs"
+	}
+
+	log.Printf("Iniciando Worker...")
+	log.Printf("RabbitMQ: %s", rabbitURL)
+	log.Printf("API Alvo: %s", ApiURL)
+
+	// 2. Conexão com Retry (Essencial para Docker Compose)
+	var conn *amqp.Connection
+	var err error
+
+	for i := 0; i < 10; i++ {
+		conn, err = amqp.Dial(rabbitURL)
+		if err == nil {
+			log.Println("✅ Conectado ao RabbitMQ!")
+			break
+		}
+		log.Printf("⚠️ Falha ao conectar (Tentativa %d/10): %s. Retentando em 5s...", i+1, err)
+		time.Sleep(5 * time.Second)
+	}
+
+	if err != nil {
+		log.Fatalf("❌ Erro fatal: Não foi possível conectar ao RabbitMQ: %s", err)
+	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	failOnError(err, "Falha ao abrir canal")
 	defer ch.Close()
 
-	// Fila
 	q, err := ch.QueueDeclare(
 		QueueName, // nome
 		true,      // durable
@@ -45,11 +73,10 @@ func main() {
 	)
 	failOnError(err, "Falha ao declarar fila")
 
-	
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
-		false,  // auto-ack (ativado)
+		false,  // auto-ack (Manual para garantir entrega)
 		false,  // exclusive
 		false,  // no-local
 		false,  // no-wait
@@ -57,37 +84,39 @@ func main() {
 	)
 	failOnError(err, "Falha ao registrar consumidor")
 
+	// 5. Loop de Processamento
 	forever := make(chan struct{})
 
 	go func() {
 		for d := range msgs {
-			log.Printf("📩 Recebido: %s", d.Body)
+			log.Printf("📩 Mensagem recebida")
 
 			var data WeatherData
 			err := json.Unmarshal(d.Body, &data)
 			if err != nil {
-				log.Printf("❌ Erro JSON: %s. Rejeitando mensagem...", err)
-				d.Nack(false, false) 
+				log.Printf("❌ Erro JSON: %s", err)
+				d.Nack(false, false)
 				continue
 			}
 
 			err = sendToAPI(data)
 			if err != nil {
-				log.Printf("⚠️ Erro ao enviar para API: %s. Tentando novamente em breve...", err)
-				d.Nack(false, true) 
-				time.Sleep(5 * time.Second)
+				log.Printf("⚠️ Erro ao enviar para API: %s", err)
+				d.Nack(false, true)
+				time.Sleep(5 * time.Second) 
 				continue
 			}
 
-			log.Printf("✅ Sucesso! Ack enviado.")
-			d.Ack(false)
+			log.Printf("✅ Sucesso! %.1f°C enviado para API.", data.Temperature)
+			d.Ack(false) 
 		}
 	}()
 
-	log.Printf(" [*] Worker Go pronto para enviar para %s", ApiURL)
+	log.Printf(" [*] Worker Go aguardando mensagens...")
 	<-forever
 }
 
+// Envia o POST para o NestJS
 func sendToAPI(data WeatherData) error {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -103,7 +132,7 @@ func sendToAPI(data WeatherData) error {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err 
+		return err
 	}
 	defer resp.Body.Close()
 
