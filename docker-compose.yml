@@ -1,0 +1,166 @@
+version: '3.8'
+
+services:
+  # ========================================
+  # DATABASE
+  # ========================================
+  mongodb:
+    image: mongo:7.0
+    container_name: gdash-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - gdash-network
+
+  # ========================================
+  # MESSAGE BROKER
+  # ========================================
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"           # AMQP port
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"  # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ========================================
+  # BACKEND API (NestJS)
+  # ========================================
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: gdash-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${API_PORT}
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      DEFAULT_USER_EMAIL: ${DEFAULT_USER_EMAIL}
+      DEFAULT_USER_PASSWORD: ${DEFAULT_USER_PASSWORD}
+      DEFAULT_USER_NAME: ${DEFAULT_USER_NAME}
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./services/api:/app
+      - /app/node_modules
+    networks:
+      - gdash-network
+
+  # ========================================
+  # QUEUE WORKER (Go)
+  # ========================================
+  queue-worker:
+    build:
+      context: ./services/queue-worker
+      dockerfile: Dockerfile
+    container_name: gdash-queue-worker
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE_NAME}
+      RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE_NAME}
+      RABBITMQ_ROUTING_KEY: ${RABBITMQ_ROUTING_KEY}
+      API_URL: http://api:${API_PORT}
+      API_ENDPOINT: /api/weather/logs
+      MAX_RETRIES: ${WORKER_MAX_RETRIES}
+      WORKER_ID: queue-worker-01
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_started
+    networks:
+      - gdash-network
+
+  # ========================================
+  # WEATHER COLLECTOR (Python)
+  # ========================================
+  weather-collector:
+    build:
+      context: ./services/weather-collector
+      dockerfile: Dockerfile
+    container_name: gdash-weather-collector
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
+      RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE_NAME}
+      RABBITMQ_ROUTING_KEY: ${RABBITMQ_ROUTING_KEY}
+      WEATHER_API_URL: ${WEATHER_API_URL}
+      LOCATION_CITY: ${LOCATION_CITY}
+      LOCATION_STATE: ${LOCATION_STATE}
+      LOCATION_COUNTRY: ${LOCATION_COUNTRY}
+      LOCATION_LATITUDE: ${LOCATION_LATITUDE}
+      LOCATION_LONGITUDE: ${LOCATION_LONGITUDE}
+      COLLECTION_INTERVAL_MINUTES: ${COLLECTION_INTERVAL_MINUTES}
+      COLLECTOR_VERSION: "1.0.0"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - gdash-network
+
+  # ========================================
+  # FRONTEND (React + Vite)
+  # ========================================
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: gdash-frontend
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:${API_PORT}
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    depends_on:
+      - api
+    volumes:
+      - ./services/frontend:/app
+      - /app/node_modules
+    networks:
+      - gdash-network
+
+# ========================================
+# VOLUMES
+# ========================================
+volumes:
+  mongodb_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+# ========================================
+# NETWORKS
+# ========================================
+networks:
+  gdash-network:
+    driver: bridge
