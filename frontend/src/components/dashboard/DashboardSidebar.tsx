@@ -1,17 +1,10 @@
 import { Button } from "@/components/ui/button";
-import {
-  CalendarDays,
-  LayoutDashboard,
-  LogOut,
-  MapPin,
-  PieChart,
-  Settings,
-  Zap,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { LayoutDashboard, LogOut, Rocket, Zap } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function DashboardSidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -25,11 +18,17 @@ export function DashboardSidebar() {
       </div>
 
       <nav className="flex flex-col gap-6 w-full items-center flex-1">
-        <SidebarButton icon={LayoutDashboard} active />
-        <SidebarButton icon={PieChart} />
-        <SidebarButton icon={MapPin} />
-        <SidebarButton icon={CalendarDays} />
-        <SidebarButton icon={Settings} />
+        <SidebarButton
+          icon={LayoutDashboard}
+          active={location.pathname === "/dashboard"}
+          onClick={() => navigate("/dashboard")}
+        />
+
+        <SidebarButton
+          icon={Rocket}
+          active={location.pathname === "/spacex"}
+          onClick={() => navigate("/spacex")}
+        />
       </nav>
 
       <Button
@@ -46,16 +45,19 @@ export function DashboardSidebar() {
 function SidebarButton({
   icon: Icon,
   active,
+  onClick,
 }: {
   icon: any;
   active?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <Button
       variant="ghost"
-      className={`w-12 h-12 rounded-xl ${
+      onClick={onClick}
+      className={`w-12 h-12 rounded-xl transition-all duration-200 ${
         active
-          ? "bg-dashboard-card text-white shadow-lg shadow-blue-900/20"
+          ? "bg-dashboard-card text-white shadow-lg shadow-blue-900/20 scale-110"
           : "text-dashboard-muted hover:bg-dashboard-card hover:text-white"
       }`}
     >

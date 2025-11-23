@@ -46,7 +46,7 @@ export class WeatherService {
     let csv = 'Data/Hora,Temperatura (C),Umidade (%),Vento (km/h)\n';
 
     logs.forEach((log) => {
-      const date = new Date(log.timestamp).toLocaleString();
+      const date = new Date(log.timestamp).toLocaleString('pt-BR');
       csv += `${date},${log.temperature},${log.humidity},${log.wind_speed}\n`;
     });
 
@@ -68,7 +68,7 @@ export class WeatherService {
 
     logs.forEach((log) => {
       worksheet.addRow({
-        timestamp: new Date(log.timestamp).toLocaleString(),
+        timestamp: new Date(log.timestamp).toLocaleString('pt-BR'),
         temperature: log.temperature,
         humidity: log.humidity,
         wind_speed: log.wind_speed,

@@ -28,6 +28,27 @@ export interface WeatherInsight {
   averageTemp: number;
 }
 
+export interface SpacexLaunch {
+  id: string;
+  name: string;
+  date_utc: string;
+  success: boolean | null;
+  details: string | null;
+  rocket: {
+    name: string;
+  };
+}
+
+export interface SpacexResponse {
+  data: SpacexLaunch[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 export const getWeatherLogs = async (): Promise<WeatherLog[]> => {
   const response = await api.get<WeatherLog[]>("/weather/logs");
   return response.data;
@@ -35,5 +56,15 @@ export const getWeatherLogs = async (): Promise<WeatherLog[]> => {
 
 export const getInsights = async (): Promise<WeatherInsight> => {
   const response = await api.get<WeatherInsight>("/weather/insights");
+  return response.data;
+};
+
+export const getSpacexLaunches = async (
+  page = 1,
+  limit = 10
+): Promise<SpacexResponse> => {
+  const response = await api.get<SpacexResponse>("/spacex/launches", {
+    params: { page, limit },
+  });
   return response.data;
 };

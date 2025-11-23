@@ -7,7 +7,9 @@ import {
   TrendingUp,
   Wind,
 } from "lucide-react";
+
 import type { WeatherInsight, WeatherLog } from "../../services/api";
+import { api } from "../../services/api";
 
 interface Props {
   current: WeatherLog | undefined;
@@ -15,6 +17,29 @@ interface Props {
 }
 
 export function HighlightsGrid({ current, insight }: Props) {
+  const handleDownload = async (type: "csv" | "xlsx") => {
+    try {
+      const response = await api.get(`/weather/export/${type}`, {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+
+      link.setAttribute("download", `clima_gdash.${type}`);
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Erro ao baixar arquivo:", error);
+      alert("Erro ao realizar download. Verifique sua conexão ou login.");
+    }
+  };
+
   return (
     <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
       <div className="bg-dashboard-card rounded-[2rem] p-6 border border-purple-500/30 relative overflow-hidden">
@@ -61,7 +86,7 @@ export function HighlightsGrid({ current, insight }: Props) {
         />
 
         <div className="bg-dashboard-card rounded-3xl p-5 border border-white/5 col-span-1 sm:col-span-2">
-          <div className="text-white text-xs font-medium mb-2">
+          <div className="text-dashboard-muted text-xs font-medium mb-2">
             MÉDIA TÉRMICA (IA)
           </div>
           <div className="flex items-center justify-between">
@@ -103,18 +128,14 @@ export function HighlightsGrid({ current, insight }: Props) {
 
       <div className="grid grid-cols-2 gap-4 mt-auto">
         <Button
-          onClick={() =>
-            window.open("http://localhost:3000/api/weather/export/csv")
-          }
+          onClick={() => handleDownload("csv")}
           variant="outline"
           className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all hover:scale-105"
         >
           CSV
         </Button>
         <Button
-          onClick={() =>
-            window.open("http://localhost:3000/api/weather/export/xlsx")
-          }
+          onClick={() => handleDownload("xlsx")}
           className="bg-dashboard-highlight hover:bg-dashboard-highlight/80 text-dashboard-card font-bold rounded-xl shadow-lg shadow-dashboard-highlight/20 transition-all hover:scale-105"
         >
           Excel
