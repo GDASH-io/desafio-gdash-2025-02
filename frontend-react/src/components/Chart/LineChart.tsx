@@ -31,6 +31,8 @@ interface LineChartProps {
       borderColor?: string;
       backgroundColor?: string;
       fill?: boolean;
+      yAxisID?: string;
+      [key: string]: any; // Permitir propriedades adicionais do Chart.js
     }[];
   };
   title?: string;

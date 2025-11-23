@@ -108,10 +108,30 @@ export default function Dashboard() {
     .reverse()
     .map((log) => log.temperature_c);
 
+  const humidityData = chartData
+    .slice()
+    .reverse()
+    .map((log) => log.relative_humidity);
+
   const irradianceData = chartData
     .slice()
     .reverse()
     .map((log) => log.estimated_irradiance_w_m2 || 0);
+
+  const precipitationData = chartData
+    .slice()
+    .reverse()
+    .map((log) => log.precipitation_mm || 0);
+
+  const cloudsData = chartData
+    .slice()
+    .reverse()
+    .map((log) => log.clouds_percent || 0);
+
+  const windSpeedData = chartData
+    .slice()
+    .reverse()
+    .map((log) => log.wind_speed_m_s || 0);
 
   const pressureData = chartData
     .slice()
@@ -153,19 +173,32 @@ export default function Dashboard() {
   return (
     <Layout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard de Clima</h1>
-          <p className="text-muted-foreground">Dados em tempo real de Coronel Fabriciano, MG</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Data e Hora atual: {currentDateTime.toLocaleString('pt-BR', { 
-              day: '2-digit', 
-              month: '2-digit', 
-              year: 'numeric', 
-              hour: '2-digit', 
-              minute: '2-digit', 
-              second: '2-digit' 
-            })}
-          </p>
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 p-6 rounded-lg border-2 border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                Dashboard Climático e Energético
+              </h1>
+              <p className="text-muted-foreground mt-2 text-lg">
+                Coronel Fabriciano, MG - Monitoramento em Tempo Real
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Última atualização: {currentDateTime.toLocaleString('pt-BR', { 
+                  day: '2-digit', 
+                  month: '2-digit', 
+                  year: 'numeric', 
+                  hour: '2-digit', 
+                  minute: '2-digit', 
+                  second: '2-digit' 
+                })}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl mb-2">🌤️</div>
+              <p className="text-xs text-muted-foreground">Dados integrados</p>
+              <p className="text-xs text-muted-foreground">Open-Meteo</p>
+            </div>
+          </div>
         </div>
 
         {error && (
@@ -420,10 +453,11 @@ export default function Dashboard() {
           );
         })()}
 
+        {/* Gráficos de Tendências - Últimas 24h */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Temperatura e Irradiância ao Longo do Tempo</CardTitle>
+              <CardTitle>Temperatura e Irradiância (Últimas 24h)</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-64">
@@ -438,7 +472,83 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Forecast7Days />
+          <Card>
+            <CardHeader>
+              <CardTitle>Umidade e Cobertura de Nuvens (Últimas 24h)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                {chartData.length > 0 ? (
+                  <LineChart
+                    data={{
+                      labels: chartLabels,
+                      datasets: [
+                        {
+                          label: 'Umidade (%)',
+                          data: humidityData,
+                          borderColor: 'rgb(59, 130, 246)',
+                          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                          fill: true,
+                          yAxisID: 'y',
+                        },
+                        {
+                          label: 'Nuvens (%)',
+                          data: cloudsData,
+                          borderColor: 'rgb(156, 163, 175)',
+                          backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                          fill: true,
+                          yAxisID: 'y1',
+                        },
+                      ],
+                    }}
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    Sem dados disponíveis
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Precipitação e Vento (Últimas 24h)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64">
+                {chartData.length > 0 ? (
+                  <LineChart
+                    data={{
+                      labels: chartLabels,
+                      datasets: [
+                        {
+                          label: 'Precipitação (mm)',
+                          data: precipitationData,
+                          borderColor: 'rgb(59, 130, 246)',
+                          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                          fill: true,
+                          yAxisID: 'y',
+                        },
+                        {
+                          label: 'Vento (m/s)',
+                          data: windSpeedData,
+                          borderColor: 'rgb(34, 197, 94)',
+                          backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                          fill: true,
+                          yAxisID: 'y1',
+                        },
+                      ],
+                    }}
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    Sem dados disponíveis
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           {pressureData.length > 0 && (
             <Card>
@@ -477,6 +587,9 @@ export default function Dashboard() {
             </Card>
           )}
         </div>
+
+        {/* Previsão 7 Dias */}
+        <Forecast7Days />
 
         {/* Seção de Insights */}
         <InsightsSection />
