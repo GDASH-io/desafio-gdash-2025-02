@@ -14,7 +14,7 @@ Este projeto adota uma arquitetura de microsserviços orientada a eventos:
 
 ## 📹 Demonstração em Vídeo
 
-> **[link]** > _Assista ao vídeo de 5 minutos explicando a arquitetura e o funcionamento do sistema._
+> **[https://youtu.be/8uu-SBEqSwo]** > _Assista ao vídeo de 5 minutos explicando a arquitetura e o funcionamento do sistema._
 
 ## 🛠️ Tech Stack
 
