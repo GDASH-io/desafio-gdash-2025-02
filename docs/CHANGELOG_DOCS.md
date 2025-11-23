@@ -53,7 +53,7 @@
 4. **Endpoints.md** - Documentação de endpoints
 5. **COMMIT_GUIDE.md** - Guia de commits
 6. **IA_INSIGHTS_STRATEGY.md** - Estratégia de IA (referência)
-7. **FASE2_PLAN.md** - Plano da fase opcional
+7. **FASE2.md** - Documentação completa da Fase 2 (Integração NASA)
 8. **initial_project_files_gdash_challenge.md** - Referência histórica
 
 ## Estado Atual da Documentação
@@ -69,7 +69,7 @@ docs/
 ├── Endpoints.md                 # Documentação de endpoints
 ├── COMMIT_GUIDE.md             # Guia de commits
 ├── IA_INSIGHTS_STRATEGY.md     # Estratégia de IA
-├── FASE2_PLAN.md               # Plano da fase opcional
+├── FASE2.md                    # Documentação completa da Fase 2 (Integração NASA)
 └── initial_project_files_gdash_challenge.md  # Referência histórica
 ```
 

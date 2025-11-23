@@ -14,7 +14,7 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 ### Documentação por Fase
 
 - **[FASE1.md](./FASE1.md)** - Fase 1: Collector (Python) - Open-Meteo
-- **[FASE2.md](./FASE2.md)** - Fase 2: Paginação ANA (Opcional)
+- **[FASE2.md](./FASE2.md)** - Fase 2: Integração NASA Earth Imagery
 - **[FASE3.md](./FASE3.md)** - Fase 3: Worker (Go)
 - **[FASE4.md](./FASE4.md)** - Fase 4: API NestJS (Persistência e Endpoints)
 - **[FASE5.md](./FASE5.md)** - Fase 5: Frontend React (Dashboard)
@@ -28,6 +28,7 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 ### Documentação Técnica
 
 - **[Endpoints.md](./Endpoints.md)** - Documentação completa de todos os endpoints da API
+- **[Pipeline.md](./Pipeline.md)** - Documentação detalhada do pipeline de dados
 - **[COMMIT_GUIDE.md](./COMMIT_GUIDE.md)** - Guia de convenções de commits (Conventional Commits)
 - **[IA_INSIGHTS_STRATEGY.md](./IA_INSIGHTS_STRATEGY.md)** - Estratégia e arquitetura de IA/Insights (Fase 6)
 
@@ -35,14 +36,22 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 
 - **[TESTE_SISTEMA.md](./TESTE_SISTEMA.md)** - Guia completo de teste do sistema
 - **[TESTE_SISTEMA_COMPLETO.md](./TESTE_SISTEMA_COMPLETO.md)** - Testes completos após melhorias do dashboard
+- **[TESTES_PENDENTES.md](./TESTES_PENDENTES.md)** - Lista detalhada de testes que ainda precisam ser implementados
+- **[STATUS_TESTES.md](./STATUS_TESTES.md)** - Status atual dos testes por módulo
+- **[REQUISITOS_PENDENTES.md](./REQUISITOS_PENDENTES.md)** - Checklist de requisitos do README e status
 - **[IMPLEMENTACAO_COMPLETA.md](./IMPLEMENTACAO_COMPLETA.md)** - Resumo da implementação da Fase 6
 - **[IMPLEMENTACAO_FLUXO_123.md](./IMPLEMENTACAO_FLUXO_123.md)** - Implementação das melhorias do dashboard (Fluxo 1, 2, 3)
 - **[DASHBOARD_ENHANCEMENTS.md](./DASHBOARD_ENHANCEMENTS.md)** - Análise e recomendações de melhorias no dashboard
-- **[test-system.sh](./test-system.sh)** - Script automatizado de testes
 
 ### Planos de Fase
 
-- **[FASE2_PLAN.md](./FASE2_PLAN.md)** - Plano detalhado da Fase 2 (Paginação ANA - Opcional)
+- **[FASE2.md](./FASE2.md)** - Documentação completa da Fase 2 (Integração NASA - Concluída)
+
+### Análise e Status
+
+- **[SCRIPTS_ANALISE.md](./SCRIPTS_ANALISE.md)** - Análise dos scripts do projeto e recomendações
+- **[REQUISITOS_PENDENTES.md](./REQUISITOS_PENDENTES.md)** - Checklist de requisitos do README e status
+- **[RESUMO_FINAL.md](./RESUMO_FINAL.md)** - Resumo final consolidado do projeto
 
 ### Documentos Históricos
 
@@ -64,14 +73,14 @@ Este diretório contém toda a documentação do projeto, organizada por categor
 
 ## Status Atual do Projeto
 
-**Progresso Total: ~95%**
+**Progresso Total: 100%**
 
 - Fase 1 - Collector (Python): 100%
+- Fase 2 - Integração NASA: 100%
 - Fase 3 - Worker (Go): 100%
 - Fase 4 - API NestJS: 100%
 - Fase 5 - Frontend React: 100%
 - Fase 6 - IA/Insights: 100%
-- Fase 2 - Paginação ANA: 0% (Opcional)
 
 ---
 
@@ -106,4 +115,4 @@ Open-Meteo API → Collector (Python) → Kafka → Worker (Go) → API NestJS �
 
 ---
 
-**Última atualização:** 21/11/2025 - Previsão 7 dias e melhorias no Dashboard
+**Última atualização:** 23/11/2025 - Integração NASA, documentação completa, análise de testes e scripts

@@ -24,17 +24,18 @@
 - [x] Testes corrigidos (source: "openmeteo")
 - [x] Documentação atualizada
 
-### Fase 2 - Paginação ANA (Hidrologia) ⏳ OPCIONAL
-**Nota:** Esta fase não está no README.md do desafio, mas foi incluída no plano original. Pode ser implementada em paralelo ou após outras fases.
+### Fase 2 - Integração NASA Earth Imagery ✅ CONCLUÍDA
+**Nota:** Implementada como alternativa à API ANA, fornecendo imagens de satélite da região.
 
-- [ ] Pesquisar documentação da API ANA
-- [ ] Decidir se implementa (opcional)
-- [ ] Criar estrutura no collector-python ou serviço separado
-- [ ] Implementar pagination handler com cursor (Redis ou arquivo)
-- [ ] Respeitar rate limits e Retry-After
-- [ ] Normalizar dados em contrato `ana.hydro.readings`
-- [ ] Publicar no Kafka topic `ana.hydro.readings`
-- [ ] Testes com mock da API ANA
+- [x] Pesquisar documentação da NASA Worldview API
+- [x] Criar módulo NASA no backend (NasaModule, NasaService, NasaController)
+- [x] Implementar endpoint GET `/api/v1/nasa` com paginação
+- [x] Integração com NASA Worldview API para geração de URLs de imagens
+- [x] Criar página dedicada no frontend (`/nasa`)
+- [x] Implementar visualização de imagens de satélite
+- [x] Adicionar gráfico de disponibilidade de imagens
+- [x] Testes de integração
+- [x] Documentação atualizada
 
 ### Fase 3 - Worker (Go) ✅ CONCLUÍDA
 - [x] Estrutura base do projeto Go (Clean Architecture)
@@ -121,6 +122,7 @@
 - Coordenadas: LAT=-19.5186, LON=-42.6289
 - API de Clima: Open-Meteo (gratuita, sem necessidade de chave)
 - Foco: Parâmetros que afetam produção de energia solar
-- Kafka topics: `ana.raw.readings`, `ana.hydro.readings`, `ana.processed.readings`
+- Kafka topics: `ana.raw.readings`, `ana.processed.readings`
+- NASA: Endpoint `/api/v1/nasa` para imagens de satélite
 - Rotas API: `/api/v1/...`
 - Commits: Conventional Commits (feat:, fix:, chore:, docs:, test:)

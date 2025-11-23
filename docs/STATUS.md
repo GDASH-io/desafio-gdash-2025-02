@@ -1,6 +1,6 @@
 # Status do Projeto - GDASH Challenge 2025/02
 
-**Última atualização:** 21/11/2025 - Previsão 7 dias e melhorias no Dashboard implementadas
+**Última atualização:** 23/11/2025 - Integração NASA implementada, ANA removida, Dashboard atualizado
 
 ## Visão Geral
 
@@ -12,13 +12,13 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 |------|-----------|--------|-----------|
 | **Fase 0** | Preparação | Concluída | 100% |
 | **Fase 1** | Collector (Open-Meteo) | Concluída | 100% |
-| **Fase 2** | Paginação ANA | Opcional | 0% |
+| **Fase 2** | Integração NASA Earth Imagery (Paginação) | Concluída | 100% |
 | **Fase 3** | Worker (Go) | Concluída | 100% |
 | **Fase 4** | API NestJS | Concluída | 100% |
 | **Fase 5** | Frontend React | Concluída | 100% |
 | **Fase 6** | IA/Insights | Concluída | 100% |
 
-**Progresso Total: ~95%** (Fase 2 opcional pendente)
+**Progresso Total: 100%** - Todos os requisitos obrigatórios implementados
 
 ---
 
@@ -61,9 +61,11 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - **Novo:** Endpoint GET `/api/v1` (informações da API)
 - **Novo:** Endpoint GET `/api/v1/weather/forecast/7days` (previsão 7 dias)
 - **Novo:** Endpoint GET `/api/v1/weather/forecast/day/:date` (previsão horária detalhada)
+- **Novo:** Endpoint GET `/api/v1/nasa` (imagens de satélite NASA Worldview)
 - **Novo:** Campos opcionais: `uv_index`, `pressure_hpa`, `visibility_m`, `wind_direction_10m`, `wind_gusts_10m`, `precipitation_probability`
+- **Removido:** Integração ANA (removida conforme decisão do projeto)
 
-**Status:** Funcionando. API recebendo dados do Worker e expondo endpoints REST com novos recursos.
+**Status:** Funcionando. API recebendo dados do Worker e expondo endpoints REST com novos recursos, incluindo integração NASA.
 
 ### Fase 5 - Frontend React
 - Estrutura Vite + React + TypeScript
@@ -85,21 +87,39 @@ Este documento apresenta o status atual de desenvolvimento do projeto GDASH Chal
 - **Novo:** Card de Previsão 7 Dias com modal de detalhes horários
 - **Novo:** Exibição de data e hora atual no dashboard
 - **Novo:** Filtro de dados futuros no collector (apenas dados passados/atuais)
+- **Novo:** Página dedicada NASA (`/nasa`) com visualização de imagens de satélite
+- **Novo:** Gráficos de tendências (Umidade/Nuvens, Precipitação/Vento, Pressão)
+- **Removido:** Integração ANA do dashboard e menu de navegação
 
-**Status:** Funcionando. Frontend conectado à API e exibindo dados, insights e previsão com melhorias visuais.
+**Status:** Funcionando. Frontend conectado à API e exibindo dados, insights, previsão e imagens NASA com melhorias visuais.
 
 ---
 
-## Fases Pendentes
+## Fases Concluídas Adicionais
 
-### Fase 2 - Paginação ANA (Opcional)
-- Pesquisa de documentação
-- Decisão de implementação
-- Implementação (se decidido)
+### Fase 2 - Integração NASA
+- Módulo NASA implementado no backend (NasaModule, NasaService, NasaController)
+- Integração com NASA Worldview API para imagens de satélite
+- Endpoint GET `/api/v1/nasa` com paginação (últimos 365 dias)
+- Página dedicada no frontend (`/nasa`) com visualização de imagens
+- Gráfico de disponibilidade de imagens (últimos 30 dias)
+- Estatísticas de imagens disponíveis
 
-**Prioridade:** Baixa (opcional)
+**Status:** Funcionando. Integração completa com NASA Worldview para imagens de satélite da região de Coronel Fabriciano, MG.
 
-### Fase 6 - IA/Insights
+## Fases Removidas
+
+### Integração ANA (Removida)
+- Módulo ANA removido do backend
+- Página ANA removida do frontend
+- Referências ANA removidas do dashboard e menu de navegação
+- Decisão: Foco em Open-Meteo e NASA para dados climáticos
+
+**Status:** Removido conforme decisão do projeto.
+
+---
+
+## Fase 6 - IA/Insights
 - Módulo de Insights (Clean Architecture)
 - Regras heurísticas para PV (Soiling Risk, Cloudy Days, Heat Derating, Wind Derating)
 - Análise estatística (Statistical, Trend, Day Classifier)
@@ -168,6 +188,8 @@ Ver documento [NEXT_STEPS.md](./NEXT_STEPS.md) para detalhes dos próximos passo
 ## Links Úteis
 
 - **Frontend:** http://localhost:5173
+- **Dashboard:** http://localhost:5173/dashboard
+- **NASA:** http://localhost:5173/nasa
 - **API:** http://localhost:3000/api/v1
 - **MongoDB:** localhost:27017
 - **Kafka:** localhost:9092-9093

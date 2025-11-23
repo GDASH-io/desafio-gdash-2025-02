@@ -51,21 +51,22 @@ Implementar testes unitários e de integração para garantir qualidade do códi
 
 ---
 
-### 3. Fase 2 - Paginação ANA (Opcional)
+### 3. Fase 2 - Integração NASA ✅ CONCLUÍDA
 
-Implementar coletor para dados hidrológicos da ANA.
+Integração com NASA Worldview API para imagens de satélite implementada.
 
-#### Tarefas:
+#### Tarefas Concluídas:
 
-- [ ] Pesquisar documentação da API ANA
-- [ ] Decidir se implementa (avaliar necessidade)
-- [ ] Implementar paginação com cursor
-- [ ] Respeitar rate limits
-- [ ] Normalizar dados
-- [ ] Publicar no Kafka (`ana.hydro.readings`)
-- [ ] Testes
+- [x] Pesquisar documentação da NASA Worldview API
+- [x] Implementar módulo NASA no backend
+- [x] Criar endpoint `/api/v1/nasa` com paginação
+- [x] Integrar com NASA Worldview API
+- [x] Criar página dedicada `/nasa` no frontend
+- [x] Implementar visualização de imagens
+- [x] Adicionar gráfico de disponibilidade
+- [x] Testes e documentação
 
-**Estimativa:** 1-2 semanas (se decidir implementar)
+**Status:** Concluída e funcionando
 
 **Prioridade:** Baixa (opcional)
 

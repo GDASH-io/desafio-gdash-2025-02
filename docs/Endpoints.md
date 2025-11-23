@@ -2,7 +2,7 @@
 
 Este documento descreve todos os endpoints da aplicação, incluindo os já implementados e os que serão desenvolvidos nas próximas fases.
 
-**Última atualização:** 21/11/2025 - Previsão 7 dias e melhorias no Dashboard implementadas
+**Última atualização:** 23/11/2025 - Integração NASA implementada, ANA removida
 
 ---
 
@@ -15,7 +15,8 @@ Este documento descreve todos os endpoints da aplicação, incluindo os já impl
    - [3.2. Insights de IA](#32-insights-de-ia)
    - [3.3. Autenticação](#33-autenticação)
    - [3.4. Usuários](#34-usuários)
-   - [3.5. API Pública (Opcional)](#35-api-pública-opcional)
+   - [3.5. NASA Earth Imagery](#35-nasa-earth-imagery)
+   - [3.6. API Pública (Opcional)](#36-api-pública-opcional)
 4. [Frontend (React)](#4-frontend-react)
 
 ---
@@ -988,7 +989,70 @@ Authorization: Bearer <token>
 
 ---
 
-### 3.5. API Pública (Opcional)
+### 3.5. NASA Earth Imagery
+
+#### ✅ GET `/api/v1/nasa`
+
+**Status:** Implementado (Fase 2)
+
+**Descrição:** Retorna imagens de satélite da NASA Worldview para a região de Coronel Fabriciano, MG, com paginação histórica (últimos 365 dias).
+
+**Autenticação:** Requerida (JWT)
+
+**Método:** `GET`
+
+**Query Parameters:**
+- `page` (opcional): Número da página (padrão: 1, mínimo: 1)
+- `limit` (opcional): Itens por página (padrão: 1, máximo: 365)
+
+**Headers:**
+```
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Resposta de Sucesso (200):**
+```json
+{
+  "page": 1,
+  "limit": 1,
+  "total": 365,
+  "nextPage": 2,
+  "prevPage": null,
+  "items": [
+    {
+      "date": "2025-11-23",
+      "lat": -19.5194,
+      "lon": -42.6289,
+      "imageUrl": "https://wvs.earthdata.nasa.gov/api/v1/snapshot?REQUEST=GetSnapshot&TIME=2025-11-23&BBOX=-42.7289,-19.6194,-42.5289,-19.4194&LAYERS=MODIS_Terra_CorrectedReflectance_TrueColor&WIDTH=512&HEIGHT=512&FORMAT=image/png"
+    }
+  ]
+}
+```
+
+**Resposta de Erro (400):**
+```json
+{
+  "statusCode": 400,
+  "message": "Página inválida. Deve ser um número maior que 0."
+}
+```
+
+**Exemplo de Requisição:**
+```bash
+curl -X GET "http://localhost:3000/api/v1/nasa?page=1&limit=5" \
+  -H "Authorization: Bearer <token>"
+```
+
+**Notas:**
+- As imagens são geradas dinamicamente pela NASA Worldview API
+- Nem todas as datas têm imagens disponíveis (depende de cobertura de nuvens)
+- Coordenadas fixas: Latitude -19.5194, Longitude -42.6289 (Coronel Fabriciano, MG)
+- Total de 365 dias disponíveis (último ano)
+
+---
+
+### 3.6. API Pública (Opcional)
 
 #### ⏳ GET `/api/v1/pokemon`
 
@@ -1070,6 +1134,7 @@ O frontend React consome os endpoints da API NestJS descritos acima. Não expõe
 - **Autenticação:** Login/Logout via `/api/v1/auth/login`
 - **Dashboard:** Dados via `/api/v1/weather/logs` e `/api/v1/weather/logs/latest`
 - **Insights:** Via `/api/v1/weather/insights`
+- **NASA:** Imagens de satélite via `/api/v1/nasa`
 - **Export:** Download via `/api/v1/weather/export.csv` e `/api/v1/weather/export.xlsx`
 
 ---
@@ -1178,6 +1243,9 @@ Todas as respostas de erro seguem o formato:
 - ✅ Weather Logs (POST, GET, GET latest, export CSV/XLSX, health)
 - ✅ Autenticação (login, register)
 - ✅ Usuários (CRUD completo)
+
+### Implementados (Fase 2)
+- ✅ NASA Earth Imagery (GET `/api/v1/nasa`)
 
 ### Implementados (Fase 6)
 - ✅ Insights de IA (GET, POST)
