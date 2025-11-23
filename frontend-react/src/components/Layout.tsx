@@ -30,6 +30,9 @@ export default function Layout({ children }: LayoutProps) {
             <Link to="/records" className="text-sm hover:text-primary">
               Registros
             </Link>
+            <Link to="/nasa" className="text-sm hover:text-primary">
+              NASA
+            </Link>
             {user?.role === 'admin' && (
               <Link to="/users" className="text-sm hover:text-primary">
                 Usuários

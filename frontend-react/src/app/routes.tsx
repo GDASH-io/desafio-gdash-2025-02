@@ -6,6 +6,7 @@ import Register from '../pages/Auth/Register';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import RecordsTable from '../pages/Records/RecordsTable';
 import UsersCrud from '../pages/Users/UsersCrud';
+import NasaImagery from '../pages/NASA/NasaImagery';
 
 export default function AppRoutes() {
   return (
@@ -35,6 +36,14 @@ export default function AppRoutes() {
             element={
               <PrivateRoute>
                 <UsersCrud />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/nasa"
+            element={
+              <PrivateRoute>
+                <NasaImagery />
               </PrivateRoute>
             }
           />
