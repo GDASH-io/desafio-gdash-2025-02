@@ -14,12 +14,10 @@ export function WeatherDashboard() {
   const [logs, setLogs] = useState<WeatherLog[]>([]);
   const [insight, setInsight] = useState<WeatherInsight | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState("");
-
   const fetchData = async () => {
     try {
       const [logsData, insightData] = await Promise.all([
-        getWeatherLogs(searchQuery),
+        getWeatherLogs(),
         getInsights(),
       ]);
       setLogs(logsData);
@@ -30,18 +28,10 @@ export function WeatherDashboard() {
   };
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      fetchData();
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
-
-  useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
-  }, [searchQuery]);
+  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-dashboard-bg text-dashboard-text font-sans selection:bg-dashboard-highlight selection:text-white">
@@ -49,10 +39,10 @@ export function WeatherDashboard() {
         <DashboardSidebar />
       </div>
 
-      <main className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto w-full">
-        <DashboardHeader setSearchQuery={setSearchQuery} />
+      <main className="flex-1 p-4 md:p-8 pb-20 space-y-6 md:space-y-8 overflow-y-auto w-full">
+        <DashboardHeader />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto lg:h-[calc(100vh-140px)]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-auto">
           <MainWeatherCard current={logs[0]} logs={logs} />
           <HighlightsGrid current={logs[0]} insight={insight} />
         </div>

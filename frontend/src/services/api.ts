@@ -28,14 +28,8 @@ export interface WeatherInsight {
   averageTemp: number;
 }
 
-export const getWeatherLogs = async (
-  searchQuery: string = ""
-): Promise<WeatherLog[]> => {
-  const response = await api.get<WeatherLog[]>("/weather/logs", {
-    params: {
-      search: searchQuery,
-    },
-  });
+export const getWeatherLogs = async (): Promise<WeatherLog[]> => {
+  const response = await api.get<WeatherLog[]>("/weather/logs");
   return response.data;
 };
 
