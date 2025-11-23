@@ -18,3 +18,21 @@ export interface ApiErrorResponse {
   detail?: string | Record<string, unknown>;
   [key: string]: unknown;
 }
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  avatar: string | null;
+}
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  user: User;
+  token: string;
+}

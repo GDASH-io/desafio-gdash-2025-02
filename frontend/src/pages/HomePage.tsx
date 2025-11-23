@@ -1,13 +1,23 @@
 import { Button } from "@/components/ui/button";
+import { authService } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function HomePage() {
   const navigate = useNavigate();
 
-  function handleLogout() {
-    // aqui você limparia tokens, etc.
-    navigate("/");
-  }
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast.success("Logout realizado com sucesso!");
+      navigate("/");
+    } catch (error) {
+      toast.error("Erro ao sair", {
+        description:
+          error instanceof Error ? error.message : "Tente novamente mais tarde.",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">

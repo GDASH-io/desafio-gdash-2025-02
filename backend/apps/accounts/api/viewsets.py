@@ -1,4 +1,5 @@
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -144,6 +145,7 @@ class LoginAPIView(APIView):
 
 
 class LogoutAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     http_method_names = ['post']
 

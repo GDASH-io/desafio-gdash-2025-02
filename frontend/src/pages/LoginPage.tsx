@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { authService } from "@/services/authService";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -20,34 +21,39 @@ const LoginPage: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !password) {
-      toast("Campos obrigatórios", {
+      toast.info("Campos obrigatórios", {
         description: "Preencha e-mail e senha para continuar.",
       });
       return;
     }
 
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    setTimeout(() => {
+      await authService.login({ email, password });
+
+      toast.success("Login realizado com sucesso", {
+        description: "Redirecionando para a página inicial...",
+      });
+
+      // aqui você pode ir para /home ou outra rota protegida
+      navigate("/home");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível realizar o login.";
+
+      toast.error("Erro no login", {
+        description: message,
+      });
+    } finally {
       setIsLoading(false);
-
-      const fakeSuccess = true;
-
-      if (fakeSuccess) {
-        toast("Login realizado com sucesso", {
-          description: "Redirecionando para a página inicial...",
-        });
-        // navigate("/home");
-      } else {
-        toast("Erro no login", {
-          description: "Verifique suas credenciais e tente novamente.",
-        });
-      }
-    }, 1200);
+    }
   };
 
   const handleRegisterClick = () => {
@@ -73,7 +79,9 @@ const LoginPage: React.FC = () => {
                 type="email"
                 placeholder="seuemail@exemplo.com"
                 value={email}
-                onChange={(e:  React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setEmail(e.target.value)
+                }
                 disabled={isLoading}
               />
             </div>
@@ -85,7 +93,9 @@ const LoginPage: React.FC = () => {
                 type="password"
                 placeholder="Digite sua senha"
                 value={password}
-                onChange={(e:  React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPassword(e.target.value)
+                }
                 disabled={isLoading}
               />
             </div>
