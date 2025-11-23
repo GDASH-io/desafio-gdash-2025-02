@@ -53,4 +53,8 @@ export class UsersService implements OnModuleInit {
   async remove(id: string): Promise<UserDocument | null> {
     return this.userModel.findByIdAndDelete(id).exec();
   }
+
+  async findAll(): Promise<UserDocument[]> {
+    return this.userModel.find().select('-password').exec();
+  }
 }

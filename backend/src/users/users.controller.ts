@@ -46,4 +46,10 @@ export class UsersController {
   remove(@Request() req) {
     return this.usersService.remove(req.user.userId);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
 }

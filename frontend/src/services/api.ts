@@ -79,3 +79,23 @@ export const getUserProfile = async (): Promise<UserProfile> => {
   const response = await api.get<UserProfile>("/users/profile");
   return response.data;
 };
+
+export const getUsers = async (): Promise<UserProfile[]> => {
+  const response = await api.get<UserProfile[]>("/users");
+  return response.data;
+};
+
+export const createUser = async (data: any) => {
+  const response = await api.post("/users", data);
+  return response.data;
+};
+
+export const updateUser = async (data: Partial<UserProfile>) => {
+  const response = await api.put("/users/profile", data);
+  return response.data;
+};
+
+export const deleteUser = async () => {
+  const response = await api.delete("/users/profile");
+  return response.data;
+};

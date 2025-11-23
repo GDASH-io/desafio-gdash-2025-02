@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SpacexDashboard } from "./components/SpacexDashboard";
+import { UsersDashboard } from "./components/UsersDashboard";
 import { WeatherDashboard } from "./components/WeatherDashboard";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { Login } from "./pages/Login";
@@ -25,6 +26,15 @@ function App() {
           element={
             <ProtectedRoute>
               <SpacexDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <UsersDashboard />
             </ProtectedRoute>
           }
         />

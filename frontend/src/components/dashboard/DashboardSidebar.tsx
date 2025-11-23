@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, LogOut, Rocket, Zap } from "lucide-react";
+import { LayoutDashboard, LogOut, Rocket, Users, Zap } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export function DashboardSidebar() {
@@ -17,6 +17,7 @@ export function DashboardSidebar() {
         <Zap className="h-8 w-8 text-dashboard-highlight" />
       </div>
 
+      {/* AQUI É A LISTA DE NAVEGAÇÃO PRINCIPAL */}
       <nav className="flex flex-col gap-6 w-full items-center flex-1">
         <SidebarButton
           icon={LayoutDashboard}
@@ -28,6 +29,13 @@ export function DashboardSidebar() {
           icon={Rocket}
           active={location.pathname === "/spacex"}
           onClick={() => navigate("/spacex")}
+        />
+
+        {/* MOVIDO PARA CÁ (Dentro do nav) */}
+        <SidebarButton
+          icon={Users}
+          active={location.pathname === "/users"}
+          onClick={() => navigate("/users")}
         />
       </nav>
 
