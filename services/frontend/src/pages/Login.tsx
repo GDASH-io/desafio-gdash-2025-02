@@ -66,8 +66,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(to bottom right, rgb(239 246 255), rgb(224 231 255))' }}>
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-blue-50 to-indigo-100">
+      <Card className="w-full max-w-md bg-white shadow-lg">
         <CardHeader className="space-y-4">
           <div className="flex justify-center">
             <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
@@ -117,7 +117,7 @@ export default function Login() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-linear-to-br from-blue-50 to-indigo-100" disabled={isLoading}>
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
 

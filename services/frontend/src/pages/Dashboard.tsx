@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MetricCard } from '@/components/MetricCard';
+import { weatherService } from '@/services/weather.service';
+import { insightsService } from '@/services/insights.service';
+import type { WeatherLog } from '@/types/weather.types';
+import type { InsightContext } from '@/types/insights.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,47 +37,50 @@ import {
   Legend
 } from 'recharts';
 
-// Dados mockados para demonstração
-const currentWeather = {
-  temperature: 24.5,
-  feelsLike: 26.2,
-  humidity: 68,
-  windSpeed: 12.5,
-  uvIndex: 6,
-  pressure: 1013,
-  visibility: 10,
-  precipitation: 15,
-  city: 'São Paulo',
-  state: 'SP',
-  lastUpdate: '2025-11-23T14:30:00',
-};
-
-const temperatureData = [
-  { time: '00:00', temp: 18, humidity: 75 },
-  { time: '03:00', temp: 17, humidity: 78 },
-  { time: '06:00', temp: 16, humidity: 82 },
-  { time: '09:00', temp: 20, humidity: 70 },
-  { time: '12:00', temp: 23, humidity: 65 },
-  { time: '15:00', temp: 25, humidity: 62 },
-  { time: '18:00', temp: 22, humidity: 68 },
-  { time: '21:00', temp: 20, humidity: 72 },
-];
-
-const recentLogs = [
-  { id: 1, time: '14:30', temp: 24.5, humidity: 68, wind: 12.5, condition: 'Parcialmente Nublado' },
-  { id: 2, time: '14:00', temp: 24.2, humidity: 67, wind: 11.8, condition: 'Parcialmente Nublado' },
-  { id: 3, time: '13:30', temp: 23.8, humidity: 69, wind: 12.1, condition: 'Nublado' },
-  { id: 4, time: '13:00', temp: 23.5, humidity: 70, wind: 11.5, condition: 'Nublado' },
-  { id: 5, time: '12:30', temp: 23.0, humidity: 72, wind: 10.9, condition: 'Nublado' },
-];
-
 export function Dashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [selectedCity] = useState('São Paulo - SP');
-  const [insightContext, setInsightContext] = useState('general');
+  
+  // Estados para dados do backend
+  const [currentWeather, setCurrentWeather] = useState<WeatherLog | null>(null);
+  const [weatherLogs, setWeatherLogs] = useState<WeatherLog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCity, setSelectedCity] = useState('São Paulo');
+  const [insightContext, setInsightContext] = useState<InsightContext>('general');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedInsight, setGeneratedInsight] = useState<string | null>(null);
+  
+  useEffect(() => {
+    loadWeatherData();
+  }, []);
+  
+  const loadWeatherData = async () => {
+    try {
+      setIsLoading(true);
+      const [latest, logsResponse] = await Promise.all([
+        weatherService.getLatest(),
+        weatherService.getLogs({ limit: 10 }),
+      ]);
+      
+      if (latest) {
+        setCurrentWeather(latest);
+        setSelectedCity(`${latest.city}, ${latest.state}`);
+      }
+      
+      if (logsResponse?.data) {
+        setWeatherLogs(logsResponse.data);
+      }
+    } catch (error) {
+      console.error('Error loading weather data:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar dados',
+        description: 'Não foi possível carregar os dados climáticos.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getUVLevel = (index: number) => {
     if (index <= 2) return { label: 'Baixo', variant: 'secondary' as const };
@@ -82,60 +89,149 @@ export function Dashboard() {
     return { label: 'Muito Alto', variant: 'destructive' as const };
   };
 
-  const uvLevel = getUVLevel(currentWeather.uvIndex);
+  // Dados derivados dos logs para gráficos
+  const temperatureData = weatherLogs.slice(0, 8).reverse().map((log) => ({
+    time: new Date(log.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    temp: log.temperature,
+    humidity: log.humidity,
+  }));
 
-  const handleGenerateInsight = () => {
-    setIsGenerating(true);
+  const recentLogs = weatherLogs.slice(0, 5).map((log, index) => ({
+    id: index + 1,
+    time: new Date(log.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    temp: log.temperature,
+    humidity: log.humidity,
+    wind: log.windSpeed,
+    condition: log.condition,
+  }));
+  
+  const uvLevel = currentWeather ? getUVLevel(currentWeather.uvIndex) : { label: 'N/A', variant: 'secondary' as const };
+
+  const handleGenerateInsight = async () => {
+    if (!currentWeather) {
+      toast({
+        variant: 'destructive',
+        title: 'Dados insuficientes',
+        description: 'Não há dados climáticos disponíveis para gerar insights.',
+      });
+      return;
+    }
     
-    // Simular chamada à API com dados mockados
-    setTimeout(() => {
-      const mockInsights = {
-        general: `Com base nos dados climáticos de São Paulo, observamos uma temperatura de 24.5°C com sensação térmica de 26.2°C. A umidade relativa está em 68%, dentro da faixa de conforto. O índice UV está em 6 (Alto), recomenda-se uso de protetor solar. As condições atuais indicam tempo parcialmente nublado com baixa probabilidade de precipitação (15%). A pressão atmosférica está estável em 1013 hPa, indicando manutenção do padrão climático atual.`,
-        
-        alerts: `⚠️ ALERTAS IMPORTANTES:\n\n1. ÍNDICE UV ALTO (6): Recomenda-se evitar exposição solar prolongada entre 10h e 16h. Use protetor solar FPS 30+, chapéu e óculos de sol.\n\n2. UMIDADE EM ELEVAÇÃO: A umidade subiu de 62% para 68% nas últimas 3 horas. Pessoas com problemas respiratórios devem ficar atentas.\n\n3. VENTOS MODERADOS: Rajadas de até 12.5 km/h podem causar desconforto em áreas abertas.`,
-        
-        recommendations: `📋 RECOMENDAÇÕES PARA AS PRÓXIMAS HORAS:\n\n🌡️ TEMPERATURA: Esperada elevação para 26°C até às 15h. Mantenha-se hidratado e use roupas leves.\n\n💧 HIDRATAÇÃO: Com a temperatura atual e umidade, recomenda-se ingestão de pelo menos 2L de água.\n\n🏃 ATIVIDADES FÍSICAS: Melhor período para exercícios ao ar livre: antes das 9h ou após as 17h, quando o índice UV estará mais baixo.\n\n🌤️ CONFORTO TÉRMICO: Ambiente climatizado entre 22-24°C é ideal para o período.\n\n☔ CHUVA: Probabilidade baixa (15%) nas próximas 6 horas. Sem necessidade de guarda-chuva.`,
-        
-        trends: `📊 ANÁLISE DE TENDÊNCIAS (Últimas 24h):\n\n📈 TEMPERATURA: Padrão típico observado com mínima de 16°C (06h) e máxima prevista de 25°C (15h). Amplitude térmica de 9°C.\n\n💧 UMIDADE: Comportamento inverso à temperatura, com pico de 82% durante a madrugada e mínimo de 62% à tarde. Atualmente em fase de estabilização.\n\n🌪️ VENTO: Rajadas constantes entre 10-13 km/h, vindas de sudeste. Padrão estável sem previsão de mudanças significativas.\n\n🔄 PADRÃO GERAL: Condições típicas de outono para São Paulo, com estabilidade atmosférica. Próximas 48h devem manter padrão similar.`
-      };
-
-      setGeneratedInsight(mockInsights[insightContext as keyof typeof mockInsights]);
+    setIsGenerating(true);
+    setGeneratedInsight(null);
+    
+    try {
+      const response = await insightsService.generate({
+        city: currentWeather.city,
+        state: currentWeather.state,
+        context: insightContext,
+      });
+      
+      setGeneratedInsight(response.insights);
+    } catch (error) {
+      console.error('Error generating insight:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao gerar insight',
+        description: 'Não foi possível gerar o insight. Tente novamente.',
+      });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
-  const handleExportCSV = () => {
-    // Simula exportação CSV (futura integração com backend)
-    toast({
-      title: 'Exportando CSV',
-      description: 'O download será iniciado em breve...',
-    });
-    setTimeout(() => {
+  const handleExportCSV = async () => {
+    try {
+      toast({
+        title: 'Exportando CSV',
+        description: 'O download será iniciado em breve...',
+      });
+      
+      const blob = await weatherService.exportCSV();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `weather-data-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
       toast({
         variant: 'success',
         title: 'CSV exportado',
         description: 'Dados climáticos exportados com sucesso!',
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao exportar',
+        description: 'Não foi possível exportar os dados.',
+      });
+    }
   };
 
-  const handleExportXLSX = () => {
-    // Simula exportação XLSX (futura integração com backend)
-    toast({
-      title: 'Exportando XLSX',
-      description: 'O download será iniciado em breve...',
-    });
-    setTimeout(() => {
+  const handleExportXLSX = async () => {
+    try {
+      toast({
+        title: 'Exportando XLSX',
+        description: 'O download será iniciado em breve...',
+      });
+      
+      const blob = await weatherService.exportXLSX();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `weather-data-${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
       toast({
         variant: 'success',
         title: 'XLSX exportado',
         description: 'Dados climáticos exportados com sucesso!',
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Error exporting XLSX:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao exportar',
+        description: 'Não foi possível exportar os dados.',
+      });
+    }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen -m-6 md:-m-8 p-6 md:p-8 flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Carregando dados climáticos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentWeather) {
+    return (
+      <div className="min-h-screen -m-6 md:-m-8 p-6 md:p-8 flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100">
+        <Card className="p-6 bg-white">
+          <div className="text-center">
+            <CloudRain className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-semibold mb-2">Nenhum dado disponível</h3>
+            <p className="text-muted-foreground mb-4">Não há dados climáticos disponíveis no momento.</p>
+            <Button onClick={loadWeatherData}>Tentar novamente</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen -m-6 md:-m-8 p-6 md:p-8" style={{ background: 'linear-gradient(to bottom right, rgb(239 246 255), rgb(224 231 255))' }}>
+    <div className="min-h-screen -m-6 md:-m-8 p-6 md:p-8 bg-linear-to-br from-blue-50 to-indigo-100">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -168,7 +264,7 @@ export function Dashboard() {
             value={currentWeather.temperature}
             unit="°C"
             icon={Thermometer}
-            description="Sensação térmica: 26.2°C"
+            description={`Sensação: ${currentWeather.feelsLike}°C`}
             trend="up"
           />
           <MetricCard
@@ -214,11 +310,11 @@ export function Dashboard() {
             description="Ótima visibilidade"
           />
           <MetricCard
-            title="Precipitação"
-            value={currentWeather.precipitation}
+            title="Prob. Chuva"
+            value={currentWeather.rainProbability}
             unit="%"
             icon={CloudRain}
-            description="Chance baixa de chuva"
+            description="Chance de chuva"
           />
         </div>
 
@@ -347,7 +443,7 @@ export function Dashboard() {
                 <label className="text-sm font-medium mb-2 block">
                   Tipo de Análise
                 </label>
-                <Select value={insightContext} onValueChange={setInsightContext}>
+                <Select value={insightContext} onValueChange={(value) => setInsightContext(value as InsightContext)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o contexto" />
                   </SelectTrigger>

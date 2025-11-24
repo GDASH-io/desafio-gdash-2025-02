@@ -26,7 +26,9 @@ class WeatherAPIClient:
                     'surface_pressure',
                     'wind_speed_10m',
                     'wind_direction_10m',
+                    'visibility',
                 ],
+                'daily': 'uv_index_max',
                 'timezone': 'auto',
                 'forecast_days': 1,
             }
@@ -61,6 +63,7 @@ class WeatherAPIClient:
     
     def _normalize_response(self, raw_data: Dict) -> Dict:
         current = raw_data.get('current', {})
+        daily = raw_data.get('daily', {})
 
         weather_code = current.get('weather_code', 0)
         condition = self._map_weather_code(weather_code)
@@ -69,6 +72,13 @@ class WeatherAPIClient:
         temperature = current.get('temperature_2m')
         if temperature is None:
             raise ValueError("API não retornou temperatura")
+        
+        # Pegar UV index do forecast diário (Open-Meteo retorna array com 1 elemento)
+        uv_index_max_array = daily.get('uv_index_max', [0])
+        uv_index = int(uv_index_max_array[0]) if uv_index_max_array else 0
+        
+        # Converter visibilidade de metros para metros (API retorna em metros)
+        visibility_meters = current.get('visibility', 10000)
         
         return {
             'timestamp': current.get('time', datetime.utcnow().isoformat()),
@@ -86,8 +96,8 @@ class WeatherAPIClient:
                 'wind_speed': current.get('wind_speed_10m'),
                 'wind_direction': current.get('wind_direction_10m'),
                 'pressure': current.get('pressure_msl'),
-                'uv_index': 0,
-                'visibility': 10000,
+                'uv_index': uv_index,
+                'visibility': visibility_meters,
                 'condition': condition,
                 'rain_probability': self._calculate_rain_probability(current),
                 'cloud_cover': current.get('cloud_cover', 0),

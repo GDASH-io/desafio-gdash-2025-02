@@ -45,8 +45,14 @@ export class GroqService {
     private readonly httpService: HttpService,
   ) {
     this.apiKey = this.configService.get<string>('GROQ_API_KEY') || '';
-    this.model = this.configService.get<string>('GROQ_MODEL') || 'llama-3.1-70b-versatile';
+    this.model = this.configService.get<string>('GROQ_MODEL') || 'llama-3.3-70b-versatile';
     this.baseUrl = this.configService.get<string>('GROQ_BASE_URL') || 'https://api.groq.com/openai/v1';
+    
+    if (!this.apiKey) {
+      this.logger.warn('GROQ_API_KEY não está configurada!');
+    }
+    
+    this.logger.log(`Groq Service inicializado com modelo: ${this.model}`);
   }
 
   async chat(messages: GroqMessage[], options?: {
@@ -54,16 +60,20 @@ export class GroqService {
     maxTokens?: number;
     topP?: number;
   }): Promise<string> {
+    if (!this.apiKey) {
+      throw new BadRequestException('GROQ_API_KEY não está configurada. Configure a variável de ambiente GROQ_API_KEY.');
+    }
+
     try {
       const requestData: GroqChatRequest = {
         model: this.model,
         messages,
         temperature: options?.temperature ?? 0.7,
-        max_tokens: options?.maxTokens ?? 2000,
+        max_tokens: options?.maxTokens ?? 1024,
         top_p: options?.topP ?? 1,
       };
 
-      this.logger.debug(`Groq API Request: ${JSON.stringify(requestData)}`);
+      this.logger.debug(`Groq API Request to model ${this.model}`);
 
       const { data } = await firstValueFrom(
         this.httpService.post<GroqChatResponse>(
@@ -88,14 +98,15 @@ export class GroqService {
 
       return content;
     } catch (error) {
-      this.logger.error(`Groq API Error: ${error.message}`, error.stack);
+      const errorDetails = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+      this.logger.error(`Groq API Error: ${errorDetails}`, error.stack);
       
       if (error instanceof BadRequestException) {
         throw error;
       }
       
       throw new BadRequestException(
-        `Falha ao comunicar com API Groq: ${error.message}`,
+        `Falha ao comunicar com API Groq: ${errorDetails}`,
       );
     }
   }
@@ -130,7 +141,7 @@ Responda sempre em português brasileiro de forma clara, objetiva e profissional
 
     return this.chat(messages, {
       temperature: 0.7,
-      maxTokens: 1500,
+      maxTokens: 1000,
     });
   }
 }

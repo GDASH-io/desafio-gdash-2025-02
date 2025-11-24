@@ -16,17 +16,17 @@ type Location struct {
 }
 
 type Current struct {
-	Temperature      float64 `json:"temperature"`
-	FeelsLike        float64 `json:"feels_like"`
-	Humidity         int     `json:"humidity"`
-	WindSpeed        float64 `json:"wind_speed"`
-	WindDirection    int     `json:"wind_direction"`
-	Pressure         float64 `json:"pressure"`
-	UVIndex          int     `json:"uv_index"`
-	Visibility       int     `json:"visibility"`
-	Condition        string  `json:"condition"`
-	RainProbability  int     `json:"rain_probability"`
-	CloudCover       int     `json:"cloud_cover"`
+	Temperature     float64 `json:"temperature"`
+	FeelsLike       float64 `json:"feels_like"`
+	Humidity        int     `json:"humidity"`
+	WindSpeed       float64 `json:"wind_speed"`
+	WindDirection   int     `json:"wind_direction"`
+	Pressure        float64 `json:"pressure"`
+	UVIndex         float64 `json:"uv_index"`
+	Visibility      float64 `json:"visibility"`
+	Condition       string  `json:"condition"`
+	RainProbability int     `json:"rain_probability"`
+	CloudCover      int     `json:"cloud_cover"`
 }
 
 type Metadata struct {
@@ -69,8 +69,8 @@ func (w *WeatherData) ToNestJSPayload() *NestJSPayload {
 		WindSpeed:       w.Current.WindSpeed,
 		WindDirection:   w.Current.WindDirection,
 		Pressure:        w.Current.Pressure,
-		UVIndex:         w.Current.UVIndex,
-		Visibility:      w.Current.Visibility,
+		UVIndex:         int(w.Current.UVIndex),
+		Visibility:      int(w.Current.Visibility),
 		Condition:       w.Current.Condition,
 		RainProbability: w.Current.RainProbability,
 		CloudCover:      w.Current.CloudCover,

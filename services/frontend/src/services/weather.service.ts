@@ -31,4 +31,18 @@ export const weatherService = {
     });
     return response.data;
   },
+
+  async exportCSV(): Promise<Blob> {
+    const response = await api.get('/weather/export/csv', {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
+
+  async exportXLSX(): Promise<Blob> {
+    const response = await api.get('/weather/export/xlsx', {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };

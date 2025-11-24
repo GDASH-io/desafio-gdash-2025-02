@@ -16,11 +16,7 @@ export class FindLogsController {
 
   @Get('latest')
   async findLatest(@Query('city') city?: string) {
-    const log = await this.findLogsService.findLatest(city);
-    
-    return {
-      data: log,
-    };
+    return this.findLogsService.findLatest(city);
   }
 
   @Get('stats')
@@ -29,10 +25,6 @@ export class FindLogsController {
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    const stats = await this.findLogsService.getStats(city, startDate, endDate);
-    
-    return {
-      data: stats,
-    };
+    return this.findLogsService.getStats(city, startDate, endDate);
   }
 }

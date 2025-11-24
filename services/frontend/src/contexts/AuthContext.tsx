@@ -30,23 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (credentials: LoginRequest) => {
-    // Simulação de login para testes (sem backend)
-    const mockUser: User = {
-      id: '1',
-      email: credentials.email,
-      name: 'Usuário Teste',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const mockToken = 'mock-jwt-token-' + Date.now();
-    
-    authService.storeAuth(mockToken, mockUser);
-    setUser(mockUser);
-    
-    // Para usar com backend real, descomente abaixo:
-    // const response = await authService.login(credentials);
-    // authService.storeAuth(response.access_token, response.user);
-    // setUser(response.user);
+    try {
+      const response = await authService.login(credentials);
+      authService.storeAuth(response.access_token, response.user);
+      setUser(response.user);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const logout = () => {

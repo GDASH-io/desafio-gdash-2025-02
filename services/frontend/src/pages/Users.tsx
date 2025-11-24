@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Pencil, Trash2, UserPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { userService } from '@/services/auth.service';
+import type { User } from '@/types/user.types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -34,28 +36,35 @@ const userSchema = z.object({
 
 type UserFormData = z.infer<typeof userSchema>;
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: string;
-}
-
-// Dados mockados
-const initialUsers: User[] = [
-  { id: '1', name: 'João Silva', email: 'joao@example.com', createdAt: '2025-01-15' },
-  { id: '2', name: 'Maria Santos', email: 'maria@example.com', createdAt: '2025-01-20' },
-  { id: '3', name: 'Pedro Costa', email: 'pedro@example.com', createdAt: '2025-02-01' },
-  { id: '4', name: 'Ana Oliveira', email: 'ana@example.com', createdAt: '2025-02-10' },
-];
-
 export function Users() {
   const { toast } = useToast();
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setIsLoading(true);
+      const data = await userService.getAll();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error loading users:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar usuários',
+        description: 'Não foi possível carregar a lista de usuários.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const {
     register,
@@ -66,53 +75,87 @@ export function Users() {
     resolver: zodResolver(userSchema),
   });
 
-  const handleCreate = (data: UserFormData) => {
-    const newUser: User = {
-      id: String(users.length + 1),
-      name: data.name,
-      email: data.email,
-      createdAt: new Date().toISOString().split('T')[0],
-    };
-    setUsers([...users, newUser]);
-    setIsCreateOpen(false);
-    reset();
-    toast({
-      variant: 'success',
-      title: 'Usuário criado',
-      description: `${data.name} foi adicionado com sucesso.`,
-    });
+  const handleCreate = async (data: UserFormData) => {
+    try {
+      const newUser = await userService.create({
+        name: data.name,
+        email: data.email,
+        password: data.password || 'defaultPassword123',
+      });
+      setUsers([...users, newUser]);
+      setIsCreateOpen(false);
+      reset();
+      toast({
+        variant: 'success',
+        title: 'Usuário criado',
+        description: `${data.name} foi adicionado com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao criar usuário',
+        description: 'Não foi possível criar o usuário.',
+      });
+    }
   };
 
-  const handleEdit = (data: UserFormData) => {
+  const handleEdit = async (data: UserFormData) => {
     if (!selectedUser) return;
     
-    setUsers(users.map(user => 
-      user.id === selectedUser.id 
-        ? { ...user, name: data.name, email: data.email }
-        : user
-    ));
-    setIsEditOpen(false);
-    setSelectedUser(null);
-    reset();
-    toast({
-      variant: 'success',
-      title: 'Usuário atualizado',
-      description: `${data.name} foi editado com sucesso.`,
-    });
+    try {
+      const updateData: any = {
+        name: data.name,
+        email: data.email,
+      };
+      if (data.password) {
+        updateData.password = data.password;
+      }
+      
+      const updatedUser = await userService.update(selectedUser.id, updateData);
+      setUsers(users.map(user => 
+        user.id === selectedUser.id ? updatedUser : user
+      ));
+      setIsEditOpen(false);
+      setSelectedUser(null);
+      reset();
+      toast({
+        variant: 'success',
+        title: 'Usuário atualizado',
+        description: `${data.name} foi editado com sucesso.`,
+      });
+    } catch (error) {
+      console.error('Error updating user:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao atualizar usuário',
+        description: 'Não foi possível atualizar o usuário.',
+      });
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!selectedUser) return;
     
-    const userName = selectedUser.name;
-    setUsers(users.filter(user => user.id !== selectedUser.id));
-    setIsDeleteOpen(false);
-    setSelectedUser(null);
-    toast({
-      variant: 'destructive',
-      title: 'Usuário removido',
-      description: `${userName} foi excluído do sistema.`,
-    });
+    try {
+      const userName = selectedUser.name;
+      await userService.delete(selectedUser.id);
+      setUsers(users.filter(user => user.id !== selectedUser.id));
+      setIsDeleteOpen(false);
+      setSelectedUser(null);
+      toast({
+        variant: 'destructive',
+        title: 'Usuário removido',
+        description: `${userName} foi excluído do sistema.`,
+      });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao deletar usuário',
+        description: 'Não foi possível deletar o usuário.',
+      });
+    }
   };
 
   const openEditModal = (user: User) => {

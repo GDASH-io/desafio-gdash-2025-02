@@ -19,7 +19,7 @@ class Config:
     LOCATION_LATITUDE = float(os.getenv('LOCATION_LATITUDE', '-23.5505'))
     LOCATION_LONGITUDE = float(os.getenv('LOCATION_LONGITUDE', '-46.6333'))
     
-    COLLECTION_INTERVAL_MINUTES = int(os.getenv('COLLECTION_INTERVAL_MINUTES', '60'))
+    COLLECTION_INTERVAL_MINUTES = float(os.getenv('COLLECTION_INTERVAL_MINUTES', '60'))
     COLLECTOR_VERSION = os.getenv('COLLECTOR_VERSION', '1.0.0')
     
     @classmethod
@@ -45,7 +45,8 @@ class Config:
             raise ValueError("LOCATION_CITY e LOCATION_STATE devem ser definidas")
         
         print(f"Config OK: {cls.LOCATION_CITY} ({cls.LOCATION_LATITUDE}, {cls.LOCATION_LONGITUDE})")
-        print(f"Intervalo de coleta: {cls.COLLECTION_INTERVAL_MINUTES}min")
+        interval_text = f"{int(cls.COLLECTION_INTERVAL_MINUTES * 60)}s" if cls.COLLECTION_INTERVAL_MINUTES < 1 else f"{cls.COLLECTION_INTERVAL_MINUTES}min"
+        print(f"Intervalo de coleta: {interval_text}")
 
 
 # Validar configurações ao importar o módulo

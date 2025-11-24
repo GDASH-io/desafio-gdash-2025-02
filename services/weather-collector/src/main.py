@@ -26,7 +26,8 @@ def main():
     print("="*60)
     print(f"Iniciado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Local: {Config.LOCATION_CITY}, {Config.LOCATION_STATE}")
-    print(f"Intervalo: {Config.COLLECTION_INTERVAL_MINUTES}min")
+    interval_text = f"{int(Config.COLLECTION_INTERVAL_MINUTES * 60)}s" if Config.COLLECTION_INTERVAL_MINUTES < 1 else f"{Config.COLLECTION_INTERVAL_MINUTES}min"
+    print(f"Intervalo: {interval_text}")
     print("="*60 + "\n")
     
     # Configurar handlers de sinais
@@ -47,7 +48,8 @@ def main():
             replace_existing=True,
         )
         
-        print(f"\nScheduler OK. Próxima coleta em {Config.COLLECTION_INTERVAL_MINUTES}min")
+        interval_text = f"{int(Config.COLLECTION_INTERVAL_MINUTES * 60)}s" if Config.COLLECTION_INTERVAL_MINUTES < 1 else f"{Config.COLLECTION_INTERVAL_MINUTES}min"
+        print(f"\nScheduler OK. Próxima coleta em {interval_text}")
         print("Aguardando... (Ctrl+C para parar)\n")
         
         scheduler.start()
