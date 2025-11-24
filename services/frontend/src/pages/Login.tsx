@@ -19,7 +19,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login: authLogin } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -36,21 +36,25 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      setIsLoading(true);
-      setErrorMessage('');
-      await login(data);
-      navigate('/dashboard');
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.';
-      setErrorMessage(message);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    // Simulação de login para testes (sem chamada ao backend)
+    setTimeout(async () => {
+      try {
+        // Simular dados do usuário
+        await authLogin(data);
+        navigate('/dashboard');
+      } catch (error) {
+        setErrorMessage('Erro ao fazer login');
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'linear-gradient(to bottom right, rgb(239 246 255), rgb(224 231 255))' }}>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
           <div className="flex justify-center">
