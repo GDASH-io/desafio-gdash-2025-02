@@ -27,6 +27,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
+    "@nestjs/throttler": "^6.4.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.1.0",

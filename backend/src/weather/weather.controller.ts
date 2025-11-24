@@ -13,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { WeatherService } from './weather.service';
 import {
   ApiOperation,
@@ -22,7 +23,6 @@ import {
   ApiParam,
   ApiExcludeEndpoint,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { createWeatherSchema } from './validation/create-weather.schema';
@@ -44,6 +44,7 @@ export class WeatherController {
   @ApiExcludeEndpoint()
   @Post('internal')
   @UseGuards(ApiKeyGuard)
+  @SkipThrottle()
   async createWeatherInternal(@Body() weatherData: CreateWeatherDto) {
     const result = createWeatherSchema.safeParse(weatherData);
 
@@ -55,7 +56,6 @@ export class WeatherController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new weather record' })
   @ApiResponse({
     status: 201,
@@ -78,7 +78,6 @@ export class WeatherController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Get all weather records with pagination and filters',
   })
@@ -144,7 +143,7 @@ export class WeatherController {
   }
 
   @Get('export-csv')
-  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename="weather.csv"')
   @ApiOperation({
@@ -235,7 +234,7 @@ export class WeatherController {
   }
 
   @Get('export-xlsx')
-  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Header(
     'Content-Type',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -364,7 +363,6 @@ export class WeatherController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete a weather record' })
   @ApiParam({ name: 'id', description: 'Weather record ID' })
   @ApiResponse({

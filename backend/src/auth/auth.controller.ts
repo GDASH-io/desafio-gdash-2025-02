@@ -6,10 +6,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
+import { Public } from './guards/public.decorator';
 import { z } from 'zod';
 
 const loginSchema = z.object({
@@ -23,6 +25,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
+  @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Login user' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
@@ -58,6 +62,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @Public()
   @ApiOperation({ summary: 'Logout user' })
   @ApiResponse({
     status: 200,
