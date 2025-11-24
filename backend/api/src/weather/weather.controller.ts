@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards, Res } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { Response } from 'express'
 
 @Controller('weather')
 export class WeatherController {
@@ -30,5 +31,42 @@ export class WeatherController {
     const limitNumber = parseInt(limit, 10) || 50;
 
     return this.weatherService.findAll(pageNumber, limitNumber);
+  }
+  
+  /**
+   * Endpoint usado para exportar como xlsx
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('export.xlsx')
+  async exportXlsx(@Res() res: Response) {
+    const buffer = await this.weatherService.generateXlsx();
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="weather_logs.xlsx"',
+    );
+
+    res.send(buffer);
+  }
+  
+  /**
+   * Endpoint usado para exportar em .csv
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('export.csv')
+  async exportCsv(@Res() res: Response) {
+    const csv = await this.weatherService.generateCsv();
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="weather_logs.csv"',
+    );
+
+    res.send(csv);
   }
 }
