@@ -1,0 +1,78 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:6
+    container_name: weather-mongo
+    restart: unless-stopped
+    ports: ["27017:27017"]
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: weather-rabbit
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  nest-api:
+    build:
+      context: ./backend-nest
+      dockerfile: Dockerfile
+    container_name: weather-nest
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/weatherdb
+      - JWT_SECRET=${JWT_SECRET:-supersecret}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASS=${ADMIN_PASS:-123456}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: weather-frontend
+    environment:
+      - VITE_API_BASE=http://localhost:3000/api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - nest-api
+    restart: unless-stopped
+
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: weather-go-worker
+    depends_on:
+      - rabbitmq
+      - nest-api
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - NEST_API_URL=http://nest-api:3000/api/weather/logs
+    restart: unless-stopped
+
+  python-producer:
+    build:
+      context: ./python-producer
+      dockerfile: Dockerfile
+    container_name: weather-producer
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - CITY_LAT=${CITY_LAT:--15.601}
+      - CITY_LON=${CITY_LON:--56.097}
+      - INTERVAL_SECONDS=${INTERVAL_SECONDS:-3600}
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
