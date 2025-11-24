@@ -16,8 +16,10 @@ import {
   Eye,
   Sparkles,
   MapPin,
-  Loader2
+  Loader2,
+  FileDown
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import {
   LineChart,
   Line,
@@ -67,6 +69,7 @@ const recentLogs = [
 
 export function Dashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [selectedCity] = useState('São Paulo - SP');
   const [insightContext, setInsightContext] = useState('general');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -101,20 +104,60 @@ export function Dashboard() {
     }, 2000);
   };
 
+  const handleExportCSV = () => {
+    // Simula exportação CSV (futura integração com backend)
+    toast({
+      title: 'Exportando CSV',
+      description: 'O download será iniciado em breve...',
+    });
+    setTimeout(() => {
+      toast({
+        variant: 'success',
+        title: 'CSV exportado',
+        description: 'Dados climáticos exportados com sucesso!',
+      });
+    }, 1500);
+  };
+
+  const handleExportXLSX = () => {
+    // Simula exportação XLSX (futura integração com backend)
+    toast({
+      title: 'Exportando XLSX',
+      description: 'O download será iniciado em breve...',
+    });
+    setTimeout(() => {
+      toast({
+        variant: 'success',
+        title: 'XLSX exportado',
+        description: 'Dados climáticos exportados com sucesso!',
+      });
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen -m-6 md:-m-8 p-6 md:p-8" style={{ background: 'linear-gradient(to bottom right, rgb(239 246 255), rgb(224 231 255))' }}>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground mt-1">
               Bem-vindo, {user?.name}! Acompanhe os dados climáticos em tempo real.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
-            <MapPin className="h-4 w-4" />
-            <span>{selectedCity}</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
+              <MapPin className="h-4 w-4" />
+              <span>{selectedCity}</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleExportCSV}>
+              <FileDown className="mr-2 h-4 w-4" />
+              CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExportXLSX}>
+              <FileDown className="mr-2 h-4 w-4" />
+              XLSX
+            </Button>
           </div>
         </div>
 

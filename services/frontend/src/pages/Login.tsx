@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CloudSun } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -20,6 +21,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function Login() {
   const navigate = useNavigate();
   const { login: authLogin } = useAuth();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -44,9 +46,19 @@ export default function Login() {
       try {
         // Simular dados do usuário
         await authLogin(data);
+        toast({
+          variant: 'success',
+          title: 'Login realizado',
+          description: 'Bem-vindo ao GDASH Weather!',
+        });
         navigate('/dashboard');
       } catch (error) {
         setErrorMessage('Erro ao fazer login');
+        toast({
+          variant: 'destructive',
+          title: 'Erro ao fazer login',
+          description: 'Verifique suas credenciais e tente novamente.',
+        });
       } finally {
         setIsLoading(false);
       }

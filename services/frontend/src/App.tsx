@@ -5,6 +5,7 @@ import { Layout } from '@/components/Layout';
 import Login from '@/pages/Login';
 import { Dashboard } from '@/pages/Dashboard';
 import { Users } from '@/pages/Users';
+import { Toaster } from '@/components/ui/toaster';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        <Toaster />
       </AuthProvider>
     </BrowserRouter>
   );

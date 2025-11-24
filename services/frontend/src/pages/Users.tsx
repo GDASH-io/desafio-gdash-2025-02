@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Pencil, Trash2, UserPlus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -49,6 +50,7 @@ const initialUsers: User[] = [
 ];
 
 export function Users() {
+  const { toast } = useToast();
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -74,6 +76,11 @@ export function Users() {
     setUsers([...users, newUser]);
     setIsCreateOpen(false);
     reset();
+    toast({
+      variant: 'success',
+      title: 'Usuário criado',
+      description: `${data.name} foi adicionado com sucesso.`,
+    });
   };
 
   const handleEdit = (data: UserFormData) => {
@@ -87,14 +94,25 @@ export function Users() {
     setIsEditOpen(false);
     setSelectedUser(null);
     reset();
+    toast({
+      variant: 'success',
+      title: 'Usuário atualizado',
+      description: `${data.name} foi editado com sucesso.`,
+    });
   };
 
   const handleDelete = () => {
     if (!selectedUser) return;
     
+    const userName = selectedUser.name;
     setUsers(users.filter(user => user.id !== selectedUser.id));
     setIsDeleteOpen(false);
     setSelectedUser(null);
+    toast({
+      variant: 'destructive',
+      title: 'Usuário removido',
+      description: `${userName} foi excluído do sistema.`,
+    });
   };
 
   const openEditModal = (user: User) => {
