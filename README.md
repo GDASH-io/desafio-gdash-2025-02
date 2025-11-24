@@ -248,9 +248,7 @@ O projeto possui CI configurado com GitHub Actions (`.github/workflows/ci.yml`):
 
 ## Vídeo Explicativo
 
-[Link do vídeo no YouTube]
-
-<!-- TODO: Adicionar link do vídeo -->
+[Link do video](https://youtu.be/jysYHv0l4E4)
 
 ## Autor
 
