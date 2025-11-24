@@ -9,10 +9,8 @@ from datetime import datetime
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'localhost')
 QUEUE_NAME = 'weather_data'
 
-# Coordenadas (Exemplo: São Paulo). 
-# Dica: Você pode alterar para sua cidade.
-LATITUDE = -23.55
-LONGITUDE = -46.63
+LATITUDE = -15.79
+LONGITUDE = -47.88
 
 def get_weather_data():
     """
