@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   mongo:
     image: mongo:7
@@ -31,6 +29,29 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+
+  collector:
+    build:
+      context: ../collector
+      dockerfile: Dockerfile
+    container_name: gdash-collector
+    restart: unless-stopped
+    env_file:
+      - ../collector/.env
+    depends_on:
+      - rabbitmq
+
+  worker:
+    build:
+      context: ../worker
+      dockerfile: Dockerfile
+    container_name: gdash-worker
+    restart: unless-stopped
+    env_file:
+      - ../worker/.env
+    depends_on:
+      - rabbitmq
+      - api
 
 volumes:
   mongo_data:
