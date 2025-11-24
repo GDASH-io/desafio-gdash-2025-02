@@ -3,7 +3,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { MetricCard } from '@/components/MetricCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Thermometer, 
   Droplets, 
@@ -12,8 +14,9 @@ import {
   Gauge,
   CloudRain,
   Eye,
-  ArrowUp,
-  MapPin
+  Sparkles,
+  MapPin,
+  Loader2
 } from 'lucide-react';
 import {
   LineChart,
@@ -65,6 +68,9 @@ const recentLogs = [
 export function Dashboard() {
   const { user } = useAuth();
   const [selectedCity] = useState('São Paulo - SP');
+  const [insightContext, setInsightContext] = useState('general');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedInsight, setGeneratedInsight] = useState<string | null>(null);
 
   const getUVLevel = (index: number) => {
     if (index <= 2) return { label: 'Baixo', variant: 'secondary' as const };
@@ -74,6 +80,26 @@ export function Dashboard() {
   };
 
   const uvLevel = getUVLevel(currentWeather.uvIndex);
+
+  const handleGenerateInsight = () => {
+    setIsGenerating(true);
+    
+    // Simular chamada à API com dados mockados
+    setTimeout(() => {
+      const mockInsights = {
+        general: `Com base nos dados climáticos de São Paulo, observamos uma temperatura de 24.5°C com sensação térmica de 26.2°C. A umidade relativa está em 68%, dentro da faixa de conforto. O índice UV está em 6 (Alto), recomenda-se uso de protetor solar. As condições atuais indicam tempo parcialmente nublado com baixa probabilidade de precipitação (15%). A pressão atmosférica está estável em 1013 hPa, indicando manutenção do padrão climático atual.`,
+        
+        alerts: `⚠️ ALERTAS IMPORTANTES:\n\n1. ÍNDICE UV ALTO (6): Recomenda-se evitar exposição solar prolongada entre 10h e 16h. Use protetor solar FPS 30+, chapéu e óculos de sol.\n\n2. UMIDADE EM ELEVAÇÃO: A umidade subiu de 62% para 68% nas últimas 3 horas. Pessoas com problemas respiratórios devem ficar atentas.\n\n3. VENTOS MODERADOS: Rajadas de até 12.5 km/h podem causar desconforto em áreas abertas.`,
+        
+        recommendations: `📋 RECOMENDAÇÕES PARA AS PRÓXIMAS HORAS:\n\n🌡️ TEMPERATURA: Esperada elevação para 26°C até às 15h. Mantenha-se hidratado e use roupas leves.\n\n💧 HIDRATAÇÃO: Com a temperatura atual e umidade, recomenda-se ingestão de pelo menos 2L de água.\n\n🏃 ATIVIDADES FÍSICAS: Melhor período para exercícios ao ar livre: antes das 9h ou após as 17h, quando o índice UV estará mais baixo.\n\n🌤️ CONFORTO TÉRMICO: Ambiente climatizado entre 22-24°C é ideal para o período.\n\n☔ CHUVA: Probabilidade baixa (15%) nas próximas 6 horas. Sem necessidade de guarda-chuva.`,
+        
+        trends: `📊 ANÁLISE DE TENDÊNCIAS (Últimas 24h):\n\n📈 TEMPERATURA: Padrão típico observado com mínima de 16°C (06h) e máxima prevista de 25°C (15h). Amplitude térmica de 9°C.\n\n💧 UMIDADE: Comportamento inverso à temperatura, com pico de 82% durante a madrugada e mínimo de 62% à tarde. Atualmente em fase de estabilização.\n\n🌪️ VENTO: Rajadas constantes entre 10-13 km/h, vindas de sudeste. Padrão estável sem previsão de mudanças significativas.\n\n🔄 PADRÃO GERAL: Condições típicas de outono para São Paulo, com estabilidade atmosférica. Próximas 48h devem manter padrão similar.`
+      };
+
+      setGeneratedInsight(mockInsights[insightContext as keyof typeof mockInsights]);
+      setIsGenerating(false);
+    }, 2000);
+  };
 
   return (
     <div className="min-h-screen -m-6 md:-m-8 p-6 md:p-8" style={{ background: 'linear-gradient(to bottom right, rgb(239 246 255), rgb(224 231 255))' }}>
@@ -156,7 +182,7 @@ export function Dashboard() {
         {/* Gráficos */}
         <div className="grid gap-4 md:grid-cols-2">
           {/* Gráfico de Temperatura */}
-          <Card className="shadow-sm">
+          <Card className="shadow-sm bg-white">
             <CardHeader>
               <CardTitle>Temperatura nas últimas 24h</CardTitle>
               <CardDescription>Variação da temperatura ao longo do dia</CardDescription>
@@ -182,7 +208,7 @@ export function Dashboard() {
         </Card>
 
           {/* Gráfico de Umidade */}
-          <Card className="shadow-sm">
+          <Card className="shadow-sm bg-white">
             <CardHeader>
               <CardTitle>Umidade nas últimas 24h</CardTitle>
               <CardDescription>Variação da umidade relativa do ar</CardDescription>
@@ -210,7 +236,7 @@ export function Dashboard() {
       </div>
 
         {/* Tabela de logs recentes */}
-        <Card className="shadow-sm">
+        <Card className="shadow-sm bg-white">
           <CardHeader>
             <CardTitle>Registros Recentes</CardTitle>
             <CardDescription>
@@ -260,21 +286,89 @@ export function Dashboard() {
         </CardContent>
       </Card>
 
-        {/* Card de AI Insights - Placeholder */}
-        <Card className="shadow-sm">
+        {/* Card de AI Insights */}
+        <Card className="shadow-sm bg-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ArrowUp className="h-5 w-5" />
+              <Sparkles className="h-5 w-5 text-purple-600" />
               AI Insights
             </CardTitle>
             <CardDescription>
-              Análises inteligentes sobre os dados climáticos
+              Análises inteligentes sobre os dados climáticos usando IA
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Seção de insights com IA em construção... 🤖
-            </p>
+          <CardContent className="space-y-4">
+            {/* Controles */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <label className="text-sm font-medium mb-2 block">
+                  Tipo de Análise
+                </label>
+                <Select value={insightContext} onValueChange={setInsightContext}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o contexto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="general">Análise Geral</SelectItem>
+                    <SelectItem value="alerts">Alertas Importantes</SelectItem>
+                    <SelectItem value="recommendations">Recomendações</SelectItem>
+                    <SelectItem value="trends">Análise de Tendências</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button 
+                  onClick={handleGenerateInsight}
+                  disabled={isGenerating}
+                  className="w-full sm:w-auto"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Gerando...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Gerar Insight
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            {/* Área de exibição do insight */}
+            {generatedInsight ? (
+              <div className="rounded-lg border p-6" style={{ background: 'linear-gradient(to bottom right, rgb(250 245 255), rgb(239 246 255))' }}>
+                <div className="flex items-start gap-3">
+                  <div className="rounded-full bg-purple-100 p-2 mt-1">
+                    <Sparkles className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-lg mb-3 text-purple-900">
+                      {insightContext === 'general' && 'Análise Geral do Clima'}
+                      {insightContext === 'alerts' && 'Alertas Importantes'}
+                      {insightContext === 'recommendations' && 'Recomendações Personalizadas'}
+                      {insightContext === 'trends' && 'Análise de Tendências'}
+                    </h4>
+                    <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                      {generatedInsight}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-purple-200 flex items-center gap-2 text-xs text-purple-600">
+                      <Sparkles className="h-3 w-3" />
+                      <span>Gerado por IA • {new Date().toLocaleString('pt-BR')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center">
+                <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">
+                  Selecione um tipo de análise e clique em "Gerar Insight" para obter análises inteligentes
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
