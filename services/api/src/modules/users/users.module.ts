@@ -24,6 +24,6 @@ import { DeleteUserController } from './features/delete-user/delete-user.control
     UpdateUserService,
     DeleteUserService,
   ],
-  exports: [FindUsersService],
+  exports: [FindUsersService, CreateUserService],
 })
 export class UsersModule {}

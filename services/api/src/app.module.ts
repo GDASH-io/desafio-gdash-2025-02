@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { WeatherModule } from './modules/weather/weather.module';
+import { InsightsModule } from './modules/insights/insights.module';
 import { CreateUserService } from './modules/users/features/create-user/create-user.service';
 import { FindUsersService } from './modules/users/features/find-users/find-users.service';
 
@@ -24,6 +25,7 @@ import { FindUsersService } from './modules/users/features/find-users/find-users
     AuthModule,
     UsersModule,
     WeatherModule,
+    InsightsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
