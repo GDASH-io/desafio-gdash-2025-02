@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { FindLogsService } from '../../../weather/features/find-logs/find-logs.service';
 import { GroqService } from './groq.service';
 import { GenerateInsightDto, InsightContext } from '../../dto/generate-insight.dto';
@@ -19,7 +19,7 @@ export class GenerateInsightService {
       state,
       startDate,
       endDate,
-      limit: '50',
+      limit: 50,
     });
 
     if (!weatherData.data || weatherData.data.length === 0) {
@@ -61,7 +61,13 @@ export class GenerateInsightService {
         generatedAt: new Date().toISOString(),
       };
     } catch (error) {
-      throw new Error(`${ERROR_MESSAGES.INSIGHTS.GENERATION_FAILED}: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      
+      throw new InternalServerErrorException(
+        `${ERROR_MESSAGES.INSIGHTS.GENERATION_FAILED}: ${error.message}`,
+      );
     }
   }
 }

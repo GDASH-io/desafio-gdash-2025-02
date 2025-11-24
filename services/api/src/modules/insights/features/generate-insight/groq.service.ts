@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -83,13 +83,20 @@ export class GroqService {
       const content = data.choices[0]?.message?.content;
       
       if (!content) {
-        throw new Error('No content in Groq API response');
+        throw new BadRequestException('Resposta vazia da API Groq');
       }
 
       return content;
     } catch (error) {
       this.logger.error(`Groq API Error: ${error.message}`, error.stack);
-      throw error;
+      
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      
+      throw new BadRequestException(
+        `Falha ao comunicar com API Groq: ${error.message}`,
+      );
     }
   }
 

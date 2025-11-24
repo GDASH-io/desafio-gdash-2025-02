@@ -1,4 +1,5 @@
-import { IsString, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsInt, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class FindWeatherLogsDto {
   @IsString()
@@ -17,11 +18,15 @@ export class FindWeatherLogsDto {
   @IsOptional()
   endDate?: string;
 
-  @IsString()
+  @IsInt()
+  @Min(1)
+  @Type(() => Number)
   @IsOptional()
-  limit?: string;
+  limit?: number;
 
-  @IsString()
+  @IsInt()
+  @Min(0)
+  @Type(() => Number)
   @IsOptional()
-  offset?: string;
+  offset?: number;
 }

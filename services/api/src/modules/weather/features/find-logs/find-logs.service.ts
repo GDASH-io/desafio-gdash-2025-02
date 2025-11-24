@@ -11,7 +11,7 @@ export class FindLogsService {
   ) {}
 
   async findAll(filters: FindWeatherLogsDto) {
-    const { city, state, startDate, endDate, limit = '50', offset = '0' } = filters;
+    const { city, state, startDate, endDate, limit = 50, offset = 0 } = filters;
 
     const query: Record<string, unknown> = {};
 
@@ -34,15 +34,12 @@ export class FindLogsService {
       query.timestamp = timestampQuery;
     }
 
-    const limitNum = parseInt(limit, 10);
-    const offsetNum = parseInt(offset, 10);
-
     const [logs, total] = await Promise.all([
       this.weatherLogModel
         .find(query)
         .sort({ timestamp: -1 })
-        .limit(limitNum)
-        .skip(offsetNum)
+        .limit(limit)
+        .skip(offset)
         .exec(),
       this.weatherLogModel.countDocuments(query).exec(),
     ]);
@@ -51,9 +48,9 @@ export class FindLogsService {
       data: logs,
       meta: {
         total,
-        limit: limitNum,
-        offset: offsetNum,
-        hasMore: offsetNum + limitNum < total,
+        limit,
+        offset,
+        hasMore: offset + limit < total,
       },
     };
   }

@@ -1,20 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { HTTP_PATHS } from './shared/constants/http-paths';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global prefix para todas as rotas
-  app.setGlobalPrefix('api'); // Poderia usar HTTP_PATHS.GLOBAL_PREFIX da pasta shared/constants
+  app.setGlobalPrefix(HTTP_PATHS.GLOBAL_PREFIX);
 
-  // CORS para comunicação com o frontend
   app.enableCors({
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
     credentials: true,
   });
 
-  // Validação global de DTOs
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -24,6 +22,8 @@ async function bootstrap() {
   );
 
   const port = process.env.PORT || 4000;
+  const env = process.env.NODE_ENV || 'development';
+
   await app.listen(port);
 
   console.log(`
@@ -33,9 +33,9 @@ async function bootstrap() {
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 
-🚀 Server: http://localhost:${port}/api
-📊 Health: http://localhost:${port}/api/health
-📚 Env: ${process.env.NODE_ENV || 'development'}
+🚀 Server:  http://localhost:${port}/${HTTP_PATHS.GLOBAL_PREFIX}
+📊 Health:  http://localhost:${port}/${HTTP_PATHS.GLOBAL_PREFIX}/health
+📚 Env:     ${env}
   `);
 }
 bootstrap();
