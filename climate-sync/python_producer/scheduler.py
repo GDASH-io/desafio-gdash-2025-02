@@ -22,6 +22,8 @@ class WeatherScheduler:
     def run(self):
         print("🔵 Iniciando o scheduler...")
         print(f"🚀 Weather Producer started at {self.config.LATITUDE},{self.config.LONGITUDE}")
+        print(f"Usando LATITUDE={self.config.LATITUDE}, LONGITUDE={self.config.LONGITUDE}")
+
         self.collect_and_publish()
         schedule.every(self.config.COLLECTION_INTERVAL_MINUTES).minutes.do(self.collect_and_publish)
         try:
@@ -31,6 +33,7 @@ class WeatherScheduler:
         except KeyboardInterrupt:
             print("⏹️ Shutting down...")
             self.queue_publisher.close()
+
 
 if __name__ == "__main__":
     scheduler = WeatherScheduler()

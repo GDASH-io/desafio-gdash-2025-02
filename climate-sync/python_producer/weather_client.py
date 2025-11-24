@@ -3,15 +3,16 @@ from datetime import datetime
 from typing import Dict, Optional
 from config import Config
 
+
 class WeatherClient:
     def __init__(self):
         self.api_url = Config.WEATHER_API_URL
         self.latitude = Config.LATITUDE
         self.longitude = Config.LONGITUDE
-    
+
     def fetch_weather_data(self) -> Optional[Dict]:
         """
-        Busca dados climáticos da API Open-Meteo
+        Busca dados climáticos da API Open-Meteo e adiciona localização detalhada
         """
         try:
             params = {
@@ -31,27 +32,30 @@ class WeatherClient:
         except requests.exceptions.RequestException as e:
             print(f"❌ Error fetching weather data: {e}")
             return None
-    
+
     def _normalize_data(self, raw_data: Dict) -> Dict:
         """
-        Normaliza dados da API para formato padrão
+        Normaliza dados da API para formato padrão, incluindo lookup de cidade/estado/país
         """
         current = raw_data.get("current", {})
         hourly = raw_data.get("hourly", {})
         
-        # Pega a probabilidade de precipitação da próxima hora
+        # Probabilidade de precipitação da próxima hora
         precipitation_prob = 0
         if hourly.get("precipitation_probability"):
             precipitation_prob = hourly["precipitation_probability"][0]
+        
+        # Geocoding reverso para obter cidade, estado e país
+        location_info = self._get_location_info()
         
         normalized = {
             "timestamp": datetime.utcnow().isoformat(),
             "location": {
                 "latitude": float(self.latitude),
                 "longitude": float(self.longitude),
-                "city": "Taubaté",
-                "state": "São Paulo",
-                "country": "Brazil"
+                "city": location_info.get("city", "Unknown"),
+                "state": location_info.get("state", "Unknown"),
+                "country": location_info.get("country", "Unknown")
             },
             "data": {
                 "temperature": current.get("temperature_2m"),
@@ -66,7 +70,38 @@ class WeatherClient:
         }
         
         return normalized
-    
+
+    def _get_location_info(self) -> Dict[str, str]:
+        """
+        Retorna cidade, estado e país via geocoding reverso usando Nominatim API
+        """
+        try:
+            url = "https://nominatim.openstreetmap.org/reverse"
+            params = {
+                "lat": self.latitude,
+                "lon": self.longitude,
+                "format": "json",
+                "accept-language": "pt"
+            }
+            headers = {
+                "User-Agent": "weather-app/1.0"
+            }
+            
+            response = requests.get(url, params=params, headers=headers, timeout=5)
+            response.raise_for_status()
+            
+            data = response.json()
+            address = data.get("address", {})
+            
+            return {
+                "city": address.get("city") or address.get("town") or address.get("village") or address.get("municipality"),
+                "state": address.get("state"),
+                "country": address.get("country")
+            }
+        except Exception as e:
+            print(f"❌ Error fetching location info: {e}")
+            return {}
+
     def _get_weather_condition(self, code: int) -> str:
         """
         Converte código WMO para descrição textual

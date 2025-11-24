@@ -1,0 +1,53 @@
+@baseUrl = http://localhost:3000
+
+### 1. Login (Admin) - Para pegar o Token
+# Faz o login com o usuário admin padrão criado automaticamente
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "123456"
+}
+
+###
+@authToken = {{login.response.body.access_token}}
+
+### 2. Criar Novo Usuário
+# Cria um usuário comum
+# @name createUser
+POST {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Novo Admin",
+  "email": "admin@climatec.com.br",
+  "password": "admin123"
+}
+
+###
+@userId = {{createUser.response.body._id}}
+
+### 3. Listar Todos os Usuários
+GET {{baseUrl}}/users
+Authorization: Bearer {{authToken}}
+
+### 4. Buscar Usuário por ID
+GET {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+
+### 5. Atualizar Usuário
+PATCH {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Admin Climatec",
+  "email": "climatec@email.com"
+}
+
+### 6. Excluir Usuário
+DELETE {{baseUrl}}/users/{{userId}}
+Authorization: Bearer {{authToken}}

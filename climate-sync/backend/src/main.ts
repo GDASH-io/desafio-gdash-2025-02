@@ -6,8 +6,10 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000
 
+  app.enableCors()
+
   await app.listen(port)
-  console.log(`Application is running on: http://localhost:${port}`)
+  console.log(`Application is running on port: ${port}`)
   console.log('Node environment:', process.env.NODE_ENV)
 }
 

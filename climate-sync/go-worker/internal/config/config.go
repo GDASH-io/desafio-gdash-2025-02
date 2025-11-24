@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	RabbitURL string
-	QueueName string
+	RabbitURL    string
+	QueueName    string
+	PythonAPIURL string
 }
 
 func Load() *Config {
@@ -28,17 +29,22 @@ func Load() *Config {
 	}
 
 	queue := os.Getenv("RABBITMQ_QUEUE")
+	if queue == "" {
+		queue = "weather.data"
+	}
+
+	pythonURL := os.Getenv("PYTHON_API_URL")
+	if pythonURL == "" {
+		pythonURL = "http://python-producer:5000/weather"
+	}
 
 	if rabbitMQ == "" {
 		log.Fatal("❌ Missing RABBITMQ_URL in environment")
 	}
 
-	if queue == "" {
-		queue = "weather.data"
-	}
-
 	return &Config{
-		RabbitURL: rabbitMQ,
-		QueueName: queue,
+		RabbitURL:    rabbitMQ,
+		QueueName:    queue,
+		PythonAPIURL: pythonURL,
 	}
 }

@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common'
+import { DashboardController } from './dashboard.controller'
+import { DashboardService } from './dashboard.service'
 import { MongooseModule } from '@nestjs/mongoose'
-import { WeatherService } from './weather.service'
-import { WeatherController } from './weather.controller'
 import { Weather, WeatherSchema } from '../weather/schema/weather.schema'
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Weather.name, schema: WeatherSchema }]),
   ],
-  providers: [WeatherService],
-  controllers: [WeatherController],
-  exports: [WeatherService],
+  controllers: [DashboardController],
+  providers: [DashboardService],
+  exports: [DashboardService],
 })
-export class WeatherModule {}
+export class DashboardModule {}

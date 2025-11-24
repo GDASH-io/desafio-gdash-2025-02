@@ -5,6 +5,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    env_file:
+      - ./.env
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
@@ -22,8 +24,10 @@ services:
     container_name: mongo
     ports:
       - "27017:27017"
+    env_file:
+      - ./.env
     environment:
-      - MONGO_INITDB_DATABASE=climate-sync
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     volumes:
       - mongo_data:/data/db
     healthcheck:
@@ -40,14 +44,17 @@ services:
       dockerfile: Dockerfile
     container_name: nestjs-api
     ports:
-      - "3000:3000"
+      - "${PORT}:3000"
     env_file:
       - ./.env
     environment:
-      - NODE_ENV=production
-      - MONGO_URI=mongodb://mongo:27017/climate-sync
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URI=${MONGO_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL}
       - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -67,7 +74,10 @@ services:
       - LATITUDE=${LATITUDE}
       - LONGITUDE=${LONGITUDE}
       - COLLECTION_INTERVAL_MINUTES=${COLLECTION_INTERVAL_MINUTES}
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
       - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
     depends_on:
       rabbitmq:
@@ -83,8 +93,10 @@ services:
     env_file:
       - ./.env
     environment:
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
-      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      LATITUDE: ${LATITUDE}
+      LONGITUDE: ${LONGITUDE}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
     depends_on:
       rabbitmq:
         condition: service_healthy
