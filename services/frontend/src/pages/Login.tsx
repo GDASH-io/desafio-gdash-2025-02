@@ -41,10 +41,8 @@ export default function Login() {
     setIsLoading(true);
     setErrorMessage('');
     
-    // Simulação de login para testes (sem chamada ao backend)
     setTimeout(async () => {
       try {
-        // Simular dados do usuário
         await authLogin(data);
         toast({
           variant: 'success',

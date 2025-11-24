@@ -1,4 +1,3 @@
-// Weather types
 export interface WeatherLog {
   _id: string;
   timestamp: string;

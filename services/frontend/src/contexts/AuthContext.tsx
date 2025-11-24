@@ -18,7 +18,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
     const storedUser = authService.getStoredUser();
     const storedToken = authService.getStoredToken();
 

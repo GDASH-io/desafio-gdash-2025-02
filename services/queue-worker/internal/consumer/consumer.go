@@ -128,7 +128,6 @@ func (c *Consumer) processMessage(msg amqp.Delivery) {
 
 	if err := validator.ValidateWeatherData(&weatherData); err != nil {
 		log.Printf("Validação falhou: %v", err)
-		// Dados inválidos não devem ser reenfileirados (evita loop infinito)
 		msg.Nack(false, false)
 		return
 	}
@@ -139,7 +138,6 @@ func (c *Consumer) processMessage(msg amqp.Delivery) {
 
 	if err := c.sendWithRetry(payload); err != nil {
 		log.Printf("Falha após %d tentativas: %v", c.cfg.MaxRetries, err)
-		// Evita loop infinito quando API está offline
 		msg.Nack(false, false)
 		return
 	}

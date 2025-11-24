@@ -1,4 +1,3 @@
-// Insights types
 export type InsightContext = 'general' | 'alerts' | 'recommendations' | 'trends';
 
 export interface GenerateInsightRequest {

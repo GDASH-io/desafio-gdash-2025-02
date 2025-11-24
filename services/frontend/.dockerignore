@@ -1,0 +1,10 @@
+node_modules
+dist
+npm-debug.log
+.env
+.env.local
+.env.*.local
+coverage
+.vscode
+.idea
+*.log

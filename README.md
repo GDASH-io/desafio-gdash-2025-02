@@ -66,10 +66,28 @@ desafio-gdash-2025-02/
 
 ### Pré-requisitos
 
-- Docker & Docker Compose instalados
-- Conta Groq (gratuita): https://console.groq.com
+- **Docker Desktop** instalado e rodando
+- Conta **Groq** (gratuita): https://console.groq.com/keys
 
-### Passo a Passo
+### 🎯 Setup Automático (Recomendado)
+
+#### Windows:
+```bash
+.\setup.bat
+```
+
+#### Linux/Mac:
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+O script irá:
+1. Criar o arquivo `.env` a partir do `.env.example`
+2. Solicitar que você configure a `GROQ_API_KEY`
+3. Subir todos os serviços Docker automaticamente
+
+### ⚙️ Setup Manual
 
 1. **Clone o repositório**:
 ```bash
@@ -83,28 +101,57 @@ git checkout cesar-da-silva-braz
 cp .env.example .env
 ```
 
-Edite o arquivo `.env` e adicione sua **Groq API Key**:
+3. **Adicione sua Groq API Key** no arquivo `.env`:
 ```env
 GROQ_API_KEY=gsk_your_api_key_here
 ```
 
-3. **Suba todos os serviços**:
+4. **Suba todos os serviços**:
 ```bash
 docker-compose up -d
 ```
 
-4. **Aguarde a inicialização** (~30-60 segundos)
+5. **Aguarde a inicialização** (~30-60 segundos)
 
-5. **Acesse a aplicação**:
-   - **Frontend**: http://localhost:3000
-   - **API**: http://localhost:4000
-   - **RabbitMQ Management**: http://localhost:15672 (usuário: `gdash`, senha: `gdash123`)
+### 🌐 Acessar a Aplicação
 
-### Credenciais Padrão
+- **Frontend**: http://localhost:5173
+- **API**: http://localhost:4000/api
+- **API Health**: http://localhost:4000/api/health
+- **RabbitMQ Management**: http://localhost:15672
+  - Usuário: `gdash`
+  - Senha: `gdash123`
+
+### 🔐 Credenciais Padrão
 
 **Login no sistema**:
 - Email: `admin@example.com`
 - Senha: `123456`
+
+### 📝 Comandos Úteis
+
+```bash
+# Ver logs de todos os serviços
+docker-compose logs -f
+
+# Ver logs de um serviço específico
+docker-compose logs -f frontend
+docker-compose logs -f api
+docker-compose logs -f weather-collector
+docker-compose logs -f queue-worker
+
+# Parar todos os serviços
+docker-compose down
+
+# Parar e remover volumes (dados do MongoDB)
+docker-compose down -v
+
+# Reiniciar um serviço específico
+docker-compose restart api
+
+# Rebuild e restart de todos os serviços
+docker-compose up -d --build
+```
 
 ---
 
@@ -145,33 +192,86 @@ docker-compose up -d
 
 ## 🧪 Desenvolvimento
 
-### Rodar serviços individualmente
+### 🐳 Modo Docker (Recomendado)
 
-**API (NestJS)**:
+O `docker-compose.yml` está configurado para desenvolvimento com hot-reload em todos os serviços:
+
 ```bash
+# Desenvolvimento com hot reload
+docker-compose up
+
+# Desenvolvimento em background
+docker-compose up -d
+
+# Rebuild após mudanças no Dockerfile ou dependências
+docker-compose up --build
+```
+
+### 💻 Modo Local (Sem Docker)
+
+Para desenvolvimento local sem Docker, você precisa ter instalado:
+- Node.js 20+
+- Python 3.11+
+- Go 1.21+
+- MongoDB rodando localmente
+- RabbitMQ rodando localmente
+
+**1. Configure cada serviço**:
+
+Cada serviço tem seu próprio `.env.example`. Copie para `.env` e configure:
+
+```bash
+# API
 cd services/api
+cp .env.example .env
 npm install
-npm run start:dev
-```
 
-**Frontend (React)**:
-```bash
+# Frontend
 cd services/frontend
+cp .env.example .env
 npm install
-npm run dev
-```
 
-**Weather Collector (Python)**:
-```bash
+# Weather Collector
 cd services/weather-collector
+cp .env.example .env
 pip install -r requirements.txt
-python src/main.py
+
+# Queue Worker
+cd services/queue-worker
+cp .env.example .env
+go mod download
 ```
 
-**Queue Worker (Go)**:
+**2. Rode cada serviço em um terminal separado**:
+
 ```bash
+# Terminal 1 - API
+cd services/api
+npm run start:dev
+
+# Terminal 2 - Frontend
+cd services/frontend
+npm run dev
+
+# Terminal 3 - Weather Collector
+cd services/weather-collector
+python src/main.py
+
+# Terminal 4 - Queue Worker
 cd services/queue-worker
 go run cmd/worker/main.go
+```
+
+### 🏭 Produção
+
+Para build de produção:
+
+```bash
+# Build otimizado
+docker-compose -f docker-compose.prod.yml up -d --build
+
+# Ou especifique NODE_ENV=production
+NODE_ENV=production docker-compose up -d --build
 ```
 
 ---

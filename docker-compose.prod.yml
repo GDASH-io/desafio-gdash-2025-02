@@ -4,7 +4,7 @@ services:
   mongodb:
     image: mongo:7.0
     container_name: gdash-mongodb
-    restart: unless-stopped
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -19,7 +19,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.12-management-alpine
     container_name: gdash-rabbitmq
-    restart: unless-stopped
+    restart: always
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -40,11 +40,11 @@ services:
     build:
       context: ./services/api
       dockerfile: Dockerfile
-      target: development
+      target: production
     container_name: gdash-api
-    restart: unless-stopped
+    restart: always
     environment:
-      NODE_ENV: ${NODE_ENV}
+      NODE_ENV: production
       PORT: ${API_PORT}
       MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
       JWT_SECRET: ${JWT_SECRET}
@@ -63,9 +63,6 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
-    volumes:
-      - ./services/api:/app
-      - /app/node_modules
     networks:
       - gdash-network
 
@@ -74,7 +71,7 @@ services:
       context: ./services/queue-worker
       dockerfile: Dockerfile
     container_name: gdash-queue-worker
-    restart: unless-stopped
+    restart: always
     environment:
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       RABBITMQ_QUEUE: ${RABBITMQ_QUEUE_NAME}
@@ -83,7 +80,7 @@ services:
       API_URL: http://api:${API_PORT}
       API_ENDPOINT: /api/weather/logs
       MAX_RETRIES: ${WORKER_MAX_RETRIES}
-      WORKER_ID: queue-worker-01
+      WORKER_ID: queue-worker-prod-01
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -97,7 +94,7 @@ services:
       context: ./services/weather-collector
       dockerfile: Dockerfile
     container_name: gdash-weather-collector
-    restart: unless-stopped
+    restart: always
     environment:
       RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/
       RABBITMQ_EXCHANGE: ${RABBITMQ_EXCHANGE_NAME}
@@ -120,18 +117,13 @@ services:
     build:
       context: ./services/frontend
       dockerfile: Dockerfile
-      target: development
+      target: production
     container_name: gdash-frontend
-    restart: unless-stopped
-    environment:
-      VITE_API_URL: http://localhost:${API_PORT}/api
+    restart: always
     ports:
-      - "${FRONTEND_PORT}:5173"
+      - "${FRONTEND_PORT}:80"
     depends_on:
       - api
-    volumes:
-      - ./services/frontend:/app
-      - /app/node_modules
     networks:
       - gdash-network
 
@@ -141,6 +133,9 @@ volumes:
   rabbitmq_data:
     driver: local
 
+# ========================================
+# NETWORKS
+# ========================================
 networks:
   gdash-network:
     driver: bridge

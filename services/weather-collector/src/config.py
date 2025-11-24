@@ -3,16 +3,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Config:    
-    # RabbitMQ
+class Config:
     RABBITMQ_URL = os.getenv('RABBITMQ_URL', 'amqp://gdash:gdash123@localhost:5672/')
     RABBITMQ_EXCHANGE = os.getenv('RABBITMQ_EXCHANGE', 'weather_exchange')
     RABBITMQ_ROUTING_KEY = os.getenv('RABBITMQ_ROUTING_KEY', 'weather.data')
     
-    # API do Open-Meteo
     WEATHER_API_URL = os.getenv('WEATHER_API_URL', 'https://api.open-meteo.com/v1/forecast')
     
-    # Localização
     LOCATION_CITY = os.getenv('LOCATION_CITY', 'São Paulo')
     LOCATION_STATE = os.getenv('LOCATION_STATE', 'SP')
     LOCATION_COUNTRY = os.getenv('LOCATION_COUNTRY', 'BR')
@@ -49,5 +46,4 @@ class Config:
         print(f"Intervalo de coleta: {interval_text}")
 
 
-# Validar configurações ao importar o módulo
 Config.validate()

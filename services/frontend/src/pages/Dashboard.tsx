@@ -41,7 +41,6 @@ export function Dashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   
-  // Estados para dados do backend
   const [currentWeather, setCurrentWeather] = useState<WeatherLog | null>(null);
   const [weatherLogs, setWeatherLogs] = useState<WeatherLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,7 +88,6 @@ export function Dashboard() {
     return { label: 'Muito Alto', variant: 'destructive' as const };
   };
 
-  // Dados derivados dos logs para gráficos
   const temperatureData = weatherLogs.slice(0, 8).reverse().map((log) => ({
     time: new Date(log.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     temp: log.temperature,

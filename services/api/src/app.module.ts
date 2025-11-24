@@ -38,7 +38,6 @@ export class AppModule implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // Criar usuário padrão se não existir
     const defaultEmail = this.configService.get<string>('DEFAULT_USER_EMAIL') || 'admin@example.com';
     const defaultPassword = this.configService.get<string>('DEFAULT_USER_PASSWORD') || '123456';
     const defaultName = this.configService.get<string>('DEFAULT_USER_NAME') || 'Admin User';

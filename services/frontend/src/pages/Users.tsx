@@ -27,7 +27,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-// Schema de validação
 const userSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   email: z.string().email('Email inválido'),
@@ -39,7 +38,6 @@ type UserFormData = z.infer<typeof userSchema>;
 export function Users() {
   const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -51,7 +49,6 @@ export function Users() {
 
   const loadUsers = async () => {
     try {
-      setIsLoading(true);
       const data = await userService.getAll();
       setUsers(data);
     } catch (error) {
@@ -61,8 +58,6 @@ export function Users() {
         title: 'Erro ao carregar usuários',
         description: 'Não foi possível carregar a lista de usuários.',
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 

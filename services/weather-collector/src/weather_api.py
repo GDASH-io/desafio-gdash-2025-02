@@ -68,16 +68,13 @@ class WeatherAPIClient:
         weather_code = current.get('weather_code', 0)
         condition = self._map_weather_code(weather_code)
         
-        # Validar campos obrigatórios
         temperature = current.get('temperature_2m')
         if temperature is None:
             raise ValueError("API não retornou temperatura")
         
-        # Pegar UV index do forecast diário (Open-Meteo retorna array com 1 elemento)
         uv_index_max_array = daily.get('uv_index_max', [0])
         uv_index = int(uv_index_max_array[0]) if uv_index_max_array else 0
         
-        # Converter visibilidade de metros para metros (API retorna em metros)
         visibility_meters = current.get('visibility', 10000)
         
         return {

@@ -30,7 +30,6 @@ def main():
     print(f"Intervalo: {interval_text}")
     print("="*60 + "\n")
     
-    # Configurar handlers de sinais
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
