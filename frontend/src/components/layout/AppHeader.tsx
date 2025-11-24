@@ -99,7 +99,7 @@ const AppHeader: React.FC = () => {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Conta</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/home")}>
+          <DropdownMenuItem onClick={() => navigate("/home")} className="cursor-pointer">
             Home
           </DropdownMenuItem>
           <DropdownMenuItem disabled>

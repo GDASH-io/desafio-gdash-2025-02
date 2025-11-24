@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* suporte a modo dark do shadcn */
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -10,7 +9,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  /* cor base do app */
   --radius: 0.625rem;
   --background: #242424;
   --foreground: oklch(0.145 0 0);
@@ -55,20 +53,17 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* layout base da página */
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
 }
 
-/* 👇 importante pra centralizar Login/Register e ocupar a tela toda */
 #root {
   min-height: 100vh;
   width: 100%;
 }
 
-/* Mapeia as variáveis para o tema Tailwind */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -118,7 +113,6 @@ body {
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* tema dark continua, se usar .dark no <html> */
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

@@ -40,7 +40,6 @@ const LoginPage: React.FC = () => {
         description: "Redirecionando para a página inicial...",
       });
 
-      // aqui você pode ir para /home ou outra rota protegida
       navigate("/home");
     } catch (error) {
       const message =
