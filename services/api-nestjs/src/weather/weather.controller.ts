@@ -9,12 +9,12 @@ import { logsWeatherDTO } from '../DTO/logsWeather.dto';
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
-  @Post('teste')
+  @Post('logs')
   async logWeatherData(@Body() logsWeather: logsWeatherDTO) {
     await this.weatherService.logWeatherPost(logsWeather);
   }
 
-  @Get('teste')
+  @Get('logs')
   async getTest() {
     const data = await this.weatherService.logWeatherGet();
     return data;

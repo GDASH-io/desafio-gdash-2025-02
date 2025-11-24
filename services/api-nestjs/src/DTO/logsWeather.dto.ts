@@ -4,4 +4,5 @@ export class logsWeatherDTO {
   vento: number;
   condicao: string;
   probabilidadeChuva: number;
+  data_coleta: Date;
 }

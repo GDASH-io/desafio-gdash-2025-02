@@ -1,20 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { logsWeatherDTO } from '../DTO/logsWeather.dto';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { WeatherLogs } from 'src/schema/user.schema';
 
 @Injectable()
 export class WeatherService {
-  teste: logsWeatherDTO[] = [];
+  constructor(
+    @InjectModel('WeatherLogs')
+    private weatherLogsModel: Model<WeatherLogs>,
+  ) {}
 
-  async logWeatherPost(logsWeather: logsWeatherDTO) {
-    await Promise.resolve();
-
-    console.log('Dados de clima recebidos:', logsWeather);
-    this.teste.push(logsWeather); // simulando uma operação de armazenamento
+  async logWeatherPost(logsWeather: logsWeatherDTO): Promise<WeatherLogs> {
+    const createdLog = new this.weatherLogsModel(logsWeather);
+    return createdLog.save();
   }
 
-  async logWeatherGet() {
-    await Promise.resolve();
+  async logWeatherGet(): Promise<WeatherLogs[]> {
+    return this.weatherLogsModel.find().exec();
+  }
 
-    return this.teste; // retornando os dados armazenados
+  async updateLogWeather(
+    id: string,
+    updateData: Partial<logsWeatherDTO>,
+  ): Promise<WeatherLogs | null> {
+    return this.weatherLogsModel
+      .findOneAndUpdate({ id_log: id }, updateData, { new: true })
+      .exec();
+  }
+
+  async deleteLogWeather(id: string): Promise<WeatherLogs | null> {
+    return this.weatherLogsModel.findOneAndDelete({ id_log: id }).exec();
   }
 }
