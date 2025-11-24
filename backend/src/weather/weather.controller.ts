@@ -24,6 +24,7 @@ import {
   ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import { ApiKeyGuard } from '../auth/guards/api-key.guard';
+import { Public } from '../auth/guards/public.decorator';
 import { Roles } from '../auth/guards/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role } from '../users/enums/role.enum';
@@ -46,6 +47,7 @@ export class WeatherController {
 
   @ApiExcludeEndpoint()
   @Post('internal')
+  @Public()
   @UseGuards(ApiKeyGuard)
   @SkipThrottle()
   async createWeatherInternal(@Body() weatherData: CreateWeatherDto) {

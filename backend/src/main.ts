@@ -17,7 +17,7 @@ async function bootstrap() {
     origin: process.env.NODE_ENV === 'development',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'x-api-key'],
   });
 
   setupSwagger(app);
