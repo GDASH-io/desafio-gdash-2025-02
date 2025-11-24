@@ -20,6 +20,10 @@ export class WeatherService {
     return this.weatherLogsModel.find().exec();
   }
 
+  async logWeatherGetById(id: string): Promise<WeatherLogs | null> {
+    return this.weatherLogsModel.findOne({ id_log: id }).exec();
+  }
+
   async updateLogWeather(
     id: string,
     updateData: Partial<logsWeatherDTO>,
