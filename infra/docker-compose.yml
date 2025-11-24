@@ -1,0 +1,57 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: gdash-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  api:
+    build:
+      context: ../backend/api
+      dockerfile: Dockerfile
+    container_name: gdash-api
+    restart: unless-stopped
+    env_file:
+      - ../backend/api/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - rabbitmq
+
+  collector:
+    build:
+      context: ../collector
+      dockerfile: Dockerfile
+    container_name: gdash-collector
+    restart: unless-stopped
+    env_file:
+      - ../collector/.env
+    depends_on:
+      - rabbitmq
+
+  worker:
+    build:
+      context: ../worker
+      dockerfile: Dockerfile
+    container_name: gdash-worker
+    restart: unless-stopped
+    env_file:
+      - ../worker/.env
+    depends_on:
+      - rabbitmq
+      - api
+
+volumes:
+  mongo_data:
