@@ -32,7 +32,6 @@ export class WeatherService {
   }
 
   private gerarConselho(temp: number, umidade: number, chuva: number): string {
-
     if (chuva > 0) {
       return `Vai chover (ou já está)! ☔ Pegue o guarda-chuva e cuidado no trânsito.`;
     }

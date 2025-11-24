@@ -12,12 +12,11 @@ Este projeto foi desenvolvido como parte do Desafio Técnico GDASH. Ele integra 
   <img src="https://raw.githubusercontent.com/Tiagliveira/desafio-gdash/tiago-oliveira-pereira/frontend/public/ReadmeDesafioGDASH.png" width="600" height="auto" />
 </p>
 
----
 
 ### Demonstração
 
  Assista ao vídeo explicativo no YouTube  
-(Mostrando a arquitetura, containers Docker subindo e funcionalidades do sistema)  
+[(Mostrando a arquitetura, containers Docker subindo e funcionalidades do sistema)](https://youtu.be/jp26NIm6Bbk)  
 
 ---
 
@@ -111,6 +110,6 @@ Você pode acompanhar os logs no terminal:
 
 ## Autor
 
-###  Desenvolvido por Tiago de Oliveira Pereira  
+###  Desenvolvido por Tiago de Oliveira  
 
 ---

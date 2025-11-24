@@ -84,4 +84,4 @@ if __name__ == "__main__":
             enviar_para_fila(dados_clima)
        
         print(" Dormindo...")
-        time.sleep(180) 
+        time.sleep(1800) 

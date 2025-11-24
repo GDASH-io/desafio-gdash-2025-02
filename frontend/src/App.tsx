@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { MapPin, History, ChevronDown, ChevronUp, Download, Search, X, Sun, Moon, Wind, CloudRain, Cloud, CloudSnow, Snowflake, ThermometerSun, ThermometerSnowflake, CloudSun } from "lucide-react";
+import { MapPin, History, ChevronDown, ChevronUp, Download, Search, X, Sun, Moon, Wind, CloudRain, Cloud, ThermometerSun, ThermometerSnowflake, CloudSun } from "lucide-react";
 
 import imgCalor from "@/assets/sol_quente.png";
 import imgNormal from "@/assets/sol_normal.png";
