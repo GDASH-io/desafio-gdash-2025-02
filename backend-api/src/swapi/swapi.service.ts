@@ -5,21 +5,21 @@ import axios from 'axios';
 export class SwapiService {
   private readonly baseURL = 'https://swapi.dev/api';
 
-  async getPlanets(page: number = 1) {
+  async getResource(resource: string, page: number = 1) {
     try {
-      const response = await axios.get(`${this.baseURL}/planets/?page=${page}`);
+      const response = await axios.get(`${this.baseURL}/${resource}/?page=${page}`);
       return response.data;
     } catch (error) {
-      throw new HttpException('Erro ao buscar dados da SWAPI', 502);
+      throw new HttpException(`Erro ao buscar ${resource}`, 502);
     }
   }
 
-  async getPlanetById(id: string) {
+  async getResourceById(resource: string, id: string) {
     try {
-      const response = await axios.get(`${this.baseURL}/planets/${id}/`);
+      const response = await axios.get(`${this.baseURL}/${resource}/${id}/`);
       return response.data;
     } catch (error) {
-      throw new HttpException('Planeta não encontrado', 404);
+      throw new HttpException('Recurso não encontrado', 404);
     }
   }
 }

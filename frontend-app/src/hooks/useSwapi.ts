@@ -1,15 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/service/api'; 
-import { useState } from 'react';
+import { api } from '@/service/api';
+import { useState, useEffect } from 'react';
 
-export const usePlanets = () => {
+export const useSwapi = (category: string) => {
     const [page, setPage] = useState(1);
+    const [search, setSearch] = useState('');
+
+    useEffect(() => setPage(1), [category, search]);
 
     const query = useQuery({
-        queryKey: ['planets', page],
+        queryKey: ['swapi', category, page, search],
         queryFn: async () => {
-            const { data } = await api.get(`/swapi/planets?page=${page}`);
-            return data; 
+            let url = `/swapi/${category}?page=${page}`;
+            const { data } = await api.get(url);
+            return data;
         },
         staleTime: 60000, 
     });
@@ -19,6 +23,7 @@ export const usePlanets = () => {
         loading: query.isLoading,
         page,
         setPage,
-        isPreviousData: query.isPlaceholderData
+        search,
+        setSearch
     };
 };

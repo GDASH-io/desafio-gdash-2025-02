@@ -48,7 +48,7 @@ export const SideBar = () => {
             className={getButtonClass('/dashboard/explorer')}
             onClick={() => navigate({ to: '/dashboard/explorer' })} 
           >
-            <Rocket className="mr-2 h-4 w-4" /> Explorador (Bônus)
+            <Rocket className="mr-2 h-4 w-4" /> Explorador
           </Button>
         </nav>
 

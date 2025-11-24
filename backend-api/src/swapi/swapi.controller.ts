@@ -6,14 +6,13 @@ import { AuthGuard } from '@nestjs/passport';
 @UseGuards(AuthGuard('jwt'))
 export class SwapiController {
   constructor(private readonly swapiService: SwapiService) {}
-
-  @Get('planets')
-  findAll(@Query('page') page: number) {
-    return this.swapiService.getPlanets(page);
+  @Get(':resource')
+  findAll(@Param('resource') resource: string, @Query('page') page: number) {
+    return this.swapiService.getResource(resource, page);
   }
 
-  @Get('planets/:id')
-  findOne(@Param('id') id: string) {
-    return this.swapiService.getPlanetById(id);
+  @Get(':resource/:id')
+  findOne(@Param('resource') resource: string, @Param('id') id: string) {
+    return this.swapiService.getResourceById(resource, id);
   }
 }

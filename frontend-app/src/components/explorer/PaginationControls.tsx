@@ -10,24 +10,27 @@ interface PaginationControlsProps {
 
 export function PaginationControls({ page, loading, hasNext, setPage }: PaginationControlsProps) {
   return (
-    <div className="flex items-center justify-end space-x-2 mt-4 pt-4 border-t border-slate-800">
+    <div className="flex items-center justify-center gap-4 mt-8 pb-8">
       <Button
         variant="outline"
-        size="sm"
         onClick={() => setPage((old) => Math.max(old - 1, 1))}
         disabled={page === 1 || loading}
-        className="bg-slate-900 border-slate-700 text-white hover:bg-slate-800"
+        className="rounded-full px-6 py-6 border-yellow-400 text-yellow-400 bg-slate-900 hover:bg-yellow-400 hover:text-black transition-all duration-300 disabled:opacity-50"
       >
-        <ChevronLeft className="h-4 w-4 mr-2" /> Anterior
+        <ChevronLeft className="h-5 w-5 mr-2" /> Anterior
       </Button>
+      
+      <span className="text-xl font-bold text-yellow-400">
+        Página {page}
+      </span>
+
       <Button
         variant="outline"
-        size="sm"
         onClick={() => setPage((old) => (!hasNext ? old : old + 1))}
         disabled={!hasNext || loading}
-        className="bg-slate-900 border-slate-700 text-white hover:bg-slate-800"
+        className="rounded-full px-6 py-6 border-yellow-400 text-yellow-400 bg-slate-900 hover:bg-yellow-400 hover:text-black transition-all duration-300 disabled:opacity-50"
       >
-        Próximo <ChevronRight className="h-4 w-4 ml-2" />
+        Próxima <ChevronRight className="h-5 w-5 ml-2" />
       </Button>
     </div>
   )
