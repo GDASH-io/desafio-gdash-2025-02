@@ -21,15 +21,24 @@
   },
   "dependencies": {
     "@nestjs/config": "^4.0.2",
+    "@nestjs/jwt": "^11.0.1",
     "@nestjs/microservices": "^11.1.9",
     "@nestjs/mongoose": "^11.0.3",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.9",
     "amqplib": "^0.10.9",
-    "mongoose": "^8.20.1"
+    "bcrypt": "^6.0.0",
+    "mongoose": "^8.20.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.8",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^24.10.1",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-local": "^1.0.38",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
