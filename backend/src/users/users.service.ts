@@ -27,7 +27,12 @@ export class UsersService {
   ): Promise<PaginatedResponseDto<UserDocument>> {
     const skip = (page - 1) * itemsPerPage;
     const [data, totalItems] = await Promise.all([
-      this.userModel.find().skip(skip).limit(itemsPerPage).exec(),
+      this.userModel
+        .find()
+        .select('-password -__v')
+        .skip(skip)
+        .limit(itemsPerPage)
+        .exec(),
       this.userModel.countDocuments().exec(),
     ]);
 
@@ -46,7 +51,10 @@ export class UsersService {
     id: string,
     userData: Partial<User>,
   ): Promise<UserDocument | null> {
-    return this.userModel.findByIdAndUpdate(id, userData, { new: true }).exec();
+    return this.userModel
+      .findByIdAndUpdate(id, userData, { new: true })
+      .select('-password -__v')
+      .exec();
   }
 
   async deleteUser(id: string): Promise<UserDocument | null> {
@@ -54,6 +62,6 @@ export class UsersService {
   }
 
   async findUserById(id: string): Promise<UserDocument | null> {
-    return this.userModel.findById(id).exec();
+    return this.userModel.findById(id).select('-password -__v').exec();
   }
 }

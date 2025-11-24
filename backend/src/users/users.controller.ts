@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -23,16 +24,18 @@ import { UserResponseDto } from './dto/user-response.dto';
 import { PaginatedUsersResponseDto } from './dto/paginated-users-response.dto';
 import { PaginationQueryDto } from '../utils/pagination-query.dto';
 import { PaginatedResponseDto } from '../utils/paginated-response.dto';
-import { Public } from '../auth/guards/public.decorator';
+import { Roles } from '../auth/guards/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('Users')
 @Controller('users')
+@UseGuards(RolesGuard)
+@Roles(Role.ADMIN)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Public()
-  @ApiOperation({ summary: 'Create a new user' })
+  @ApiOperation({ summary: 'Create a new user (Admin only)' })
   @ApiResponse({
     status: 201,
     description: 'User successfully created',
@@ -42,6 +45,7 @@ export class UsersController {
     status: 400,
     description: 'Bad request - validation failed or user already exists',
   })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async createUser(@Body() userData: CreateUserDto): Promise<UserDocument> {
     const result = userSchema.safeParse(userData);
 
@@ -66,13 +70,14 @@ export class UsersController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all users with pagination' })
+  @ApiOperation({ summary: 'Get all users with pagination (Admin only)' })
   @ApiResponse({
     status: 200,
     description: 'List of users with pagination metadata',
     type: PaginatedUsersResponseDto,
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async getUsers(
     @Query() query: PaginationQueryDto,
   ): Promise<PaginatedResponseDto<UserDocument>> {
@@ -92,7 +97,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiOperation({ summary: 'Get user by ID (Admin only)' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({
     status: 200,
@@ -101,6 +106,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async getUserById(@Param('id') id: string): Promise<UserDocument> {
     const user = await this.usersService.findUserById(id);
     if (!user) {
@@ -110,7 +116,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update user by ID' })
+  @ApiOperation({ summary: 'Update user by ID (Admin only)' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({
     status: 200,
@@ -120,6 +126,7 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'Bad request - validation failed' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async updateUser(
     @Param('id') id: string,
     @Body() userData: UpdateUserDto,
@@ -145,7 +152,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete user by ID' })
+  @ApiOperation({ summary: 'Delete user by ID (Admin only)' })
   @ApiParam({ name: 'id', description: 'User ID' })
   @ApiResponse({
     status: 200,
@@ -162,6 +169,7 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async deleteUser(@Param('id') id: string): Promise<{ message: string }> {
     const deletedUser = await this.usersService.deleteUser(id);
     if (!deletedUser) {

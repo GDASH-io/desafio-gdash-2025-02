@@ -24,6 +24,9 @@ import {
   ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import { ApiKeyGuard } from '../auth/guards/api-key.guard';
+import { Roles } from '../auth/guards/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role } from '../users/enums/role.enum';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { createWeatherSchema } from './validation/create-weather.schema';
 import { z } from 'zod';
@@ -56,7 +59,9 @@ export class WeatherController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new weather record' })
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Create a new weather record (Admin only)' })
   @ApiResponse({
     status: 201,
     description: 'Weather record successfully created',
@@ -67,6 +72,7 @@ export class WeatherController {
     description: 'Bad request - validation failed or weather already exists',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async createWeather(@Body() weatherData: CreateWeatherDto) {
     const result = createWeatherSchema.safeParse(weatherData);
 
@@ -363,7 +369,9 @@ export class WeatherController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a weather record' })
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Delete a weather record (Admin only)' })
   @ApiParam({ name: 'id', description: 'Weather record ID' })
   @ApiResponse({
     status: 200,
@@ -380,6 +388,7 @@ export class WeatherController {
   })
   @ApiResponse({ status: 404, description: 'Weather record not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin role required' })
   async deleteWeather(@Param('id') id: string): Promise<{ message: string }> {
     const deletedWeather = await this.weatherService.deleteWeather(id);
     if (!deletedWeather) {
