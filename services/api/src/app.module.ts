@@ -3,9 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { UsersService } from './users/users.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { CreateUserService } from './modules/users/features/create-user/create-user.service';
+import { FindUsersService } from './modules/users/features/find-users/find-users.service';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { UsersService } from './users/users.service';
 })
 export class AppModule implements OnModuleInit {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly findUsersService: FindUsersService,
+    private readonly createUserService: CreateUserService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -37,10 +39,10 @@ export class AppModule implements OnModuleInit {
     const defaultPassword = this.configService.get<string>('DEFAULT_USER_PASSWORD') || '123456';
     const defaultName = this.configService.get<string>('DEFAULT_USER_NAME') || 'Admin User';
     
-    const existingUser = await this.usersService.findByEmail(defaultEmail);
+    const existingUser = await this.findUsersService.findByEmail(defaultEmail);
 
     if (!existingUser) {
-      await this.usersService.create({
+      await this.createUserService.create({
         email: defaultEmail,
         password: defaultPassword,
         name: defaultName,

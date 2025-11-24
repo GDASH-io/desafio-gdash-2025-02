@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Global prefix para todas as rotas
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api'); // Poderia usar HTTP_PATHS.GLOBAL_PREFIX da pasta shared/constants
 
   // CORS para comunicação com o frontend
   app.enableCors({
