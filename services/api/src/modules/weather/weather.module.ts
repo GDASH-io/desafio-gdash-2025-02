@@ -5,6 +5,8 @@ import { CreateLogService } from './features/create-log/create-log.service';
 import { CreateLogController } from './features/create-log/create-log.controller';
 import { FindLogsService } from './features/find-logs/find-logs.service';
 import { FindLogsController } from './features/find-logs/find-logs.controller';
+import { ExportLogsService } from './features/export-logs/export-logs.service';
+import { ExportLogsController } from './features/export-logs/export-logs.controller';
 
 @Module({
   imports: [
@@ -12,8 +14,8 @@ import { FindLogsController } from './features/find-logs/find-logs.controller';
       { name: WeatherLog.name, schema: WeatherLogSchema },
     ]),
   ],
-  controllers: [CreateLogController, FindLogsController],
-  providers: [CreateLogService, FindLogsService],
+  controllers: [CreateLogController, FindLogsController, ExportLogsController],
+  providers: [CreateLogService, FindLogsService, ExportLogsService],
   exports: [FindLogsService],
 })
 export class WeatherModule {}
