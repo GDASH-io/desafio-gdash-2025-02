@@ -1,10 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import { helmetConfig } from './utils/helmet-config';
+import { setupSwagger } from './utils/setup-swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet(helmetConfig()));
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');
@@ -16,30 +20,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  const config = new DocumentBuilder()
-    .setTitle('GDash API')
-    .setDescription('API for weather monitoring system')
-    .setVersion('1.0')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config, {
-    ignoreGlobalPrefix: false,
-  });
-
-  if (document.components?.securitySchemes) {
-    delete document.components.securitySchemes;
-  }
-  if (document.security) {
-    document.security = [];
-  }
-
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: false,
-      withCredentials: true,
-    },
-    customSiteTitle: 'GDash API Documentation',
-  });
+  setupSwagger(app);
 
   await app.listen(process.env.BACKEND_PORT ?? 3001);
 }
