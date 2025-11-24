@@ -64,3 +64,29 @@ export const useDeleteUser = () => {
         loading: mutation.isPending
     };
 };
+
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+
+    const mutation = useMutation({
+        mutationFn: async ({ id, data }: { id: string, data: any }) => {
+            try {
+                const payload = { ...data };
+                if (!payload.password) delete payload.password;
+                
+                await api.patch(`/users/${id}`, payload);
+            } catch (error: any) {
+                throw new Error(error.response?.data?.message || "Erro ao atualizar utilizador");
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+        }
+    });
+
+    return {
+        updateUser: mutation.mutateAsync,
+        loading: mutation.isPending,
+        error: mutation.error instanceof Error ? mutation.error.message : null,
+    };
+};
