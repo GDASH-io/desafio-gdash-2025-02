@@ -1,4 +1,35 @@
-# 🚀 Desafio Técnico – Desenvolvedor Full-Stack Junior
+# Desafio para o processo seletivo GDASH 2025/02
+
+Repositório destinado aos interessados em participar do processo seletivo GDASH 2025/02.
+
+## Sobre o GDASH
+
+No ramo da produção de energia fotovoltaica, há a modalidade de produção compartilhada. Nessa modalidade, diferentes pessoas investem na construção de uma mesma usina fotovoltaica e dividem o retorno finaceiro referente à energia gerada pela usina.
+
+Acreditamos que as energias renováveis terão um lugar dominante em nossa economia pelo resto de nossas vidas. Trabalhamos no sentido de ampliar o impacto positivo que as energias renováveis podem ter no meio ambiente e nas nossas vidas. O sucesso da GDASH é resultado de nossa equipe apaixonada, juntamente com nosso compromisso de oferecer a melhor solução.
+
+Sabemos que negócios enfrentam desafios únicos e por isso oferecemos soluções turnkey, customizadas, economicamente viáveis e seguras.
+
+Somos uma startup em estágio de crescimento e você trabalhará diretamente com os fundadores, ajudando a definir a visão, o produto e a experiência do usuário.
+
+<p align="left">
+  <a href="https://www.linkedin.com/company/gdash/">
+    <img src="https://img.shields.io/badge/LinkedIn-%230077B5.svg?&style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn Button">
+  </a>
+  <a href="https://gdash.io/">
+    <img src="https://img.shields.io/badge/-Website-red" alt="GDASH Website Button">
+  </a>
+</p>
+
+## Sobre a vaga
+
+Já pensou em potencializar o setor que mais cresce na galáxia e trabalhar com uma solução que utiliza tecnologia web de ponta, altamente distribuída com foco em performance e disponibilidade? 👀
+
+Os desenvolvedores GDASH são responsáveis por criar e manter aplicações para clientes internos e externos, prover soluções escaláveis, resilientes e altamente disponíveis que sustentem picos de acesso além de atuar como referência técnica e tutores de outros desenvolvedores.
+
+Procuramos por pessoas dinâmicas e que queiram estar aprendendo sempre. Nossa equipe é jovem, motivada e estamos sempre em busca de soluções criativas para alcançar os resultados que nossos clientes esperam. Se você tem esse perfil, é autoconfiante, autodidata e tem facilidade para lidar com desafios diários, essa vaga é para você!
+
+# 🚀 O Desafio
 
 ## 🧭 Visão geral
 O objetivo deste desafio é desenvolver uma aplicação **full-stack** moderna que integre múltiplas linguagens e serviços, com foco em **integração entre sistemas, dados reais e uso de IA**.
@@ -6,7 +37,7 @@ O objetivo deste desafio é desenvolver uma aplicação **full-stack** moderna q
 Você deverá construir um sistema que:
 
 1. **Coleta dados climáticos** (via **Open-Meteo** ou **OpenWeather**) da sua **cidade/localização**;  
-2. **Envia esses dados periodicamente** para uma **fila RabbitMQ**, processada por um **worker em Go**;  
+2. **Envia esses dados periodicamente** para uma **fila** (Message Broker, como RabbitMQ ou até Redis), processada por um **worker em Go**;  
 3. **Armazena os dados** em uma **API NestJS** com **MongoDB**;  
 4. **Exibe um Dashboard** no frontend (React + Vite + Tailwind + shadcn/ui) com os dados coletados;  
 5. Gera **insights baseados em IA** a partir das informações climáticas — podendo ser gerados automaticamente, sob demanda, ou de qualquer outra forma que você julgar adequada;  
@@ -27,7 +58,7 @@ Você deverá construir um sistema que:
 - **Frontend:** React + Vite + Tailwind + [shadcn/ui](https://ui.shadcn.com)  
 - **Backend (API):** NestJS (TypeScript)  
 - **Banco de dados:** MongoDB (Atlas ou container)  
-- **Fila:** Go + RabbitMQ (obrigatória)  
+- **Fila:** Go + Message Broker (`RabbitMQ`, `Redis`, etc.)  
 - **Coleta de dados:** Python (`requests`, `httpx`, `pandas`, etc.)  
 - **APIs externas:**
   - Clima (obrigatória): [Open-Meteo](https://open-meteo.com/) ou [OpenWeather](https://openweathermap.org/)
@@ -41,7 +72,7 @@ Você deverá construir um sistema que:
 
 ## ⚙️ Escopo funcional
 
-### 1️⃣ Coleta de dados (Python → RabbitMQ)
+### 1️⃣ Coleta de dados (Python → Fila)
 
 O serviço em **Python** será responsável por:
 
@@ -52,7 +83,7 @@ O serviço em **Python** será responsável por:
   - Velocidade do vento
   - Condição do céu
   - Probabilidade de chuva  
-- Enviar os dados normalizados para uma **fila RabbitMQ** em formato **JSON**.
+- Enviar os dados normalizados para uma **fila** em formato **JSON**.
 
 > 🔹 Estrutura do JSON, nomes de campos e cron/intervalo são **livres** — podem ser adaptados conforme sua arquitetura.
 
@@ -60,11 +91,11 @@ O Python é o **produtor dos dados meteorológicos**. A camada de IA pode ser im
 
 ---
 
-### 2️⃣ Fila (Go + RabbitMQ)
+### 2️⃣ Fila (Go + Message Broker)
 
 Implemente um **worker em Go**, responsável por:
 
-- Consumir mensagens da fila RabbitMQ;  
+- Consumir mensagens da fila;  
 - Validar e transformar os dados, se necessário;  
 - Enviar os registros para a **API NestJS** (por exemplo, um endpoint como `POST /api/weather/logs`);  
 - Confirmar as mensagens com **ack/nack**, implementar **retry básico**;  
@@ -72,7 +103,7 @@ Implemente um **worker em Go**, responsável por:
 
 > 📘 **Observação:**  
 > O nome do endpoint, o body do JSON e a estrutura de erro são **apenas exemplos** neste README.  
-> Você pode definir o contrato de comunicação da forma que achar melhor, desde que o fluxo Python → RabbitMQ → Go → NestJS funcione corretamente.
+> Você pode definir o contrato de comunicação da forma que achar melhor, desde que o fluxo Python → Message Broker → Go → NestJS funcione corretamente.
 
 Bibliotecas sugeridas (não obrigatórias):
 
@@ -233,7 +264,7 @@ A forma de aplicar IA é livre. Algumas ideias possíveis:
 
 ## 🧠 Critérios de avaliação
 
-- **Funcionalidade completa:** pipeline Python → RabbitMQ → Go → NestJS → MongoDB → Frontend;  
+- **Funcionalidade completa:** pipeline Python → Message Broker → Go → NestJS → MongoDB → Frontend;  
 - **Clareza de arquitetura:** organização de pastas, camadas e responsabilidades;  
 - **Qualidade de código:** tipagem, legibilidade, padrões adotados;  
 - **Integração entre serviços:** comunicação estável e bem tratada;  
@@ -272,7 +303,7 @@ A forma de aplicar IA é livre. Algumas ideias possíveis:
 Grave um vídeo de **até 5 minutos** explicando:
 
 - Arquitetura geral da aplicação;  
-- Pipeline de dados (Python → RabbitMQ → Go → NestJS → Frontend);  
+- Pipeline de dados (Python → Message Broker → Go → NestJS → Frontend);  
 - Como os insights de IA são gerados e exibidos;  
 - Principais decisões técnicas;  
 - Demonstração rápida da aplicação rodando via Docker Compose.
@@ -298,7 +329,7 @@ O Pull Request deve conter:
 - Código do **frontend (Vite)**;  
 - Código **Python** (coleta de clima);  
 - Código **Go** (worker da fila);  
-- `docker-compose.yml` com todos os serviços (API, frontend, banco, RabbitMQ, etc.);  
+- `docker-compose.yml` com todos os serviços (API, frontend, banco, Message Broker, etc.);  
 - Arquivo `.env.example` com todas as variáveis necessárias;  
 - Link do vídeo explicativo (YouTube não listado);  
 - README com:
@@ -313,7 +344,7 @@ O Pull Request deve conter:
 ## ✅ Checklist rápido
 
 - [ ] Python coleta dados de clima (Open-Meteo ou OpenWeather)  
-- [ ] Python envia dados para RabbitMQ  
+- [ ] Python envia dados para a fila  
 - [ ] Worker Go consome a fila e envia para a API NestJS  
 - [ ] API NestJS:
   - [ ] Armazena logs de clima em MongoDB  
