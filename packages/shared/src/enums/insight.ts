@@ -1,0 +1,13 @@
+export enum InsightTypeEnum {
+  TEMPERATURE_TREND = 'TEMPERATURE_TREND',
+  RAIN_ALERT = 'RAIN_ALERT',
+  COMFORT_SCORE = 'COMFORT_SCORE',
+  DAILY_SUMMARY = 'DAILY_SUMMARY',
+  EXTREME_WEATHER = 'EXTREME_WEATHER',
+}
+
+export enum InsightSeverityEnum {
+  INFO = 'INFO',
+  WARNING = 'WARNING',
+  ALERT = 'ALERT',
+}

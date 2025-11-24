@@ -1,0 +1,20 @@
+{
+  "name": "gdash-weather",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "turbo format",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean && rm -rf node_modules",
+    "db:up": "docker-compose up -d mongodb rabbitmq",
+    "db:down": "docker-compose down",
+    "db:reset": "docker-compose down -v && docker-compose up -d mongodb rabbitmq"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
