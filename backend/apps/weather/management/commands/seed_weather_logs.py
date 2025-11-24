@@ -38,15 +38,12 @@ class Command(BaseCommand):
         )
 
         for day_offset in range(days, 0, -1):
-            # base = "começo do dia" (mesmo timezone)
             base = (now - timedelta(days=day_offset)).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
 
             for hour in range(0, 24, step):
                 dt = base + timedelta(hours=hour)
-
-                # Geração simples de valores "realistas"
                 temp = random.uniform(18, 34)          # °C
                 humidity = random.uniform(30, 90)      # %
                 wind = random.uniform(0, 12)           # m/s (ou algo assim)

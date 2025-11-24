@@ -59,7 +59,7 @@ export async function listWeatherLogs(params?: {
   offset?: number;
 }): Promise<WeatherListResponse> {
   try {
-    const { data } = await weatherApi.get<WeatherListResponse>("/weather/", {
+    const { data } = await weatherApi.get<WeatherListResponse>("/weather/logs/", {
       params,
     });
     console.log("Fetched weather logs:", data);
@@ -76,7 +76,7 @@ export async function getWeatherInsights(params?: {
 }): Promise<WeatherInsightsResponse> {
   try {
     const { data } = await weatherApi.get<WeatherInsightsResponse>(
-      "/weather/logs/insights",
+      "/weather/logs/insights/",
       { params }
     );
     console.log("Fetched weather insights:", data);

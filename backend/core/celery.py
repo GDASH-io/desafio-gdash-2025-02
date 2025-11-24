@@ -15,9 +15,13 @@ app.autodiscover_tasks()
 
 # Agendamento do Celery Beat
 app.conf.beat_schedule = {
-    "fetch-weather-every-hour": {
-        # Nome completo da task (módulo + função)
-        "task": "apps.weather.tasks.fetch_weather_data",
+    "collect-weather-every-hour": {
+        "task": "apps.weather.tasks.collect_weather_task",
         "schedule": crontab(minute=0, hour="*"),  # a cada 1h
+    },
+    "generate-weather-insights-every-3-hours": {
+        "task": "apps.weather.tasks.generate_insights_task",
+        "schedule": crontab(minute=5, hour="*/3"),
+        "args": (24,),  # últimos 24h
     },
 }

@@ -1,12 +1,14 @@
 export interface WeatherLog {
   id: number;
-  collected_at: string;
+  timestamp: string;
+  city: string;
   temperature: number;
   humidity: number;
+  pressure: number;
   wind_speed: number;
   condition: string;
-  rain_probability: number;
-  source: string;
+  raw: any;
+  created_at: string;
 }
 
 export interface WeatherListResponse {
@@ -16,9 +18,15 @@ export interface WeatherListResponse {
   results: WeatherLog[];
 }
 
+export interface WeatherInsight {
+  id: number;
+  generated_at: string;
+  text: string;
+}
+
 export interface WeatherInsightsResponse {
-  days: number;
   count: number;
-  insights: string;
-  data: WeatherLog[];
+  next: string | null;
+  previous: string | null;
+  results: WeatherInsight[];
 }

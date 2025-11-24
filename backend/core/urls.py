@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
-from apps.weather.api.viewsets import WeatherLogViewSet
+from apps.weather.api.viewsets import WeatherInsightViewSet, WeatherLogViewSet
 from core import settings
 from drf_yasg import openapi
 from rest_framework import permissions
@@ -36,11 +36,13 @@ urlpatterns = [
     path('api/v1/register/', RegisterAPIView.as_view(), name='register'),
     path('api/v1/login/', LoginAPIView.as_view(), name='login'),
     path('api/v1/logout/', LogoutAPIView.as_view(), name='logout'),
-    # weather
-    path('api/v1/weather/', WeatherLogViewSet.as_view({'get': 'list'}), name='weather-logs-list'), # noqa E501
-    path('api/v1/weather/logs/export.csv', WeatherLogViewSet.as_view({'get': 'export_csv'}), name='weather-logs-export-csv'), # noqa E501
-    path('api/v1/weather/logs/export.xlsx', WeatherLogViewSet.as_view({'get': 'export_xlsx'}), name='weather-logs-export-xlsx'), # noqa E501
-    path('api/v1/weather/logs/insights', WeatherLogViewSet.as_view({'get': 'insights', 'post': 'insights'}), name='weather-logs-insights'), # noqa E501
+    # Weather logs
+    path("api/v1/weather/logs/", WeatherLogViewSet.as_view({"get": "list", "post": "create"}), name="weather-logs-list"), # noqa E501
+    path("api/v1/weather/logs/export.csv/", WeatherLogViewSet.as_view({"get": "export_csv"}), name="weather-logs-export-csv"), # noqa E501
+    path("api/v1/weather/logs/export.xlsx/", WeatherLogViewSet.as_view({"get": "export_xlsx"}), name="weather-logs-export-xlsx"), # noqa E501
+    # Weather insights
+    path("api/v1/weather/logs/insights/", WeatherInsightViewSet.as_view({"get": "list", "post": "generate"}), name="weather-logs-insights"), # noqa E501
+    path("api/v1/weather/logs/insights/latest/", WeatherInsightViewSet.as_view({"get": "latest"}), name="weather-logs-insights-latest"), # noqa E501
 ]
 
 if settings.DEBUG:

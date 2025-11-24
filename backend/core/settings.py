@@ -12,9 +12,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -189,3 +192,13 @@ CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 CELERY_TIMEZONE = 'America/Sao_Paulo'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+# Weather API (OpenWeather)
+OPENWEATHER_CONFIG = {
+    "api_key": env("OPENWEATHER_API_KEY"),
+    "lat": env("OPENWEATHER_LAT"),
+    "lon": env("OPENWEATHER_LON"),
+    "units": env("OPENWEATHER_UNITS"),
+    "lang": env("OPENWEATHER_LANG"),
+    "base_url": "https://api.openweathermap.org/data/2.5/weather",
+}
