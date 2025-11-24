@@ -9,7 +9,7 @@
 
 ## Visão Geral
 
-A Fase 2 implementa a integração com a NASA Worldview API para exibir imagens de satélite da região de Coronel Fabriciano, MG. Esta implementação substitui a integração ANA originalmente planejada e fornece visualizações complementares aos dados climáticos coletados pelo sistema.
+A Fase 2 implementa a integração com a NASA Worldview API para exibir imagens de satélite da região de Coronel Fabriciano, MG. Esta implementação substitui a integração PokenAPI originalmente planejada e fornece visualizações complementares aos dados climáticos coletados pelo sistema.
 
 ## Objetivos
 

@@ -3,8 +3,8 @@ services:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: gdash-zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT}
+      ZOOKEEPER_TICK_TIME: ${ZOOKEEPER_TICK_TIME}
     ports:
       - "2181:2181"
     networks:
@@ -20,7 +20,7 @@ services:
       - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_CLIENT_PORT}
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
@@ -30,7 +30,7 @@ services:
       - gdash-network
 
   mongodb:
-    image: mongo:6
+    image: mongo:5
     container_name: gdash-mongodb
     ports:
       - "27017:27017"
@@ -38,7 +38,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
     volumes:
-      - mongo_data:/data/db
+      - mongo_data_v5:/data/db
     networks:
       - gdash-network
 
@@ -55,16 +55,16 @@ services:
     build: ./colletor-python
     container_name: gdash-collector
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
-      - LATITUDE=${LATITUDE:--19.5186}
-      - LONGITUDE=${LONGITUDE:--42.6289}
-      - TIMEZONE=${TIMEZONE:-America/Sao_Paulo}
-      - COLLECT_INTERVAL_SECONDS=${COLLECT_INTERVAL_SECONDS:-3600}
-      - COLLECT_INTERVAL_TYPE=${COLLECT_INTERVAL_TYPE:-hourly}
-      - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW:-ana.raw.readings}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - LOG_FORMAT=${LOG_FORMAT:-json}
-      - HEALTHCHECK_PORT=${HEALTHCHECK_PORT:-8080}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+      - LATITUDE=${LATITUDE}
+      - LONGITUDE=${LONGITUDE}
+      - TIMEZONE=${TIMEZONE}
+      - COLLECT_INTERVAL_SECONDS=${COLLECT_INTERVAL_SECONDS}
+      - COLLECT_INTERVAL_TYPE=${COLLECT_INTERVAL_TYPE}
+      - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW}
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_FORMAT=json
+      - HEALTHCHECK_PORT=8080
     depends_on:
       - kafka
     networks:
@@ -76,19 +76,19 @@ services:
     build: ./worker-go
     container_name: gdash-worker
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9093
-      - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW:-ana.raw.readings}
-      - KAFKA_TOPIC_PROCESSED=${KAFKA_TOPIC_PROCESSED:-ana.processed.readings}
-      - KAFKA_GROUP_ID=${KAFKA_GROUP_ID:-gdash-worker-group}
-      - API_URL=http://api:3000
-      - API_TIMEOUT_SECONDS=${API_TIMEOUT_SECONDS:-10}
-      - API_MAX_RETRIES=${API_MAX_RETRIES:-3}
-      - WORKER_MAX_RETRIES=${WORKER_MAX_RETRIES:-3}
-      - WORKER_BATCH_SIZE=${WORKER_BATCH_SIZE:-10}
-      - WORKER_PROCESSING_INTERVAL_MS=${WORKER_PROCESSING_INTERVAL_MS:-1000}
-      - HEALTHCHECK_PORT=${WORKER_HEALTHCHECK_PORT:-8081}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - LOG_FORMAT=${LOG_FORMAT:-json}
+      - KAFKA_BOOTSTRAP_SERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+      - KAFKA_TOPIC_RAW=${KAFKA_TOPIC_RAW}
+      - KAFKA_TOPIC_PROCESSED=${KAFKA_TOPIC_PROCESSED}
+      - KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
+      - API_URL=${API_URL}
+      - API_TIMEOUT_SECONDS=${API_TIMEOUT_SECONDS}
+      - API_MAX_RETRIES=${API_MAX_RETRIES}
+      - WORKER_MAX_RETRIES=${WORKER_MAX_RETRIES}
+      - WORKER_BATCH_SIZE=${WORKER_BATCH_SIZE}
+      - WORKER_PROCESSING_INTERVAL_MS=${WORKER_PROCESSING_INTERVAL_MS}
+      - HEALTHCHECK_PORT=8081
+      - LOG_LEVEL=${LOG_LEVEL}
+      - LOG_FORMAT=json
     depends_on:
       - kafka
       - api
@@ -101,9 +101,9 @@ services:
     build: ./api-nest
     container_name: gdash-api
     environment:
-      - MONGO_URL=mongodb://root:root@mongodb:27017/gdash?authSource=admin
-      - JWT_SECRET=${JWT_SECRET:-changeme}
-      - PORT=3000
+      - MONGO_URL=${MONGO_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=${PORT}
     depends_on:
       - mongodb
     networks:
@@ -115,7 +115,7 @@ services:
     build:
       context: ./frontend-react
       args:
-        - VITE_API_URL=http://localhost:3000/api/v1
+        - VITE_API_URL=${VITE_API_URL}
     container_name: gdash-frontend
     depends_on:
       - api
@@ -129,5 +129,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongo_data:
+  mongo_data_v5:
 

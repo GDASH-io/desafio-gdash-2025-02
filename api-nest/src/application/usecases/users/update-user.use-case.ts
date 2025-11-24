@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, ConflictException, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException, Inject } from '@nestjs/common';
+import { Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { IUserRepository } from '../../../domain/repositories/user.repository';
 import { UpdateUserDto } from '../../../presentation/dto/update-user.dto';
@@ -11,6 +12,14 @@ export class UpdateUserUseCase {
   ) {}
 
   async execute(id: string, updateUserDto: UpdateUserDto) {
+    if (!id || id === 'undefined' || id.trim() === '') {
+      throw new BadRequestException('ID do usuário é obrigatório');
+    }
+
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('ID do usuário inválido');
+    }
+
     const user = await this.userRepository.findById(id);
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');

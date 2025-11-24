@@ -80,7 +80,7 @@ func (c *APIClient) SendWeatherLogs(logs []interface{}) error {
 
 // IsHealthy verifica se a API está saudável
 func (c *APIClient) IsHealthy() bool {
-	url := fmt.Sprintf("%s/health", c.baseURL)
+	url := fmt.Sprintf("%s/api/v1/weather/health", c.baseURL)
 	
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

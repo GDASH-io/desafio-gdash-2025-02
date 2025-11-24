@@ -3,11 +3,14 @@ import Layout from '../../components/Layout';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { Dialog } from '../../components/ui/Dialog';
+import { useToast } from '../../components/ui/Toast';
 import api from '../../app/api';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface User {
-  id: string;
+  id?: string;
+  _id?: string;
   email: string;
   name: string;
   role: string;
@@ -15,11 +18,19 @@ interface User {
 
 export default function UsersCrud() {
   const { user } = useAuth();
+  const { showToast, ToastContainer } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'user' });
+
+  // Helper para obter o ID do usuário (suporta tanto id quanto _id)
+  const getUserId = (user: User): string => {
+    return user.id || user._id || '';
+  };
 
   useEffect(() => {
     if (user?.role === 'admin') {
@@ -33,9 +44,15 @@ export default function UsersCrud() {
       const response = await api.get('/users');
       // A resposta pode vir como array direto ou como objeto com data
       const data = Array.isArray(response.data) ? response.data : (response.data.data || []);
-      setUsers(data);
+      // Normalizar IDs: garantir que todos os usuários tenham 'id'
+      const normalizedData = data.map((u: any) => ({
+        ...u,
+        id: u.id || u._id,
+      }));
+      setUsers(normalizedData);
     } catch (err: any) {
       console.error('Erro ao carregar usuários:', err);
+      showToast('Erro ao carregar usuários. Tente novamente.', 'error');
     } finally {
       setLoading(false);
     }
@@ -45,16 +62,24 @@ export default function UsersCrud() {
     e.preventDefault();
     try {
       if (editingUser) {
-        await api.put(`/users/${editingUser.id}`, formData);
+        const userId = getUserId(editingUser);
+        if (!userId) {
+          showToast('ID do usuário inválido', 'error');
+          return;
+        }
+        await api.put(`/users/${userId}`, formData);
+        showToast('Usuário atualizado com sucesso!', 'success');
       } else {
         await api.post('/users', formData);
+        showToast('Usuário criado com sucesso!', 'success');
       }
       setShowModal(false);
       setEditingUser(null);
       setFormData({ name: '', email: '', password: '', role: 'user' });
       fetchUsers();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao salvar usuário');
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Erro ao salvar usuário';
+      showToast(errorMessage, 'error');
     }
   };
 
@@ -64,13 +89,33 @@ export default function UsersCrud() {
     setShowModal(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este usuário?')) return;
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!userToDelete) return;
+    
+    const userId = getUserId(userToDelete);
+    if (!userId) {
+      showToast('ID do usuário inválido', 'error');
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
+      return;
+    }
+
     try {
-      await api.delete(`/users/${id}`);
+      await api.delete(`/users/${userId}`);
+      showToast('Usuário excluído com sucesso!', 'success');
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
       fetchUsers();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Erro ao excluir usuário');
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Erro ao excluir usuário';
+      showToast(errorMessage, 'error');
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
     }
   };
 
@@ -86,6 +131,7 @@ export default function UsersCrud() {
 
   return (
     <Layout>
+      <ToastContainer />
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
@@ -143,7 +189,7 @@ export default function UsersCrud() {
                             <Button
                               variant="destructive"
                               size="sm"
-                              onClick={() => handleDelete(u.id)}
+                              onClick={() => handleDeleteClick(u)}
                             >
                               Excluir
                             </Button>
@@ -227,6 +273,40 @@ export default function UsersCrud() {
             </Card>
           </div>
         )}
+
+        <Dialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          title="Confirmar Exclusão"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Tem certeza que deseja excluir o usuário <strong>{userToDelete?.name}</strong> ({userToDelete?.email})?
+            </p>
+            <p className="text-sm text-red-600 font-medium">
+              Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setUserToDelete(null);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDeleteConfirm}
+              >
+                Excluir
+              </Button>
+            </div>
+          </div>
+        </Dialog>
       </div>
     </Layout>
   );
