@@ -9,6 +9,13 @@ async function bootstrap() {
   app.use(cookieParser());
   app.setGlobalPrefix('api');
 
+  app.enableCors({
+    origin: process.env.NODE_ENV === 'development',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   const config = new DocumentBuilder()
     .setTitle('GDash API')
     .setDescription('API for weather monitoring system')
