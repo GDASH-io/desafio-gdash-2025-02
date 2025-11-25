@@ -2,23 +2,20 @@ import { Module } from '@nestjs/common';
 import { WeatherModule } from './weather/weather.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { InsightsIaService } from './insights-ia/insights-ia.service';
+import { InsightsIaService } from './insights-ia/insights-ia.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     MongooseModule.forRoot(
       process.env.MONGO_URI ?? 'mongodb://localhost/nestjs-weather',
     ),
     WeatherModule,
   ],
+  providers: [InsightsIaService],
+  controllers: [],
 })
-export class AppModule {}
-
-/* uso:
-constructor(private readonly configService: ConfigService) {}
-
-const port = this.configService.get<number>('PORT');
-*/
+export class AppModule { }

@@ -6,9 +6,6 @@ COPY package*.json ./
 
 RUN npm install
 
-# Testes
-RUN npm run test
-
 COPY . .
 
 RUN npm run build

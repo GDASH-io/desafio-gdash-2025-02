@@ -27,7 +27,6 @@ COORDINATES_EXISTING = {}
 
 
 def get_coordinates():
-    global COORDINATES_EXISTING
     geolocator = Nominatim(user_agent="coordenadas_teresina")
     cidade = "Teresina, Piauí, Brasil"
     location = geolocator.geocode(cidade, timeout=20)
@@ -41,7 +40,6 @@ def get_coordinates():
                 "latitude": latitude,
                 "longitude": longitude
             }
-            COORDINATES_EXISTING = cordinates
             return cordinates
     except ValueError as e:
         print(e)
@@ -72,7 +70,6 @@ def get_time_info():
         forecast = search_forecast(cordinates["latitude"], cordinates["longitude"], "America/Fortaleza")
         data = extract_data(forecast)
         formatted_data = format_data(**data)
-        print(formatted_data)
         return formatted_data
     
     except Exception as e:
@@ -99,14 +96,16 @@ def format_data(**kwargs):
         "vento": kwargs["current"]["windspeed"],
         "condicao": kwargs["condition"],
         "probabilidade_chuva": float(kwargs['hourly']['precipitation_probability'][0]),
-        "data_coleta": (datetime.now(tz=tz_brasil)).strftime("%Y-%m-%d %H:%M:%S")
+        "data_coleta": (datetime.now(tz=tz_brasil)).strftime("%Y-%m-%d %H:%M:%S"),
+        "cidade": "Teresina"
     }
+
     return data_formatted
 
 
-if __name__ == "__main__":
-    cordinates = get_coordinates()
-    forecast = search_forecast(cordinates["latitude"], cordinates["longitude"], "America/Fortaleza")
-    data = extract_data(forecast)
-    formatted_data = format_data(**data)
-    print(formatted_data)
+#if __name__ == "__main__":
+#    cordinates = get_coordinates()
+#    forecast = search_forecast(cordinates["latitude"], cordinates["longitude"], "America/Fortaleza")
+#    data = extract_data(forecast)
+#    formatted_data = format_data(**data)
+#    print(formatted_data)

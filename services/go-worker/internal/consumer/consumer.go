@@ -19,7 +19,8 @@ type WeatherData struct {
     Vento              float64 `json:"vento"`
     Condicao           string  `json:"condicao"`
     ProbabilidadeChuva float64 `json:"probabilidade_chuva"`
-	Data_coleta        string  `json:"data_coleta"`
+	DataColeta        string  `json:"data_coleta"`
+    Cidade            string  `json:"cidade"`
 }
 
 func ConsumeRMQ(config *internal.Config) error {

@@ -8,15 +8,24 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  Header,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { WeatherService } from './weather.service';
+import { CsvExportService } from '../exports/csv/csv-export.service';
+import { XlsxExportService } from 'src/exports/xlsx/xlsx-export.service';
 import { logsWeatherDTO } from '../DTO/logsWeather.dto';
+import { StreamableFile } from '@nestjs/common';
+
 
 @ApiTags('weather')
 @Controller('weather')
 export class WeatherController {
-  constructor(private readonly weatherService: WeatherService) {}
+  constructor(
+    private readonly weatherService: WeatherService,
+    private readonly csvExportService: CsvExportService,
+    private readonly xlsxExportService: XlsxExportService
+  ) { }
 
   @Post('logs')
   @ApiOperation({ summary: 'Criar novo log de clima' })
@@ -76,4 +85,50 @@ export class WeatherController {
     }
     return { message: 'Log deletado com sucesso', data: deletedLog };
   }
+
+  @Get('export-csv')
+  @ApiOperation({ summary: 'Exportar logs de clima em CSV' })
+  @ApiResponse({ status: 200, description: 'CSV gerado com sucesso' })
+  @Header('Content-Type', 'text/csv')
+  @Header('Content-Disposition', 'attachment; filename="export.csv"')
+  async exportLogsToCsv() {
+    const headers_csv: (keyof logsWeatherDTO)[] = [
+      "temperatura",
+      "umidade",
+      "vento",
+      "condicao",
+      "probabilidade_chuva",
+      "data_coleta",
+    ];
+    const logs = await this.weatherService.logWeatherGet();
+    const csv_generated = this.csvExportService.generateCsvStream(logs, headers_csv);
+    return new StreamableFile(csv_generated);
+  }
+
+
+  @Get('export-xlsx')
+  @ApiOperation({ summary: 'Exportar logs de clima em XLSX' })
+  @ApiResponse({ status: 200, description: 'XLSX gerado com sucesso' })
+  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header('Content-Disposition', 'attachment; filename="export.xlsx"')
+  async exportLogsToXlsx() {
+    const headers_xlsx: (keyof logsWeatherDTO)[] = [
+      "temperatura",
+      "umidade",
+      "vento",
+      "condicao",
+      "probabilidade_chuva",
+      "data_coleta",
+    ];
+    const logs = await this.weatherService.logWeatherGet();
+    const xlsx_generated = await this.xlsxExportService.generateXlsxBuffer(logs, headers_xlsx);
+    return new StreamableFile(xlsx_generated);
+  }
+
+//  @Post('insights')
+//  @ApiOperation({ summary: 'Gerar insights por meio de IA, a partir dos logs de clima' })
+//  @ApiResponse({ status: 200, description: 'Insights gerados com sucesso' })
+//  async generateWeatherInsights() {
+//    return await this.weatherService.generateInsights(prompt.question);
+//  }
 }

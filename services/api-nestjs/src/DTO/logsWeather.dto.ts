@@ -20,7 +20,7 @@ export class logsWeatherDTO {
     example: 20,
     description: 'Probabilidade de chuva em porcentagem',
   })
-  probabilidadeChuva: number;
+  probabilidade_chuva: number;
 
   @ApiProperty({
     example: '2025-02-25T14:30:00Z',

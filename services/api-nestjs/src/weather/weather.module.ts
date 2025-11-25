@@ -3,6 +3,8 @@ import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { WeatherLogsSchema } from 'src/schema/user.schema';
+import { CsvExportService } from 'src/exports/csv/csv-export.service';
+import { XlsxExportService } from 'src/exports/xlsx/xlsx-export.service';
 
 @Module({
   imports: [
@@ -14,6 +16,6 @@ import { WeatherLogsSchema } from 'src/schema/user.schema';
     ]),
   ],
   controllers: [WeatherController],
-  providers: [WeatherService],
+  providers: [WeatherService, CsvExportService, XlsxExportService],
 })
-export class WeatherModule {}
+export class WeatherModule { }
