@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "../pages/login";
+import Login from "../pages/Login";
 
 export const AppRoutes = () => {
   return (

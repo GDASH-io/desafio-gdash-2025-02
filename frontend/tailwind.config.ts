@@ -6,10 +6,12 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#3B82F6",
+          DEFAULT: "var(--primary)",
           dark: "#1E40AF",
         },
-        secondary: "#10B981",
+        secondary: "var(--secondary)",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         bg: {
           light: "#F8FAFC",
           card: "#FFFFFF",
@@ -19,6 +21,42 @@ const config: Config = {
           secondary: "#64748B",
         },
         border: "#E2E8F0",
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        "primary-foreground": "var(--primary-foreground)",
+        "secondary-foreground": "var(--secondary-foreground)",
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
+        },
+        input: "var(--input)",
+        ring: "var(--ring)",
+        chart: {
+          "1": "var(--chart-1)",
+          "2": "var(--chart-2)",
+          "3": "var(--chart-3)",
+          "4": "var(--chart-4)",
+          "5": "var(--chart-5)",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
         heading: ["Inter", "sans-serif"],
