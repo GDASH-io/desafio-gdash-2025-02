@@ -11,10 +11,10 @@ export class Weather {
     temperature?: number
     humidity?: number
     windSpeed?: number
-    wind_speed?: number // ✅ ADICIONE ESTA LINHA
+    wind_speed?: number 
     description?: string
-    weatherCondition?: string // ✅ ADICIONE ESTA LINHA
-    weatherCode?: number // ✅ ADICIONE ESTA LINHA TAMBÉM
+    weatherCondition?: string 
+    weatherCode?: number
     pressure?: number
     visibility?: number
   }
@@ -23,9 +23,9 @@ export class Weather {
   location: {
     city?: string
     country?: string
-    state?: string // ✅ ADICIONE ESTA LINHA
-    latitude?: number // ✅ ADICIONE ESTA LINHA
-    longitude?: number // ✅ ADICIONE ESTA LINHA
+    state?: string
+    latitude?: number
+    longitude?: number
     lat?: number
     lon?: number
   }

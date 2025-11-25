@@ -4,57 +4,34 @@ import (
 	"log"
 	"time"
 
-	"github.com/mlluiz39/go-worker/internal/client"
 	"github.com/mlluiz39/go-worker/internal/config"
 	"github.com/mlluiz39/go-worker/internal/rabbitmq"
 )
 
 func main() {
-	// 1. Carregar Configurações
 	cfg := config.Load()
-	log.Println("🚀 Go Worker Starting...")
+	log.Println("🚀 Go Worker Starting (Consumer Mode)...")
 
-	// 2. Configurar Cliente HTTP (Python API)
-	weatherClient := client.NewWeatherClient(cfg.PythonAPIURL)
+	// Retry logic para conexão inicial (aguardar RabbitMQ)
+	var consumer *rabbitmq.Consumer
+	var err error
 
-	// 3. Configurar Produtor RabbitMQ
-	producer, err := rabbitmq.NewProducer(cfg)
+	for i := 0; i < 10; i++ {
+		consumer, err = rabbitmq.NewConsumer(cfg)
+		if err == nil {
+			break
+		}
+		log.Printf("⏳ Waiting for RabbitMQ... (%v)", err)
+		time.Sleep(5 * time.Second)
+	}
+
 	if err != nil {
-		log.Fatalf("❌ Fatal: Failed to initialize RabbitMQ producer: %v", err)
+		log.Fatalf("❌ Fatal: Could not connect to RabbitMQ after retries: %v", err)
 	}
-	defer producer.Close()
-	log.Println("✅ Connected to RabbitMQ")
+	defer consumer.Close()
 
-	// 4. Configurar Loop de Coleta
-	ticker := time.NewTicker(60 * time.Second) // Coleta a cada 1 minuto (pode ser ajustado via env)
-	defer ticker.Stop()
-
-	// Executar imediatamente na inicialização
-	processWeather(weatherClient, producer)
-
-	// Loop
-	for range ticker.C {
-		processWeather(weatherClient, producer)
+	log.Println("✅ Connected to RabbitMQ. Starting Consumer...")
+	if err := consumer.Start(); err != nil {
+		log.Fatal(err)
 	}
-}
-
-func processWeather(client *client.WeatherClient, producer *rabbitmq.Producer) {
-	log.Println("🔄 Polling Python API for weather data...")
-
-	// Buscar dados do Python
-	data, err := client.FetchWeather()
-	if err != nil {
-		// AQUI ESTÁ O WARNING SOLICITADO
-		log.Printf("⚠️ WARNING: Failed to fetch weather data from Python service. Service might be down. Error: %v", err)
-		return
-	}
-
-	// Publicar no RabbitMQ
-	err = producer.Publish(data)
-	if err != nil {
-		log.Printf("⚠️ WARNING: Failed to publish data to RabbitMQ. Error: %v", err)
-		return
-	}
-
-	log.Println("✅ Data processed and sent to NestJS successfully")
 }

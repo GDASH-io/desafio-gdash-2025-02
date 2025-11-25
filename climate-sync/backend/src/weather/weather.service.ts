@@ -2,16 +2,18 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Weather, WeatherDocument } from '../weather/schema/weather.schema'
+import { Subject } from 'rxjs'
 
 @Injectable()
 export class WeatherService {
   private readonly logger = new Logger(WeatherService.name)
 
+  public readonly weatherUpdates$ = new Subject<any>()
+
   constructor(
     @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>
   ) {}
 
-  // ✅ NOVA FUNÇÃO HELPER PARA SUPORTAR AMBOS OS FORMATOS
   private getWindSpeed(data: any): number {
     // Tenta camelCase primeiro, depois snake_case como fallback
     return data?.windSpeed ?? data?.wind_speed ?? 0
@@ -20,14 +22,58 @@ export class WeatherService {
   async saveWeather(payload: any) {
     this.logger.log('📝 Salvando dados meteorológicos:')
     this.logger.log('Payload completo:', JSON.stringify(payload, null, 2))
-    this.logger.log('WindSpeed no payload:', payload.data?.windSpeed)
-    return this.weatherModel.create(payload)
+
+    const normalized = {
+      timestamp:
+        payload.timestamp ?? payload.processed_at ?? new Date().toISOString(),
+      data: {
+        temperature:
+          payload.data?.temperature ??
+          payload.data?.temp ??
+          payload.temperature ??
+          0,
+        humidity:
+          payload.data?.humidity ?? payload.data?.hum ?? payload.humidity ?? 0,
+        windSpeed:
+          payload.data?.windSpeed ??
+          payload.data?.wind_speed ??
+          payload.wind_speed ??
+          payload.windSpeed ??
+          0,
+        ...payload.data,
+      },
+      location: {
+        city: payload.location?.city ?? payload.city ?? 'Unknown',
+        state: payload.location?.state,
+        country: payload.location?.country,
+        latitude: payload.location?.latitude ?? payload.latitude,
+        longitude: payload.location?.longitude ?? payload.longitude,
+      },
+      processed_by: payload.processed_by ?? payload.source ?? undefined,
+      raw: payload, 
+    }
+
+    const created = await this.weatherModel.create(normalized)
+
+    this.logger.warn('EMITINDO EVENTO SSE!')
+    this.weatherUpdates$.next(created)
+
+    return created
   }
 
-  async findAll(limit = 100) {
+  getRealtimeStream() {
+    return this.weatherUpdates$.asObservable()
+  }
+
+  async getExportData() {
+    return this.weatherModel.find().sort({ timestamp: -1 }).lean().exec()
+  }
+
+  async findAll(limit = 100, skip = 0) {
     return this.weatherModel
       .find()
       .sort({ createdAt: -1 })
+      .skip(skip)
       .limit(limit)
       .lean()
       .exec()
@@ -53,7 +99,6 @@ export class WeatherService {
     try {
       this.logger.log('Calculando métricas do dashboard...')
 
-      // Busca todos os documentos primeiro
       const allDocs = await this.weatherModel.find().lean().exec()
 
       if (allDocs.length === 0) {
@@ -65,7 +110,6 @@ export class WeatherService {
         }
       }
 
-      // Calcula as médias manualmente
       let totalTemp = 0
       let totalHumidity = 0
       let totalWindSpeed = 0
@@ -73,10 +117,8 @@ export class WeatherService {
       allDocs.forEach(doc => {
         totalTemp += doc.data?.temperature || 0
         totalHumidity += doc.data?.humidity || 0
-        // Tenta ambos os formatos
         const windSpeed = doc.data?.windSpeed ?? doc.data?.wind_speed ?? 0
         totalWindSpeed += windSpeed
-        this.logger.log(`Doc ${doc._id}: windSpeed=${windSpeed}`)
       })
 
       const avgTemperature = totalTemp / allDocs.length
@@ -165,18 +207,16 @@ export class WeatherService {
     }
   }
 
-  // ✅ ATUALIZADO COM FALLBACK
   async getWeatherForDashboard(limit = 20) {
     try {
       const recentData = await this.getRecentWeather(limit)
 
-      // Formatar dados para o formato esperado pelo frontend
       return recentData.map(item => ({
         id: item._id.toString(),
         city: item.location?.city || 'Unknown',
         temperature: item.data?.temperature || 0,
         humidity: item.data?.humidity || 0,
-        windSpeed: this.getWindSpeed(item.data), // ✅ USA O HELPER
+        windSpeed: this.getWindSpeed(item.data),
         description:
           item.data?.description ||
           (item.data as any)?.weatherCondition ||
@@ -189,7 +229,6 @@ export class WeatherService {
     }
   }
 
-  // ✅ ATUALIZADO COM FALLBACK E LOGS
   async getLatestWeather() {
     try {
       const latest = await this.weatherModel
@@ -200,19 +239,14 @@ export class WeatherService {
 
       if (!latest) return null
 
-      this.logger.log(
-        '🔍 Documento do MongoDB:',
-        JSON.stringify(latest, null, 2)
-      )
-      this.logger.log('🌬️ WindSpeed (camelCase):', latest.data?.windSpeed)
-      this.logger.log('🌬️ wind_speed (snake_case):', latest.data?.wind_speed)
+      this.logger.log('Documento do MongoDB:', JSON.stringify(latest, null, 2))
 
       return {
         id: latest._id.toString(),
         city: latest.location?.city || 'Unknown',
         temperature: latest.data?.temperature || 0,
         humidity: latest.data?.humidity || 0,
-        windSpeed: this.getWindSpeed(latest.data), // ✅ USA O HELPER
+        windSpeed: this.getWindSpeed(latest.data),
         description:
           latest.data?.description ||
           (latest.data as any)?.weatherCondition ||

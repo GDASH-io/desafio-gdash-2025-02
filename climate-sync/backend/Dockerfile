@@ -7,13 +7,13 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 # Instalar dependências
-RUN npm ci
-
-# Instalar NestJS CLI globalmente
-RUN npm install -g @nestjs/cli
+RUN npm install
 
 # Copiar código fonte
 COPY . .
+
+# Instalar NestJS CLI globalmente para garantir o build
+RUN npm install -g @nestjs/cli
 
 # Build da aplicação
 RUN npm run build

@@ -20,12 +20,15 @@ class WeatherScheduler:
             print("⚠️ Failed to fetch weather data")
     
     def run(self):
-        print("🔵 Iniciando o scheduler...")
+        print("🔵 Iniciando o scheduler (Producer Mode)...")
         print(f"🚀 Weather Producer started at {self.config.LATITUDE},{self.config.LONGITUDE}")
-        print(f"Usando LATITUDE={self.config.LATITUDE}, LONGITUDE={self.config.LONGITUDE}")
-
+        
+        # Coleta inicial
         self.collect_and_publish()
+        
+        # Agendamento
         schedule.every(self.config.COLLECTION_INTERVAL_MINUTES).minutes.do(self.collect_and_publish)
+        
         try:
             while True:
                 schedule.run_pending()
@@ -33,8 +36,3 @@ class WeatherScheduler:
         except KeyboardInterrupt:
             print("⏹️ Shutting down...")
             self.queue_publisher.close()
-
-
-if __name__ == "__main__":
-    scheduler = WeatherScheduler()
-    scheduler.run()

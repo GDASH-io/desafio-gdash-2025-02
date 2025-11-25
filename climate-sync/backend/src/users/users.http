@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3000
+@baseUrl = http://localhost:3000/api
 
 ### 1. Login (Admin) - Para pegar o Token
 # Faz o login com o usuário admin padrão criado automaticamente
@@ -51,3 +51,28 @@ Content-Type: application/json
 ### 6. Excluir Usuário
 DELETE {{baseUrl}}/users/{{userId}}
 Authorization: Bearer {{authToken}}
+
+### ENVIAR DADOS DE CLIMA (via REST Client)
+POST http://localhost:3000/api/weather/logs
+Content-Type: application/json
+Authorization: Bearer SEU_TOKEN_AQUI
+
+{
+  "data": {
+    "temperature": 25.3,
+    "humidity": 62,
+    "wind_speed": 10.5,
+    "weather_code": 3,
+    "weather_condition": "Nublado"
+  },
+  "location": {
+    "city": "Mauá",
+    "state": "São Paulo",
+    "country": "Brasil",
+    "latitude": -23.64683,
+    "longitude": -46.4551
+  },
+  "processed_by": "rest-client-test",
+   "timestamp": "2024-07-29T10:00:00Z"
+
+}

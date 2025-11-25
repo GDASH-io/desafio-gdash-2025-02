@@ -1,12 +1,13 @@
 package queue
 
 import (
-	"context"
+	"bytes"
 	"encoding/json"
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/mlluiz39/go-worker/internal/config"
-	"github.com/mlluiz39/go-worker/internal/processor"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -33,7 +34,7 @@ func (c *Consumer) Start() error {
 	routingKey := "weather.data"
 	queueName := "weather.go.queue"
 
-	// Criar exchange enterprise
+	// Criar exchange
 	err = ch.ExchangeDeclare(
 		exchangeName,
 		"topic",
@@ -47,7 +48,7 @@ func (c *Consumer) Start() error {
 		return err
 	}
 
-	// Criar fila exclusiva do Go Worker
+	// Criar fila do Go Worker
 	_, err = ch.QueueDeclare(
 		queueName,
 		true,  // durable
@@ -60,7 +61,7 @@ func (c *Consumer) Start() error {
 		return err
 	}
 
-	// Bind da fila ao exchange + routing key
+	// Bind
 	err = ch.QueueBind(
 		queueName,
 		routingKey,
@@ -88,22 +89,43 @@ func (c *Consumer) Start() error {
 		return err
 	}
 
-	processor := processor.NewWeatherProcessor()
-
 	for msg := range msgs {
 		var payload map[string]interface{}
 
 		if err := json.Unmarshal(msg.Body, &payload); err != nil {
 			log.Println("❌ Failed to parse message:", err)
-			msg.Nack(false, false) // descarta sem requeue
+			msg.Nack(false, false)
 			continue
 		}
 
-		log.Println("🌦️ Received weather payload:")
+		log.Println("🌦️ Received weather payload:", payload)
 
-		processor.Handle(context.Background(), payload)
+		// Converter payload para JSON
+		jsonData, _ := json.Marshal(payload)
 
-		msg.Ack(false) // Confirma processamento
+		// 🔥 ENVIAR PARA NESTJS EM TEMPO REAL
+		realtimeURL := "http://nestjs-api:3000/api/weather/realtime"
+
+		req, _ := http.NewRequest("POST", realtimeURL, bytes.NewBuffer(jsonData))
+		req.Header.Set("Content-Type", "application/json")
+
+		client := &http.Client{
+			Timeout: 5 * time.Second,
+		}
+
+		resp, err := client.Do(req)
+
+		if err != nil {
+			log.Println("❌ Failed to send realtime data to NestJS:", err)
+			msg.Nack(false, true) // requeue
+			continue
+		}
+
+		log.Println("✅ Realtime data sent to NestJS → Status:", resp.StatusCode)
+		resp.Body.Close()
+
+		// Confirma consumo
+		msg.Ack(false)
 	}
 
 	return nil

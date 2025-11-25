@@ -47,6 +47,8 @@ services:
       - "${PORT}:3000"
     env_file:
       - ./.env
+    volumes:
+      - ./.env:/app/.env
     environment:
       - NODE_ENV=${NODE_ENV}
       - MONGO_URI=${MONGO_URI}
@@ -97,6 +99,7 @@ services:
       LONGITUDE: ${LONGITUDE}
       RABBITMQ_URL: ${RABBITMQ_URL}
       RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      NEST_API_URL: ${NEST_API_URL}
     depends_on:
       rabbitmq:
         condition: service_healthy

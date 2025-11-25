@@ -11,6 +11,7 @@ type Config struct {
 	RabbitURL    string
 	QueueName    string
 	PythonAPIURL string
+	NestAPIURL   string
 }
 
 func Load() *Config {
@@ -38,6 +39,11 @@ func Load() *Config {
 		pythonURL = "http://python-producer:5000/weather"
 	}
 
+	nestURL := os.Getenv("NEST_API_URL")
+	if nestURL == "" {
+		nestURL = "http://nestjs-api:3000/weather/logs"
+	}
+
 	if rabbitMQ == "" {
 		log.Fatal("❌ Missing RABBITMQ_URL in environment")
 	}
@@ -46,5 +52,6 @@ func Load() *Config {
 		RabbitURL:    rabbitMQ,
 		QueueName:    queue,
 		PythonAPIURL: pythonURL,
+		NestAPIURL:   nestURL,
 	}
 }

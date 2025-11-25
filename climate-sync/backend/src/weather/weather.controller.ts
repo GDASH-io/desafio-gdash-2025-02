@@ -1,7 +1,18 @@
-import { Controller, Get, Logger, Sse, MessageEvent } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Logger,
+  Sse,
+  MessageEvent,
+  Res,
+  Query,
+} from '@nestjs/common'
 import { WeatherService } from './weather.service'
-import { Observable, interval, from } from 'rxjs'
-import { switchMap, map } from 'rxjs/operators'
+import { Observable } from 'rxjs'
+import { map, startWith } from 'rxjs/operators'
+import { Response } from 'express'
 
 @Controller('weather')
 export class WeatherController {
@@ -9,9 +20,64 @@ export class WeatherController {
 
   constructor(private readonly weatherService: WeatherService) {}
 
+  // Endpoint chamado pelo Go Worker para salvar dados
+  @Post('logs')
+  async saveWeatherLog(@Body() weatherData: any) {
+    this.logger.log('Recebendo dados via POST /weather/logs (do Go Worker)')
+    try {
+      const saved = await this.weatherService.saveWeather(weatherData)
+
+      this.logger.log(
+        `✅ Dados salvos com sucesso: ${saved.data.temperature}°C`
+      )
+      return { success: true, id: saved._id }
+    } catch (error) {
+      this.logger.error('❌ Erro ao salvar dados via POST:', error)
+      throw error
+    }
+  }
+
+  @Get('logs')
+  async getLogs(@Query('limit') limit = 100, @Query('skip') skip = 0) {
+    return this.weatherService.findAll(Number(limit), Number(skip))
+  }
+
+  @Get('export.csv')
+  async exportCsv(@Res() res: Response) {
+    const data = await this.weatherService.getExportData()
+
+    // Set headers
+    res.setHeader('Content-Type', 'text/csv')
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=weather_logs.csv'
+    )
+
+    // Write CSV header
+    res.write('Timestamp,City,Temperature,Humidity,Wind Speed\n')
+
+    // Write data rows
+    data.forEach((item: any) => {
+      const timestamp = item.timestamp || item.createdAt || ''
+      const city = item.location?.city || 'Unknown'
+      const temp = item.data?.temperature || 0
+      const humidity = item.data?.humidity || 0
+      const wind = item.data?.windSpeed ?? item.data?.wind_speed ?? 0
+
+      res.write(`${timestamp},${city},${temp},${humidity},${wind}\n`)
+    })
+
+    res.end()
+  }
+
+  @Get('export.xlsx')
+  async exportXlsx(@Res() res: Response) {
+    return this.exportCsv(res)
+  }
+
   @Get('dashboard')
   async getDashboard() {
-    this.logger.log('📊 Requisição para /weather/dashboard')
+    this.logger.log('Requisição para /weather/dashboard')
     try {
       const metrics = await this.weatherService.getDashboardMetrics()
       this.logger.log('Métricas retornadas:', metrics)
@@ -68,22 +134,27 @@ export class WeatherController {
     }
   }
 
-  // SSE para dados em tempo real - CORRIGIDO
+  // SSE para dados em tempo real (Event-Driven)
   @Sse('realtime')
-  streamWeatherUpdates(): Observable<MessageEvent> {
-    this.logger.log('🔴 Cliente conectado ao stream /weather/realtime')
-    
-    return interval(5000).pipe(
-      switchMap(() => 
-        from(this.weatherService.getLatestWeather()).pipe(
-          map(latestData => {
-            this.logger.log('Enviando atualização em tempo real:', latestData)
-            return {
-              data: latestData,
-              type: 'message'
-            } as MessageEvent
-          })
-        )
+  async streamWeatherUpdates(): Promise<Observable<MessageEvent>> {
+    this.logger.log('Cliente conectado ao SSE /weather/realtime')
+
+    // Últimos 20 registros
+    const recent = await this.weatherService.getWeatherForDashboard(20)
+
+    return this.weatherService.weatherUpdates$.asObservable().pipe(
+      startWith(
+        ...recent.map(d => ({
+          data: {
+            id: d.id,
+            timestamp: d.timestamp,
+            temperature: d.temperature ?? 0,
+            humidity: d.humidity ?? 0,
+            windSpeed: d.windSpeed ?? d.windSpeed ?? 0,
+            city: d.city ?? 'Desconhecida',
+          },
+          type: 'message',
+        }))
       )
     )
   }
