@@ -4,6 +4,8 @@ services:
     volumes:
       - mongo-data:/data/db
     ports: ["27017:27017"]
+    networks:
+      - backend-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -11,6 +13,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
+    networks:
+      - backend-network
 
   api:
     build:
@@ -20,18 +24,33 @@ services:
       - MONGO_URI=mongodb://mongo:27017/desafio_gdash
     ports: ["3000:3000"]
     depends_on: ["mongo","rabbitmq"]
+    networks:
+      - backend-network
 
   python-collector:
     build:
       context: ./services/python-collector
       dockerfile: Dockerfile
     depends_on: ["rabbitmq"]
+    networks:
+      - backend-network
 
   go-worker:
     build:
       context: ./services/go-worker
       dockerfile: Dockerfile
     depends_on: ["rabbitmq","api"]
+    networks:
+      - backend-network
+    
+    
 
 volumes:
   mongo-data:
+    driver: local
+
+networks:
+  backend-network:
+    driver: bridge
+  frontend-network:
+    driver: bridge
