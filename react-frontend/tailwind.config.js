@@ -21,38 +21,38 @@ export default {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        border: "#3b82f6", // Um tom de azul para bordas
+        input: "#1a1a1a", // Preto para inputs
+        ring: "#3b82f6", // Azul para anéis de foco
+        background: "#121212", // Preto mais escuro para fundo geral
+        foreground: "#e0e0e0", // Cinza claro para texto
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#3b82f6", // Azul primário
+          foreground: "#ffffff", // Branco para texto sobre o primário
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#1a1a1a", // Preto secundário
+          foreground: "#ffffff", // Branco para texto sobre o secundário
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "#ef4444", // Vermelho padrão para destruição
+          foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#262626", // Cinza escuro para elementos mutados
+          foreground: "#e0e0e0",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "#3b82f6", // Azul para acentos
+          foreground: "#ffffff",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: "#1a1a1a", // Preto para popovers
+          foreground: "#e0e0e0",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: "#1a1a1a", // Preto para cards
+          foreground: "#e0e0e0",
         },
       },
       borderRadius: {

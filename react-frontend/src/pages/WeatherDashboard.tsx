@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { differenceInMinutes, parseISO, format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 interface WeatherLog {
   _id: string;
@@ -19,17 +20,25 @@ interface WeatherLog {
   createdAt: string; 
 }
 
-interface WeatherInsights {
-  averageTemperature: number;
-  temperatureTrend: string;
-  message: string;
+interface WeatherRecommendation {
+  mood: string;
+  suggestions: string[];
+  description: string;
+}
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string;
+  release_date: string;
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 export function WeatherDashboard() {
   const [weatherLogs, setWeatherLogs] = useState<WeatherLog[]>([]);
-  const [weatherInsights, setWeatherInsights] = useState<WeatherInsights | null>(null);
+  const [movieRecommendations, setMovieRecommendations] = useState<Movie[]>([]);
+  const [aiRecommendation, setAiRecommendation] = useState<WeatherRecommendation | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,10 +61,28 @@ export function WeatherDashboard() {
 
       setWeatherLogs(filteredLogs);
 
-      const insightsResponse = await axios.get(`${API_BASE_URL}/api/weather/insights`);
-      setWeatherInsights(insightsResponse.data);
+      const currentWeatherData = filteredLogs.length > 0 ? filteredLogs[filteredLogs.length - 1] : null;
+      
+
+      if (currentWeatherData) {
+        const aiResponse = await axios.post<WeatherRecommendation>(`${API_BASE_URL}/api/ai/recommendations`, {
+          temperature: currentWeatherData.temperature,
+          weathercode: currentWeatherData.weathercode,
+          precipitation_probability: currentWeatherData.precipitation_probability,
+        });
+        setAiRecommendation(aiResponse.data);
+        
+
+        if (aiResponse.data.suggestions.length > 0) {
+          const genreNames = aiResponse.data.suggestions.join(',');
+          const moviesResponse = await axios.get(`${API_BASE_URL}/api/tmdb/by-genres?genres=${genreNames}`);
+          setMovieRecommendations(moviesResponse.data.results);
+          
+        }
+      }
+
     } catch (err) {
-      setError('Falha ao buscar dados de clima.');
+      setError('Falha ao buscar dados de clima ou recomendações.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -87,16 +114,19 @@ export function WeatherDashboard() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold">Painel de Clima</h2>
+      <h2 className="text-3xl font-bold">Painel de Clima e Recomendações</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {currentWeather && (
-          <Card>
+        {currentWeather && aiRecommendation && (
+          <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle>Temperatura Atual</CardTitle>
+              <CardTitle>Clima Atual e Humor Sugerido</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-semibold">{currentWeather.temperature}°C</p>
+              <p className="text-4xl font-semibold mb-2">Temperatura: {currentWeather.temperature}°C</p>
+              <p className="text-xl">Clima: {currentWeather.weathercode} {currentWeather.precipitation_probability ? `(${currentWeather.precipitation_probability}% chuva)` : ''}</p>
+              <p className="text-xl mt-2">Mood sugerido: "{aiRecommendation.mood}"</p>
+              <p className="text-md text-gray-400 mt-1">{aiRecommendation.description}</p>
             </CardContent>
           </Card>
         )}
@@ -123,19 +153,34 @@ export function WeatherDashboard() {
           </Card>
         )}
 
-        {weatherInsights && (
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Insights de IA</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xl">{weatherInsights.message}</p>
-              <p>Temperatura Média: {weatherInsights.averageTemperature}°C</p>
-              <p>Tendência de Temperatura: {weatherInsights.temperatureTrend}</p>
-            </CardContent>
-          </Card>
-        )}
       </div>
+
+      {movieRecommendations.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Filmes Sugeridos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {movieRecommendations.map((movie) => (
+                <Link to={`/movies/${movie.id}`} key={movie.id}>
+                  <div className="border rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <img
+                      src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                      alt={movie.title}
+                      className="w-full h-auto"
+                    />
+                    <div className="p-2">
+                      <h2 className="font-semibold text-lg">{movie.title}</h2>
+                      <p className="text-sm text-gray-600">{movie.release_date}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="flex justify-end space-x-2">
         <Button onClick={() => handleExport('csv')}>Exportar CSV</Button>

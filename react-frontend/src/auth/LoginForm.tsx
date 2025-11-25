@@ -24,8 +24,8 @@ export function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-sm">
+    <div className="w-full max-w-sm">
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
         </CardHeader>

@@ -7,9 +7,30 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: dark;
+  color: #e0e0e0; /* Um cinza claro para texto */
+  background-color: #1a1a1a; /* Preto quase absoluto para fundo */
+
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%; /* Azul primário */
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.4% 17.5%; /* Azul secundário */
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.4% 17.5%;
+  --muted-foreground: 210 40% 98%;
+  --accent: 217.2 32.4% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.4% 17.5%;
+  --input: 217.2 32.4% 17.5%;
+  --ring: 217.2 91.2% 59.8%;
+  --radius: 0.5rem;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,7 +40,7 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #646cff; /* Manter um tom de azul para links */
   text-decoration: inherit;
 }
 a:hover {
@@ -32,6 +53,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #1a1a1a; /* Garantir que o body também tenha o fundo preto */
 }
 
 h1 {

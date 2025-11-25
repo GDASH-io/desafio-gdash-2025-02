@@ -19,7 +19,7 @@ export const MovieList = () => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:3000/tmdb/popular?page=${page}`);
+        const response = await axios.get(`http://localhost:3000/api/tmdb/popular?page=${page}`);
         setMovies(response.data.results);
       } catch (err) {
         setError('Failed to fetch movies');

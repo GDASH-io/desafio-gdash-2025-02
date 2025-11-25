@@ -17,12 +17,40 @@ function App() {
       <ToastProvider>
         <Layout>
           <Routes>
-            <Route path="/" element={<WeatherDashboard />} />
-            <Route path="/dashboard" element={<WeatherDashboard />} />
-            <Route path="/movies" element={<MovieList />} />
-            <Route path="/movies/:id" element={<MovieDetail />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <WeatherDashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <WeatherDashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/movies"
+              element={
+                <PrivateRoute>
+                  <MovieList />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/movies/:id"
+              element={
+                <PrivateRoute>
+                  <MovieDetail />
+                </PrivateRoute>
+              }
+            />
             <Route
               path="/users"
               element={

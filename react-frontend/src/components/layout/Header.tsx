@@ -3,29 +3,21 @@ import { Button } from '../ui/button';
 
 export function Header() {
   return (
-    <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
+    <header className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-md">
       <Link to="/">
-        <h1 className="text-2xl font-bold">GDASH</h1>
+        <h1 className="text-2xl font-bold text-blue-500">GDASH</h1>
       </Link>
       <nav>
-        <ul className="flex space-x-4">
+        <ul className="flex space-x-6">
           <li>
-            <Link to="/dashboard">
-              <Button variant="ghost">Dashboard</Button>
+            <Link to="/dashboard" className="text-gray-300 hover:text-blue-400 transition-colors duration-200">
+              <Button variant="ghost">Painel</Button>
             </Link>
           </li>
           <li>
-            <Link to="/movies">
-              <Button variant="ghost">Movies</Button>
+            <Link to="/movies" className="text-gray-300 hover:text-blue-400 transition-colors duration-200">
+              <Button variant="ghost">Filmes</Button>
             </Link>
-          </li>
-          <li>
-            <Link to="/users">
-              <Button variant="ghost">Users</Button>
-            </Link>
-          </li>
-          <li>
-            <Button variant="ghost">Login</Button>
           </li>
         </ul>
       </nav>
