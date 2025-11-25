@@ -1,8 +1,16 @@
 {
-  "name": "api",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
+  "name": "weather-api",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "bun run src/main.ts",
+    "start:dev": "bun --watch src/main.ts",
+    "start:prod": "node dist/main.js",
+    "build": "nest build",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  },
   "devDependencies": {
     "@nestjs/cli": "^11.0.12",
     "@nestjs/testing": "^11.1.9",

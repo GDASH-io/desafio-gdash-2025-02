@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { WeatherModule } from './weather/weather.module';
 
 @Module({
   imports: [
@@ -10,10 +11,11 @@ import { AppService } from "./app.service";
       isGlobal: true,
       envFilePath: ".env",
     }),
+    WeatherModule,
 
-    MongooseModule.forRoot(
-      process.env.MONGODB_URI || "mongodb://mongodb:27017/weather"
-    ),
+    // MongooseModule.forRoot(
+    //   process.env.MONGODB_URI || "mongodb://mongodb:27017/weather"
+    // ),
   ],
   controllers: [AppController],
   providers: [AppService],
