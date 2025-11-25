@@ -1,0 +1,157 @@
+services:
+  # ======================
+  # Infrastructure Services
+  # ======================
+
+  redis:
+    image: redis:7-alpine
+    container_name: gdash-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - gdash-network
+
+  mongodb:
+    image: mongo:7
+    container_name: gdash-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gdash-network
+
+  # ======================
+  # Application Services
+  # ======================
+
+  python-collector:
+    build:
+      context: ./services/python-collector
+      dockerfile: Dockerfile
+    container_name: gdash-python-collector
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - OPENWEATHER_CITIES=${OPENWEATHER_CITIES}
+      - COLLECTOR_INTERVAL=${COLLECTOR_INTERVAL}
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - gdash-network
+
+  go-worker:
+    build:
+      context: ./services/go-worker
+      dockerfile: Dockerfile
+    container_name: gdash-go-worker
+    env_file:
+      - .env
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - API_BASE_URL=http://nestjs-api:3000
+    depends_on:
+      redis:
+        condition: service_healthy
+      nestjs-api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - gdash-network
+
+  nestjs-api:
+    build:
+      context: ./services/nestjs-api
+      dockerfile: Dockerfile
+    container_name: gdash-nestjs-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=3000
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - gdash-network
+    volumes:
+      # Volume apenas para exports, não montar código fonte em produção
+      - ./exports:/app/exports
+
+  react-frontend:
+    build:
+      context: ./services/react-frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: gdash-react-frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - .env
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    depends_on:
+      - nestjs-api
+    restart: unless-stopped
+    networks:
+      - gdash-network
+    volumes:
+      - ./services/react-frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+
+# ======================
+# Networks
+# ======================
+networks:
+  gdash-network:
+    driver: bridge
+
+# ======================
+# Volumes
+# ======================
+volumes:
+  redis-data:
+    driver: local
+  mongo-data:
+    driver: local
+  mongo-config:
+    driver: local
