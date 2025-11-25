@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -17,6 +15,8 @@ services:
       retries: 5
     networks:
       - weather-network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   weather-collector:
     build:
@@ -30,17 +30,43 @@ services:
       LATITUDE: "-5.795"
       LONGITUDE: "-35.209"
       CITY_NAME: "Natal"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_QUEUE: weather_data
+      COLLECTION_INTERVAL: 60
+    restart: unless-stopped
+    networks:
+      - weather-network
 
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: worker-go
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_QUEUE: weather_data
 
-      COLLECTION_INTERVAL: 60
+      API_URL: http://api:3000/api/weather/logs
+      API_TIMEOUT: 30
+
+      MAX_RETRIES: 3
+      RETRY_DELAY_SECONDS: 2
     restart: unless-stopped
     networks:
       - weather-network
+
+volumes:
+  rabbitmq_data:
+    driver: local
 
 networks:
   weather-network:
