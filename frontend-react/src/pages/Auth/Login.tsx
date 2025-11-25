@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
+import NetworkBackground from '../../components/NetworkBackground';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -29,8 +30,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+      <NetworkBackground />
+      <Card className="w-full max-w-md relative z-10 bg-card/95 backdrop-blur-sm shadow-xl">
         <CardHeader>
           <CardTitle>Login - GDASH</CardTitle>
         </CardHeader>
