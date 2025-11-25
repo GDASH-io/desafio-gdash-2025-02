@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios'; // Import HttpModule
 import { TmdbModule } from './tmdb/tmdb.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TmdbModule } from './tmdb/tmdb.module';
     AuthModule,
     HttpModule,
     TmdbModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
