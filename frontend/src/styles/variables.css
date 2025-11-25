@@ -1,0 +1,17 @@
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-dark: #1e40af;
+
+  --color-secondary: #10b981;
+
+  --color-bg-light: #f8fafc;
+  --color-bg-card: #ffffff;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+
+  --color-border: #e2e8f0;
+
+  --font-family-heading: "Inter", sans-serif;
+  --font-family-body: "Inter", sans-serif;
+}

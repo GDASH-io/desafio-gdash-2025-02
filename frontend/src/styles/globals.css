@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@import "./reset.css";
+
+@import "./variables.css";
+
+body {
+  font-family: var(--font-family-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-light);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}

@@ -79,6 +79,20 @@ services:
     networks:
       - weather-network
     restart: unless-stopped
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/app
+    networks:
+      - weather-network
+    restart: unless-stopped
 
 networks:
   weather-network:
