@@ -25,7 +25,7 @@ services:
     depends_on:
       - mongo
       - rabbitmq
-    env_file: .env.example
+    env_file: .env
     environment:
       # Override se necessário; usando variáveis do env file
       NODE_ENV: development
@@ -38,7 +38,7 @@ services:
     container_name: frontend
     depends_on:
       - api
-    env_file: .env.example
+    env_file: .env
     ports:
       - "5173:5173"
     # command: ["sh","-c","npm run dev -- --host"]  # ajustaremos após criar projeto
@@ -48,8 +48,11 @@ services:
     container_name: python_collector
     depends_on:
       - rabbitmq
-    env_file: .env.example
-    # command: ["python","main.py"]  # definiremos depois
+    env_file: .env
+    environment:
+      FETCH_INTERVAL_SECONDS: 3600
+      WEATHER_QUEUE: weather.raw
+    command: ["python","main.py"]
     restart: unless-stopped
 
   go_worker:
@@ -58,7 +61,7 @@ services:
     depends_on:
       - rabbitmq
       - api
-    env_file: .env.example
+    env_file: .env
     # command: ["/app/worker"]  # ajustaremos depois
     restart: unless-stopped
 

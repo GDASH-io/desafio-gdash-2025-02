@@ -1,12 +1,15 @@
-import { Controller, Get, Query, Post, Body } from '@nestjs/common';
+import { Controller, Get, Query, Post, Body, UseGuards } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { IngestLogDto } from './dto/ingest-log.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { IngestApiKeyGuard } from '../auth/ingest-api-key.guard';
 
 @Controller('weather')
 export class WeatherController {
 	constructor(private readonly weatherService: WeatherService) {}
 
 	@Get('logs')
+	@UseGuards(JwtAuthGuard)
 	async getLogs(
 		@Query('page') page?: string,
 		@Query('limit') limit?: string,
@@ -22,8 +25,9 @@ export class WeatherController {
 	}
 
 	@Post('logs')
+	// Ingest é protegido por API Key para o worker Go
+	@UseGuards(IngestApiKeyGuard)
 	async ingest(@Body() body: IngestLogDto) {
-		
 		return this.weatherService.ingestLog(body);
 	}
 }
