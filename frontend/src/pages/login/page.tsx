@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Cloud, Mail, Lock, ArrowRight } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { type LoginFormValues, loginSchema } from "./schema";
 import { useLoginPage } from "./useLoginPage";
 
@@ -23,7 +24,7 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const { onSubmit } = useLoginPage();
+  const { onSubmit, isLoading } = useLoginPage();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[linear-gradient(to_bottom_right,var(--primary)/0.05,var(--background),var(--secondary)/0.05)] p-4 relative overflow-hidden">
@@ -79,9 +80,19 @@ export function LoginPage() {
               type="submit"
               className="w-full h-11 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 group mt-2"
               size="lg"
+              disabled={isLoading}
             >
-              Entrar
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              {isLoading ? (
+                <>
+                  <Spinner className="w-4 h-4 animate-spin" />
+                  Entrando...
+                </>
+              ) : (
+                <>
+                  Entrar
+                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </Button>
           </form>
         </CardContent>
