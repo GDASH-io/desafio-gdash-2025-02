@@ -5,8 +5,8 @@ from src.queue_sender import connect_rmq, publish_message
 
 
 def main():
-    conn, ch = connect_rmq()
-    publish_message(ch)
+    conn, channel = connect_rmq()
+    publish_message(channel)
     conn.close()
 
 scheduler = BackgroundScheduler()
@@ -17,7 +17,6 @@ try:
         time.sleep(2)
 except (KeyboardInterrupt, SystemExit):
     scheduler.shutdown()
-
 
 if __name__ == "__main__":
     main()

@@ -9,13 +9,6 @@ export type WeatherLogsDocument = HydratedDocument<WeatherLogs>;
   collection: 'weather_logs',
 })
 export class WeatherLogs {
-  @Prop({
-    type: String,
-    default: () => uuidv4(),
-    required: true,
-    unique: true,
-  })
-  id_log: string;
 
   @Prop({ required: true })
   temperatura: number;

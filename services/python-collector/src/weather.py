@@ -1,5 +1,7 @@
 import requests
 from geopy.geocoders import Nominatim
+from datetime import datetime
+from pytz import timezone
 
 
 WEATHER_CODE = {
@@ -28,26 +30,22 @@ def get_coordinates():
     global COORDINATES_EXISTING
     geolocator = Nominatim(user_agent="coordenadas_teresina")
     cidade = "Teresina, Piauí, Brasil"
-    if COORDINATES_EXISTING == {}:
-        location = geolocator.geocode(cidade, timeout=20)
-        try:
-            if location is None:
-                raise ValueError("Não foi possível obter as coordenadas para a cidade especificada.")
-            if location:
-                latitude = location.latitude
-                longitude = location.longitude
-                cordinates = {
-                    "latitude": latitude,
-                    "longitude": longitude
-                }
-                COORDINATES_EXISTING = cordinates
-                return cordinates
-        except ValueError as e:
-            print(e)
-            return None, None
-    else:
-        return COORDINATES_EXISTING
-    # alteração feita para evitar fazer múltiplas requisições para o mesmo local em teste
+    location = geolocator.geocode(cidade, timeout=20)
+    try:
+        if location is None:
+            raise ValueError("Não foi possível obter as coordenadas para a cidade especificada.")
+        if location:
+            latitude = location.latitude
+            longitude = location.longitude
+            cordinates = {
+                "latitude": latitude,
+                "longitude": longitude
+            }
+            COORDINATES_EXISTING = cordinates
+            return cordinates
+    except ValueError as e:
+        print(e)
+        return None, None
 
 
 def search_forecast(lat: float, lon: float, tz: str):
@@ -93,14 +91,15 @@ def extract_data(func):
     }
 
 
-def format_data(**kwargs): # 
-    data_unformatted = kwargs
+def format_data(**kwargs):
+    tz_brasil = timezone("America/Fortaleza")
     data_formatted = {
         "temperatura": kwargs["current"]["temperature"],
-        "umidade": kwargs["hourly"]["relative_humidity_2m"][0],
+        "umidade": float(kwargs['hourly']['relative_humidity_2m'][0]),
         "vento": kwargs["current"]["windspeed"],
         "condicao": kwargs["condition"],
-        "probabilidade_chuva": kwargs["hourly"]["precipitation_probability"][0],
+        "probabilidade_chuva": float(kwargs['hourly']['precipitation_probability'][0]),
+        "data_coleta": (datetime.now(tz=tz_brasil)).strftime("%Y-%m-%d %H:%M:%S")
     }
     return data_formatted
 

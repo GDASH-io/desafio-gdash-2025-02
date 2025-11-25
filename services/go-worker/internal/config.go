@@ -10,6 +10,9 @@ type Config struct {
         URL      string `yaml:"URL"`
         EXCHANGE string `yaml:"EXCHANGE"`
     } `yaml:"rabbitmq"`
+	Api struct {
+		LOGS_URL string `yaml:"LOGS_URL"`
+	} `yaml:"api"`
 }
 
 func LoadConfig(path string) (*Config, error) {
