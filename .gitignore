@@ -1,0 +1,25 @@
+# --- Geral ---
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Node.js (Frontend e Backend) ---
+node_modules/
+dist/
+build/
+.env
+coverage/
+
+# --- Python (Coletor) ---
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- Go (Worker) ---
+# Binários gerados (se houver)
+worker-go/worker-go
+worker-go/main.exe
+
+# --- Docker ---
+.docker/
