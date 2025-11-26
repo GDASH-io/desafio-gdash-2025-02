@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - gdash_net
+
+  mongodb:
+    image: mongo:latest
+    container_name: gdash_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo_livre:/data/db
+    networks:
+      - gdash_net
+
+  coleta_clima:
+    build: ./coleta_clima
+    container_name: gdash_python
+    depends_on:
+      - rabbitmq # Agora só espera iniciar, não espera ficar "saudável"
+    environment:
+      RABBITMQ_HOST: gdash_rabbitmq
+    networks:
+      - gdash_net
+
+  api_clima:
+    build: ./api_clima
+    container_name: gdash_api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URL: "mongodb://gdash_mongodb:27017/gdash_db"
+    networks:
+      - gdash_net
+
+  processador_clima:
+    build: ./processador_clima
+    container_name: gdash_go
+    depends_on:
+      - rabbitmq
+      - api_clima
+    environment:
+      API_URL: "http://gdash_api:3000/weather"
+      RABBITMQ_URL: "amqp://guest:guest@gdash_rabbitmq:5672/"
+    networks:
+      - gdash_net
+
+  frontend:
+    build: ./frontend
+    container_name: gdash_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: "http://localhost:3000"
+    networks:
+      - gdash_net
+
+networks:
+  gdash_net:
+    driver: bridge
