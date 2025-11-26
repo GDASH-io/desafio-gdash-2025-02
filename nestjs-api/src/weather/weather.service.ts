@@ -23,8 +23,8 @@ export class WeatherService {
       const params = {
         latitude,
         longitude,
-        hourly: 'temperature_2m,weathercode,precipitation_probability,relativehumidity_2m',
-        daily: 'weathercode,temperature_2m_max,temperature_2m_min',
+        hourly: 'temperature_2m,apparent_temperature,weathercode,precipitation_probability,relativehumidity_2m,uv_index',
+        daily: 'weathercode,temperature_2m_max,temperature_2m_min,uv_index_max',
         current_weather: true,
         timezone: 'auto',
       };

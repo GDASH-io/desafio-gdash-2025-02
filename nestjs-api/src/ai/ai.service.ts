@@ -8,6 +8,7 @@ export interface FullWeatherData {
   humidity: number;
   weathercode: number;
   precipitation_probability?: number;
+  uv_index?: number;
   hourly_units?: { [key: string]: string };
   hourly?: { [key: string]: number[] };
 }
@@ -215,5 +216,148 @@ export class AiService {
     } else {
       return "Clima neutro, seu humor provavelmente não será muito afetado pelo tempo hoje.";
     }
+  }
+
+  getApparentTemperatureExplanation(weatherData: FullWeatherData): string {
+    const { temperature, apparent_temperature, humidity, wind_speed } = weatherData;
+    const difference = apparent_temperature - temperature;
+
+    if (Math.abs(difference) < 1) {
+      return `A sensação térmica de ${apparent_temperature}°C está próxima da temperatura real de ${temperature}°C.`;
+    }
+
+    if (difference > 3) {
+      if (humidity > 70) {
+        return `A sensação térmica de ${apparent_temperature}°C está ${difference.toFixed(1)}°C acima da temperatura real de ${temperature}°C devido à umidade alta (${humidity}%), que causa sensação de abafamento.`;
+      } else if (wind_speed < 5) {
+        return `A sensação térmica de ${apparent_temperature}°C está ${difference.toFixed(1)}°C acima da temperatura real de ${temperature}°C. O vento leve não está ajudando a refrescar.`;
+      }
+    } else if (difference < -3) {
+      if (wind_speed > 20) {
+        return `A sensação térmica de ${apparent_temperature}°C está ${Math.abs(difference).toFixed(1)}°C abaixo da temperatura real de ${temperature}°C devido ao vento forte (${wind_speed} km/h), que aumenta a sensação de frio.`;
+      }
+    }
+
+    return `A sensação térmica de ${apparent_temperature}°C está ${difference > 0 ? `${difference.toFixed(1)}°C acima` : `${Math.abs(difference).toFixed(1)}°C abaixo`} da temperatura real de ${temperature}°C.`;
+  }
+
+  getUvIndexAlert(uvIndex: number): { level: string; color: string; message: string } {
+    if (uvIndex >= 0 && uvIndex < 3) {
+      return {
+        level: 'Baixo',
+        color: 'green',
+        message: 'UV baixo — seguro para exposição prolongada ao sol.'
+      };
+    } else if (uvIndex >= 3 && uvIndex < 6) {
+      return {
+        level: 'Moderado',
+        color: 'yellow',
+        message: 'UV moderado — use protetor solar e evite exposição prolongada ao meio-dia.'
+      };
+    } else if (uvIndex >= 6 && uvIndex < 8) {
+      return {
+        level: 'Alto',
+        color: 'orange',
+        message: 'UV alto — evite exposição prolongada ao sol, use protetor solar e roupas adequadas.'
+      };
+    } else if (uvIndex >= 8 && uvIndex < 11) {
+      return {
+        level: 'Muito Alto',
+        color: 'red',
+        message: 'UV muito alto — evite exposição prolongada ao sol, procure sombra e use proteção adequada.'
+      };
+    } else {
+      return {
+        level: 'Extremo',
+        color: 'red',
+        message: 'UV extremo — evite sair ao sol, procure abrigo e use proteção máxima.'
+      };
+    }
+  }
+
+  getDetailedClothingSuggestions(weatherData: FullWeatherData): string[] {
+    const suggestions: string[] = [];
+    const { temperature, rain, wind_speed, humidity, uv_index } = weatherData;
+
+    // Baseado na temperatura
+    if (temperature >= 28) {
+      suggestions.push('👕 Camiseta leve');
+      suggestions.push('👖 Bermuda ou shorts');
+      if (uv_index && uv_index >= 6) {
+        suggestions.push('🧢 Boné ou chapéu');
+        suggestions.push('🕶 Óculos de sol');
+      }
+    } else if (temperature >= 20 && temperature < 28) {
+      suggestions.push('👕 Camiseta ou regata');
+      suggestions.push('👖 Calça leve ou bermuda');
+      if (uv_index && uv_index >= 6) {
+        suggestions.push('🧢 Boné');
+        suggestions.push('🕶 Óculos de sol');
+      }
+    } else if (temperature >= 15 && temperature < 20) {
+      suggestions.push('👕 Camiseta de manga comprida');
+      suggestions.push('👖 Calça');
+      suggestions.push('🧥 Cardigã ou jaqueta leve');
+    } else {
+      suggestions.push('🧥 Casaco ou jaqueta');
+      suggestions.push('👕 Blusa de manga comprida');
+      suggestions.push('👖 Calça');
+      suggestions.push('🧣 Cachecol (opcional)');
+    }
+
+    // Baseado na chuva
+    if (rain > 30 || (weatherData.precipitation_probability && weatherData.precipitation_probability > 50)) {
+      suggestions.push('🌂 Guarda-chuva (chance alta de chuva)');
+    } else if (rain > 0 || (weatherData.precipitation_probability && weatherData.precipitation_probability > 20)) {
+      suggestions.push('🌂 Levar sombrinha (chance baixa de chuva, mas pode ter pancadas)');
+    }
+
+    // Baseado no vento
+    if (wind_speed > 30) {
+      suggestions.push('🧥 Casaco corta-vento');
+    }
+
+    // Baseado no UV
+    if (uv_index && uv_index >= 6) {
+      suggestions.push('🧴 Protetor solar (essencial)');
+    }
+
+    return suggestions;
+  }
+
+  getHealthAndWellnessConditions(weatherData: FullWeatherData): string[] {
+    const conditions: string[] = [];
+    const { temperature, apparent_temperature, humidity, wind_speed, uv_index } = weatherData;
+
+    // Calor
+    if (temperature >= 30 || apparent_temperature >= 35) {
+      conditions.push(`🌡️ Muito calor previsto — mantenha-se hidratado, beba água regularmente e evite atividades físicas intensas ao ar livre.`);
+    }
+
+    // Umidade
+    if (humidity > 80) {
+      conditions.push(`💧 Umidade muito alta (${humidity}%) — pode causar sensação de abafamento e desconforto respiratório. Mantenha-se hidratado.`);
+    } else if (humidity < 30) {
+      conditions.push(`🌵 Ar muito seco (${humidity}%) — pode causar irritação nos olhos, pele seca e desconforto. Use hidratante e colírios se necessário.`);
+    }
+
+    // Vento
+    if (wind_speed > 40) {
+      conditions.push(`💨 Vento forte (${wind_speed} km/h) — pode agravar alergias e causar irritação nas vias respiratórias. Pessoas sensíveis devem evitar exposição prolongada.`);
+    }
+
+    // UV
+    if (uv_index && uv_index >= 8) {
+      conditions.push(`☀️ Índice UV extremo (${uv_index}) — risco alto de queimaduras solares. Evite exposição ao sol entre 10h e 16h.`);
+    } else if (uv_index && uv_index >= 6) {
+      conditions.push(`☀️ Índice UV alto (${uv_index}) — use protetor solar e evite exposição prolongada ao sol.`);
+    }
+
+    // Sensação térmica
+    if (apparent_temperature - temperature >= 5) {
+      conditions.push(`🌡️ Sensação térmica muito acima da temperatura real — a umidade alta está aumentando a sensação de calor. Vista-se com roupas leves e respiráveis.`);
+    }
+
+    return conditions;
   }
 }

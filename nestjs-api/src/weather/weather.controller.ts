@@ -43,6 +43,7 @@ export class WeatherController {
       humidity: weatherForecast.hourly.relative_humidity_2m?.[0] || 0, 
       weathercode: weatherForecast.current_weather.weathercode,
       precipitation_probability: weatherForecast.hourly.precipitation_probability[0],
+      uv_index: weatherForecast.hourly.uv_index?.[0] || weatherForecast.daily?.uv_index_max?.[0] || undefined,
       hourly_units: weatherForecast.hourly_units,
       hourly: weatherForecast.hourly,
     };
@@ -57,9 +58,13 @@ export class WeatherController {
     const smartAlerts = this.aiService.generateSmartAlerts(fullWeatherData);
     const activityRecommendations = this.aiService.getActivityRecommendations(fullWeatherData);
     const clothingSuggestions = this.aiService.getClothingSuggestions(fullWeatherData);
+    const detailedClothingSuggestions = this.aiService.getDetailedClothingSuggestions(fullWeatherData);
     const daySummary = this.aiService.getDaySummary(fullWeatherData);
     const moodInsights = this.aiService.getMoodInsights(fullWeatherData);
     const movieRecommendations = this.aiService.getMovieRecommendationsByWeather(fullWeatherData);
+    const apparentTemperatureExplanation = this.aiService.getApparentTemperatureExplanation(fullWeatherData);
+    const uvIndexAlert = fullWeatherData.uv_index ? this.aiService.getUvIndexAlert(fullWeatherData.uv_index) : null;
+    const healthAndWellnessConditions = this.aiService.getHealthAndWellnessConditions(fullWeatherData);
 
     return {
       weatherForecast,
@@ -68,9 +73,15 @@ export class WeatherController {
       smartAlerts,
       activityRecommendations,
       clothingSuggestions,
+      detailedClothingSuggestions,
       daySummary,
       moodInsights,
       movieRecommendations,
+      apparentTemperatureExplanation,
+      uvIndexAlert,
+      healthAndWellnessConditions,
+      apparent_temperature: fullWeatherData.apparent_temperature,
+      uv_index: fullWeatherData.uv_index,
     };
   }
 
@@ -95,6 +106,54 @@ export class WeatherController {
       averageTemperature: parseFloat(averageTemperature.toFixed(2)),
       temperatureTrend,
       message: `A temperatura média é de ${averageTemperature.toFixed(2)}°C. ${temperatureTrend}`,
+    };
+  }
+
+  @Get('history-insights')
+  @ApiOperation({ summary: 'Retorna histórico de clima com insights da IA' })
+  async getHistoryInsights() {
+    const logs = await this.weatherService.findAll();
+    
+    // Ordenar por timestamp (mais recente primeiro) e pegar últimos 7 dias
+    const sortedLogs = logs
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 7);
+
+    if (sortedLogs.length < 2) {
+      return {
+        logs: sortedLogs,
+        insights: "Dados insuficientes para gerar insights. Continue coletando dados para ver análises mais detalhadas.",
+        temperatureTrend: "Dados insuficientes",
+      };
+    }
+
+    // Calcular tendência de temperatura
+    const temperatures = sortedLogs.map(log => log.temperature);
+    const avgTemp = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
+    const firstTemp = temperatures[temperatures.length - 1];
+    const lastTemp = temperatures[0];
+    const tempChange = lastTemp - firstTemp;
+
+    let trendMessage = "";
+    if (tempChange > 2) {
+      trendMessage = `A temperatura subiu ${tempChange.toFixed(1)}°C nos últimos ${sortedLogs.length} dias. O clima está ficando mais quente.`;
+    } else if (tempChange < -2) {
+      trendMessage = `A temperatura caiu ${Math.abs(tempChange).toFixed(1)}°C nos últimos ${sortedLogs.length} dias. O clima está ficando mais frio.`;
+    } else {
+      trendMessage = `A temperatura está relativamente estável, variando apenas ${Math.abs(tempChange).toFixed(1)}°C nos últimos ${sortedLogs.length} dias.`;
+    }
+
+    const insights = `Temperatura média: ${avgTemp.toFixed(1)}°C. ${trendMessage}`;
+
+    return {
+      logs: sortedLogs,
+      insights,
+      temperatureTrend: trendMessage,
+      averageTemperature: parseFloat(avgTemp.toFixed(2)),
+      temperatureData: sortedLogs.map(log => ({
+        date: log.timestamp,
+        temperature: log.temperature,
+      })),
     };
   }
 
