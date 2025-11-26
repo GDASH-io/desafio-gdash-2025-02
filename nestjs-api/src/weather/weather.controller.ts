@@ -4,11 +4,15 @@ import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { WeatherLog } from './schemas/weather-log.schema';
 import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { AiService, FullWeatherData } from '../ai/ai.service'; 
 
 @ApiTags('Clima')
 @Controller('weather')
 export class WeatherController {
-  constructor(private readonly weatherService: WeatherService) {}
+  constructor(
+    private readonly weatherService: WeatherService,
+    private readonly aiService: AiService, 
+  ) {}
 
   @Get('forecast')
   @ApiOperation({ summary: 'Obter previsão do tempo por latitude e longitude' })
@@ -19,6 +23,55 @@ export class WeatherController {
     @Query('longitude', ParseFloatPipe) longitude: number,
   ) {
     return this.weatherService.getWeatherForecast(latitude, longitude);
+  }
+
+  @Get('ai-insights')
+  @ApiOperation({ summary: 'Obter insights de IA sobre o clima por latitude e longitude' })
+  @ApiQuery({ name: 'latitude', type: Number, description: 'Latitude para a previsão do tempo' })
+  @ApiQuery({ name: 'longitude', type: Number, description: 'Longitude para a previsão do tempo' })
+  async getAiInsights(
+    @Query('latitude', ParseFloatPipe) latitude: number,
+    @Query('longitude', ParseFloatPipe) longitude: number,
+  ) {
+    const weatherForecast = await this.weatherService.getWeatherForecast(latitude, longitude);
+
+    const fullWeatherData: FullWeatherData = {
+      temperature: weatherForecast.current_weather.temperature,
+      apparent_temperature: weatherForecast.hourly.apparent_temperature?.[0] || weatherForecast.current_weather.temperature, 
+      rain: weatherForecast.hourly.precipitation_probability?.[0] || 0, 
+      wind_speed: weatherForecast.current_weather.windspeed,
+      humidity: weatherForecast.hourly.relative_humidity_2m?.[0] || 0, 
+      weathercode: weatherForecast.current_weather.weathercode,
+      precipitation_probability: weatherForecast.hourly.precipitation_probability[0],
+      hourly_units: weatherForecast.hourly_units,
+      hourly: weatherForecast.hourly,
+    };
+
+    const explainedWeather = this.aiService.explainWeather({
+      temperature: fullWeatherData.temperature,
+      rain: fullWeatherData.rain,
+      wind: fullWeatherData.wind_speed,
+      humidity: fullWeatherData.humidity,
+    });
+    const healthAlerts = this.aiService.generateHealthAlerts(fullWeatherData);
+    const smartAlerts = this.aiService.generateSmartAlerts(fullWeatherData);
+    const activityRecommendations = this.aiService.getActivityRecommendations(fullWeatherData);
+    const clothingSuggestions = this.aiService.getClothingSuggestions(fullWeatherData);
+    const daySummary = this.aiService.getDaySummary(fullWeatherData);
+    const moodInsights = this.aiService.getMoodInsights(fullWeatherData);
+    const movieRecommendations = this.aiService.getMovieRecommendationsByWeather(fullWeatherData);
+
+    return {
+      weatherForecast,
+      explainedWeather,
+      healthAlerts,
+      smartAlerts,
+      activityRecommendations,
+      clothingSuggestions,
+      daySummary,
+      moodInsights,
+      movieRecommendations,
+    };
   }
 
   @Post('logs')

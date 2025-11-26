@@ -16,6 +16,7 @@ ENV NODE_ENV=${NODE_ENV}
 WORKDIR /app
 
 COPY package.json yarn.lock* package-lock.json* ./ 
+RUN apk add --no-cache curl
 COPY --from=development /app/node_modules ./node_modules
 COPY --from=development /app/dist ./dist
 

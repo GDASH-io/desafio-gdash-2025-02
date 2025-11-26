@@ -41,4 +41,9 @@ export class TmdbController {
   getMovieDetails(@Param('id', ParseIntPipe) id: number): Observable<any> {
     return this.tmdbService.getMovieDetails(id);
   }
+
+  @Get('genres') // Novo endpoint para buscar todos os gêneros
+  getGenres(): Observable<any> {
+    return this.tmdbService.getGenres();
+  }
 }

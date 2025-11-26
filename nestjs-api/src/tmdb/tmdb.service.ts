@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { catchError, map } from 'rxjs/operators';
 import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
@@ -84,5 +84,13 @@ export class TmdbService {
         throw new InternalServerErrorException('Falha ao buscar detalhes do filme no TMDB', error.message);
       }),
     );
+  }
+
+  getGenres(): Observable<{ id: number; name: string }[]> {
+    const genres: { id: number; name: string }[] = [];
+    this.genreMap.forEach((id, name) => {
+      genres.push({ id, name });
+    });
+    return of(genres);
   }
 }
