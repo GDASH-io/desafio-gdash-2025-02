@@ -75,11 +75,17 @@ export default function UsersPage() {
 
   const editUser = async (user: any) => {
     const newUsername = prompt("Novo nome de usuário:", user.username);
+
+    // Se digitou algo e é diferente do atual
     if (newUsername && newUsername !== user.username) {
-      // Exemplo de chamada PUT:
-      // await api.put(`/users/${user._id}`, { username: newUsername });
-      // refreshList();
-      alert("Para editar funcionar, crie a rota PUT no backend!");
+      try {
+        // Chama o Backend
+        await api.put(`/users/${user._id}`, { username: newUsername });
+        // Atualiza a lista na tela
+        refreshList();
+      } catch (error) {
+        alert("Erro ao editar (Verifique se o Backend subiu a alteração)");
+      }
     }
   };
 

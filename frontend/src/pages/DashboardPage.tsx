@@ -43,9 +43,19 @@ export default function DashboardPage() {
             🌦️ Dashboard Climático
           </h1>
           <div className="flex gap-2">
-            {/* Botão Excel Novo */}
             <Button
               variant="outline"
+              size="sm"
+              onClick={() =>
+                window.open("http://localhost:3000/weather/export/csv")
+              }
+            >
+              📄 CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200"
               onClick={() =>
                 window.open("http://localhost:3000/weather/export/xlsx")
               }
