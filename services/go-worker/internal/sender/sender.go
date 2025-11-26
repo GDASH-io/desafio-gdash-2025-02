@@ -15,6 +15,8 @@ func SendToAPI(data interface{}, url string) error {
         return fmt.Errorf("erro ao converter dados para JSON: %w", err)
     }
 
+    log.Printf("Enviando dados para a API: %s", string(jsonData))
+
     resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
     if err != nil {
         log.Printf("Erro ao enviar dados para a API: %v", err)

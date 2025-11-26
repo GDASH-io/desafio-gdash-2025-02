@@ -82,7 +82,10 @@ func ConsumeRMQ(config *internal.Config) error {
         return err
     }
 
+    log.Println("Iniciando consumo de mensagens...")
+
     for msg := range messages {
+        log.Printf("Mensagem recebida: %s", msg.Body)
         var weatherData WeatherData
         if err := json.Unmarshal(msg.Body, &weatherData); err != nil {
             log.Printf("Erro ao decodificar a mensagem: %s", err)

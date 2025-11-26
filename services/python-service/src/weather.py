@@ -23,9 +23,6 @@ WEATHER_CODE = {
 } # Código de condição climática baseado na API Open-Meteo
 
 
-COORDINATES_EXISTING = {}
-
-
 def get_coordinates():
     geolocator = Nominatim(user_agent="coordenadas_teresina")
     cidade = "Teresina, Piauí, Brasil"
@@ -90,13 +87,14 @@ def extract_data(func):
 
 def format_data(**kwargs):
     tz_brasil = timezone("America/Fortaleza")
+    data_coleta = datetime.now(tz=tz_brasil).isoformat()
     data_formatted = {
         "temperatura": kwargs["current"]["temperature"],
         "umidade": float(kwargs['hourly']['relative_humidity_2m'][0]),
         "vento": kwargs["current"]["windspeed"],
         "condicao": kwargs["condition"],
         "probabilidade_chuva": float(kwargs['hourly']['precipitation_probability'][0]),
-        "data_coleta": (datetime.now(tz=tz_brasil)).strftime("%Y-%m-%d %H:%M:%S"),
+        "data_coleta": data_coleta,
         "cidade": "Teresina"
     }
 

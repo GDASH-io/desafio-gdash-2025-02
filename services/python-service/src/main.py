@@ -5,6 +5,7 @@ from src.queue_sender import connect_rmq, publish_message
 
 
 def main():
+    print(f"Job iniciado")
     conn, channel = connect_rmq()
     publish_message(channel)
     conn.close()
