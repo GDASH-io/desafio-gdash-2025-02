@@ -27,6 +27,9 @@ export class WeatherLogs {
 
   @Prop({ required: true })
   data_coleta: string;
+
+  @Prop({ required: true })
+  cidade: string;
 }
 
 export const WeatherLogsSchema = SchemaFactory.createForClass(

@@ -14,6 +14,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { WeatherService } from './weather.service';
 import { CsvExportService } from '../exports/csv/csv-export.service';
 import { XlsxExportService } from 'src/exports/xlsx/xlsx-export.service';
+import { InsightsIaService } from 'src/insights-ia/insights-ia.service';
 import { logsWeatherDTO } from '../DTO/logsWeather.dto';
 import { StreamableFile } from '@nestjs/common';
 
@@ -24,14 +25,16 @@ export class WeatherController {
   constructor(
     private readonly weatherService: WeatherService,
     private readonly csvExportService: CsvExportService,
-    private readonly xlsxExportService: XlsxExportService
+    private readonly xlsxExportService: XlsxExportService,
+    private readonly insightsIaService: InsightsIaService,
   ) { }
 
   @Post('logs')
   @ApiOperation({ summary: 'Criar novo log de clima' })
   @ApiResponse({ status: 201, description: 'Log criado com sucesso' })
   async logWeatherData(@Body() logsWeather: logsWeatherDTO) {
-    return await this.weatherService.logWeatherPost(logsWeather);
+    const logs = await this.weatherService.logWeatherPost(logsWeather);
+    return logs;
   }
 
   @Get('logs')
@@ -125,10 +128,10 @@ export class WeatherController {
     return new StreamableFile(xlsx_generated);
   }
 
-//  @Post('insights')
-//  @ApiOperation({ summary: 'Gerar insights por meio de IA, a partir dos logs de clima' })
-//  @ApiResponse({ status: 200, description: 'Insights gerados com sucesso' })
-//  async generateWeatherInsights() {
-//    return await this.weatherService.generateInsights(prompt.question);
-//  }
+  @Post('insights')
+  @ApiOperation({ summary: 'Gerar insights por meio de IA, a partir dos logs de clima' })
+  @ApiResponse({ status: 200, description: 'Insights gerados com sucesso' })
+  async generateWeatherInsights() {
+    return await this.insightsIaService.generateInsights();
+  }
 }

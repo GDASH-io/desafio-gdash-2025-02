@@ -1,21 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { logsWeatherDTO } from '../DTO/logsWeather.dto';
+import { ChatResponseDto } from 'src/DTO/prompt.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { WeatherLogs } from 'src/schema/user.schema';
+import { ConfigService } from '@nestjs/config';
+import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
+
 
 @Injectable()
-export class InsightsIaService {
+export class InsightsIaService implements OnModuleInit {
+    private genModel: GenerativeModel;
+    private chatSessions: Map<string, any> = new Map();
+    private readonly logger = new Logger(InsightsIaService.name);
+
+
     constructor(
         @InjectModel('WeatherLogs')
         private weatherLogsModel: Model<WeatherLogs>,
+        private configService: ConfigService,
     ) { }
 
-    async generateInsights(): Promise<any> {
+    onModuleInit() {
+        const apiKey = this.configService.get<string>('GEMINI_API_KEY');
+        if (!apiKey) {
+            this.logger.error('GEMINI_API_KEY não está definido na configuração');
+            throw new Error('Falha na inicialização do Gemini');
+        }
+        const genAI = new GoogleGenerativeAI(apiKey);
+        this.genModel = genAI.getGenerativeModel({
+            model: 'gemini-2.5-flash',
+        });
+    }
+
+    async generateInsights(): Promise<ChatResponseDto> {
         const logs = await this.weatherLogsModel.find().exec();
         const prompt = `
         Você receberá uma lista chamada logs, onde cada item contém:
             temperatura, umidade, vento, condicao, probabilidade_chuva, data_coleta, cidade.
+        Lista: ${JSON.stringify(logs)}
 
             Tarefas:
             - Calcular estatísticas a partir dos logs:
@@ -42,5 +65,28 @@ export class InsightsIaService {
             Retorne primeiro somente o JSON, sem texto extra.
 
             Após o JSON, escreva uma análise técnica, objetiva e profissional como um especialista em meteorologia, interpretando os valores, classificações e alertas.`
+
+
+        try {
+            const sessionInUse = `session-${Date.now()}`;
+            let insightSession = this.chatSessions.get(sessionInUse);
+            if (!insightSession) {
+                insightSession = this.genModel.startChat();
+                this.chatSessions.set(sessionInUse, insightSession);
+            }
+
+            const message = await insightSession.sendMessage(prompt);
+            const response: ChatResponseDto = {
+                response: message.text,
+                sessionId: sessionInUse,
+            };
+            return response;
+        } catch (error) {
+            this.logger.error('Erro ao gerar insights com Gemini IA', error);
+            throw new Error('Falha ao gerar insights com Gemini IA');
+        }
+    }
+    clearSession(sessionId: string): Boolean {
+        return this.chatSessions.delete(sessionId);
     }
 }

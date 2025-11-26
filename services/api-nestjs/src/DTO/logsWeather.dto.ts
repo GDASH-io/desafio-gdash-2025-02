@@ -27,4 +27,10 @@ export class logsWeatherDTO {
     description: 'Data e hora da coleta dos dados',
   })
   data_coleta: string;
+
+  @ApiProperty({
+    example: 'Teresina',
+    description: 'cidade onde os dados foram coletados',
+  })
+  cidade: string;
 }
