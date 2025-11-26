@@ -15,6 +15,7 @@ let Weather = class Weather {
     temperature;
     humidity;
     windSpeed;
+    rainProbability;
     insight;
 };
 exports.Weather = Weather;
@@ -30,6 +31,10 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", Number)
 ], Weather.prototype, "windSpeed", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], Weather.prototype, "rainProbability", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)

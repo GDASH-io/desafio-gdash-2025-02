@@ -13,16 +13,18 @@ import (
 
 type WeatherInput struct {
 	Current struct {
-		Temp      float64 `json:"temperature_2m"`
-		Humidity  float64 `json:"relative_humidity_2m"`
-		WindSpeed float64 `json:"wind_speed_10m"`
+		Temp            float64 `json:"temperature_2m"`
+		Humidity        float64 `json:"relative_humidity_2m"`
+		WindSpeed       float64 `json:"wind_speed_10m"`
+		RainProbability float64 `json:"precipitation_probability"`
 	} `json:"current"`
 }
 
 type WeatherPayload struct {
-	Temperature float64 `json:"temperature"`
-	Humidity    float64 `json:"humidity"`
-	WindSpeed   float64 `json:"windSpeed"`
+	Temperature     float64 `json:"temperature"`
+	Humidity        float64 `json:"humidity"`
+	WindSpeed       float64 `json:"windSpeed"`
+	RainProbability float64 `json:"rainProbability"`
 }
 
 func main() {
@@ -95,9 +97,10 @@ func main() {
 		}
 
 		payload := WeatherPayload{
-			Temperature: input.Current.Temp,
-			Humidity:    input.Current.Humidity,
-			WindSpeed:   input.Current.WindSpeed,
+			Temperature:     input.Current.Temp,
+			Humidity:        input.Current.Humidity,
+			WindSpeed:       input.Current.WindSpeed,
+			RainProbability: input.Current.RainProbability,
 		}
 
 		payloadBytes, _ := json.Marshal(payload)
@@ -106,7 +109,7 @@ func main() {
 		if err != nil {
 			log.Printf("❌ Erro ao enviar para API: %v", err)
 		} else {
-			log.Printf("✅ Dados enviados para API! Status: %s | Temp: %.1f°C | Umidade: %.0f%%", resp.Status, input.Current.Temp, input.Current.Humidity)
+			log.Printf("✅ Dados enviados para API! Status: %s | Temp: %.1f°C | Umidade: %.0f%% | Chuva: %.0f%%", resp.Status, input.Current.Temp, input.Current.Humidity, input.Current.RainProbability)
 			resp.Body.Close()
 		}
 

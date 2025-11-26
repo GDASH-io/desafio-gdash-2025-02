@@ -15,6 +15,9 @@ export class Weather {
   windSpeed: number;
 
   @Prop()
+  rainProbability: number;
+
+  @Prop()
   insight: string;
 }
 

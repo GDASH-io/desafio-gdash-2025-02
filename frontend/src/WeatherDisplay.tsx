@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Wind, Droplets, RefreshCw, Cpu } from "lucide-react";
+import { Wind, Droplets, RefreshCw, Cpu, Cloud } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ export interface WeatherLog {
   temperature: number;
   humidity: number;
   windSpeed: number;
+  rainProbability: number;
   insight: string;
   createdAt: string;
 }
@@ -103,7 +104,7 @@ export function WeatherDisplay({ logs, loading, onRefresh, refreshError }: Weath
                     {latest.temperature.toFixed(0)}°
                   </span>
                   
-                  {/* Umidade e Vento em linha */}
+                  {/* Umidade, Vento e Chuva em linha */}
                   <div className="w-full flex justify-around text-center px-4 py-5 bg-gradient-to-r from-slate-700/20 to-slate-600/20 rounded-2xl border border-white/5 backdrop-blur-sm">
                     <div className="flex-1">
                       <div className="flex items-center justify-center gap-2 mb-2">
@@ -119,6 +120,14 @@ export function WeatherDisplay({ logs, loading, onRefresh, refreshError }: Weath
                         <span className="text-3xl font-black text-white">{latest.windSpeed}</span>
                       </div>
                       <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold">km/h</p>
+                    </div>
+                    <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-2"></div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Cloud size={22} className="text-blue-400" />
+                        <span className="text-3xl font-black text-white">{latest.rainProbability}%</span>
+                      </div>
+                      <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold">Chuva</p>
                     </div>
                   </div>
                   
@@ -201,6 +210,10 @@ export function WeatherDisplay({ logs, loading, onRefresh, refreshError }: Weath
                           <div className="flex items-center gap-1.5">
                             <Wind size={16} className="text-emerald-300" />
                             <span className="text-white">{log.windSpeed} km/h</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Cloud size={16} className="text-blue-400" />
+                            <span className="text-white">{log.rainProbability}%</span>
                           </div>
                         </div>
                         <p className="text-xs text-emerald-100/75 line-clamp-2 group-hover:line-clamp-3 transition-all">

@@ -1,1 +1,1 @@
-{"version":3,"file":"create-weather.dto.js","sourceRoot":"","sources":["../../../src/weather/dto/create-weather.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,gBAAgB;IAC3B,WAAW,CAAS;IACpB,QAAQ,CAAS;IACjB,SAAS,CAAS;CACnB;AAJD,4CAIC"}
+{"version":3,"file":"create-weather.dto.js","sourceRoot":"","sources":["../../../src/weather/dto/create-weather.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,gBAAgB;IAC3B,WAAW,CAAS;IACpB,QAAQ,CAAS;IACjB,SAAS,CAAS;IAClB,eAAe,CAAS;CACzB;AALD,4CAKC"}

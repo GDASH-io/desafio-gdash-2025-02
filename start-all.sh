@@ -245,9 +245,14 @@ start_service() {
     # Iniciar em background com melhor tratamento
     (
         cd "$cwd" || exit 1
-        # Para Python, garantir que venv está ativado
+        # Ativar venv no subshell se for producer
         if [ "$name" = "producer" ]; then
-            source "$PROJECT_DIR/venv/bin/activate" 2>/dev/null || true
+            source "$PROJECT_DIR/venv/bin/activate"
+            # Instalar dependências se necessário
+            if ! python -c "import requests, pika" 2>/dev/null; then
+                info "Instalando dependências Python..."
+                pip install requests pika
+            fi
             python producer.py >> "$log_file" 2>&1 &
         else
             eval "$command" >> "$log_file" 2>&1 &
@@ -382,11 +387,25 @@ stop_all() {
     log "Logs preservados em: $PROJECT_DIR/logs/"
 }
 
+# Ativar ou criar venv do Python
+setup_python_venv() {
+    if [ ! -d "$PROJECT_DIR/venv" ]; then
+        info "Criando ambiente virtual Python..."
+        python3 -m venv "$PROJECT_DIR/venv"
+        log "Ambiente virtual criado ✓"
+    fi
+    
+    info "Ativando ambiente virtual Python..."
+    source "$PROJECT_DIR/venv/bin/activate"
+    log "Ambiente virtual ativado ✓"
+}
+
 # Função principal
 main() {
     case "${1:-start}" in
         "start")
             log "🚀 Iniciando G-Dash..."
+            setup_python_venv
             load_env_file
             check_docker
             check_and_allocate_ports

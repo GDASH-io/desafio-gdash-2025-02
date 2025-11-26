@@ -28,12 +28,14 @@ export class WeatherService {
 - Temp: ${createWeatherDto.temperature}°C
 - Umidade: ${createWeatherDto.humidity}%
 - Vento: ${createWeatherDto.windSpeed} km/h
+- Chance de Chuva: ${createWeatherDto.rainProbability}%
 
-Dê APENAS 1 frase curta (máx 10 palavras) com um conselho prático.
+Dê APENAS 1 frase curta (máx 12 palavras) com um conselho prático considerando a chuva.
 Exemplos:
-- "Ar seco. Beba água e hidrate-se bem."
-- "Umidade alta. Dia abafado, mas brisa ajuda."
-- "Clima perfeito. Temperatura agradável."
+- "Chuva provável (80%). Leve guarda-chuva."
+- "Pouca chance de chuva. Dia ensolarado previsto!"
+- "50% de chuva. Tempo instável. Tenha cuidado."
+- "Ar seco e sem chuva. Dia perfeito pra atividades."
 
 Responda SÓ COM A FRASE, nada mais.`;
 
@@ -55,12 +57,21 @@ Responda SÓ COM A FRASE, nada mais.`;
     });
 
     this.logger.log(
-      `📊 Novo registro: ${createWeatherDto.temperature}°C, ${createWeatherDto.humidity}% umidade, ${createWeatherDto.windSpeed} km/h vento`,
+      `📊 Novo registro: ${createWeatherDto.temperature}°C, ${createWeatherDto.humidity}% umidade, ${createWeatherDto.windSpeed} km/h vento, ${createWeatherDto.rainProbability}% chuva`,
     );
     return createdWeather.save();
   }
 
   private generateFallbackInsight(dto: CreateWeatherDto): string {
+    if (dto.rainProbability > 70) {
+      return 'Chuva forte prevista! Leve guarda-chuva.';
+    }
+    if (dto.rainProbability > 50) {
+      return 'Chance alta de chuva. Tenha cuidado.';
+    }
+    if (dto.rainProbability > 20) {
+      return 'Possível chuva. Acompanhe as atualizações.';
+    }
     if (dto.humidity < 30) return 'Ar muito seco! Beba água e hidrate-se.';
     if (dto.humidity > 80) return 'Umidade alta. Sensação de abafamento.';
     if (dto.temperature > 30) return 'Calor intenso! Evite o sol forte.';

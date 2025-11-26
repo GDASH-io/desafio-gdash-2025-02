@@ -5,6 +5,7 @@ class CreateWeatherDto {
     temperature;
     humidity;
     windSpeed;
+    rainProbability;
 }
 exports.CreateWeatherDto = CreateWeatherDto;
 //# sourceMappingURL=create-weather.dto.js.map
