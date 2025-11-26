@@ -24,15 +24,15 @@ export function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-sm">
-      <Card>
+    <div className="min-h-screen flex items-center justify-center w-full">
+      <Card className="w-full max-w-sm bg-card text-card-foreground shadow-lg rounded-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl text-foreground text-center">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">
             <div className="grid gap-2">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email" className="text-foreground">Email</label>
               <Input
                 id="email"
                 type="email"
@@ -40,27 +40,29 @@ export function LoginForm() {
                 required
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                className="bg-input text-foreground border-border"
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password" className="text-foreground">Password</label>
               <Input
                 id="password"
                 type="password"
                 required
                 value={password}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                className="bg-input text-foreground border-border"
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
+            {error && <p className="text-destructive text-sm">{error}</p>}
+            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <a href="/register" className="underline">
-              Sign up
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            Não tem uma conta?{" "}
+            <a href="/register" className="underline text-primary hover:text-primary-foreground">
+              Cadastre-se
             </a>
           </div>
         </CardContent>
