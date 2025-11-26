@@ -107,6 +107,20 @@ services:
     networks:
       - climate-sync
 
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:${PORT:-3000}/api
+    container_name: climate-sync-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - nestjs-api
+    restart: unless-stopped
+    networks:
+      - climate-sync
+
 volumes:
   mongo_data:
 

@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/AppSidebar'
 import Login from './pages/Login'
+import NotFound from './pages/NotFound'
 
 const queryClient = new QueryClient()
 
@@ -33,6 +34,10 @@ const router = createBrowserRouter(
     {
       path: '/',
       element: <Login />,
+    },
+    {
+      path: '*',
+      element: <NotFound />,
     },
   ],
   {
