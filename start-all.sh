@@ -253,7 +253,7 @@ start_service() {
                 info "Instalando dependências Python..."
                 pip install requests pika
             fi
-            python producer.py >> "$log_file" 2>&1 &
+            cd "$PROJECT_DIR/producer" && python producer.py >> "$log_file" 2>&1 &
         else
             eval "$command" >> "$log_file" 2>&1 &
         fi

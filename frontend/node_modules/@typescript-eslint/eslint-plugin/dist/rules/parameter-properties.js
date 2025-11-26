@@ -74,15 +74,9 @@ exports.default = (0, util_1.createRule)({
                 TSParameterProperty(node) {
                     const modifiers = getModifiers(node);
                     if (!allow.includes(modifiers)) {
-                        // HAS to be an identifier or assignment or TSC will throw
-                        if (node.parameter.type !== utils_1.AST_NODE_TYPES.Identifier &&
-                            node.parameter.type !== utils_1.AST_NODE_TYPES.AssignmentPattern) {
-                            return;
-                        }
                         const name = node.parameter.type === utils_1.AST_NODE_TYPES.Identifier
                             ? node.parameter.name
-                            : // has to be an Identifier or TSC will throw an error
-                                node.parameter.left.name;
+                            : node.parameter.left.name;
                         context.report({
                             node,
                             messageId: 'preferClassProperty',

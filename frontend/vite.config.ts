@@ -21,5 +21,12 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
+    watch: {
+      // Usar polling em vez de inotify para evitar ENOSPC
+      usePolling: true,
+      interval: 1000,
+      // Ignorar pastas que não precisam de watch
+      ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**', '**/.venv/**'],
+    },
   },
 })

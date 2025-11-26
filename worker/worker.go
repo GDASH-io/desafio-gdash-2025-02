@@ -28,7 +28,6 @@ type WeatherPayload struct {
 }
 
 func main() {
-	// Get environment variables
 	rabbitmqHost := os.Getenv("RABBITMQ_HOST")
 	if rabbitmqHost == "" {
 		rabbitmqHost = "localhost"
@@ -46,7 +45,6 @@ func main() {
 		backendURL = "http://localhost:3000"
 	}
 
-	// Connect to RabbitMQ
 	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:5672/", rabbitmqUser, rabbitmqPassword, rabbitmqHost)
 	conn, err := amqp091.Dial(amqpURL)
 	if err != nil {
@@ -103,16 +101,30 @@ func main() {
 			RainProbability: input.Current.RainProbability,
 		}
 
-		payloadBytes, _ := json.Marshal(payload)
+		payloadBytes, err := json.Marshal(payload)
+		if err != nil {
+			log.Printf("❌ Erro ao serializar payload: %v", err)
+			d.Nack(false, true)
+			continue
+		}
+
 		resp, err := http.Post(backendURL+"/weather", "application/json", bytes.NewBuffer(payloadBytes))
 
 		if err != nil {
 			log.Printf("❌ Erro ao enviar para API: %v", err)
-		} else {
-			log.Printf("✅ Dados enviados para API! Status: %s | Temp: %.1f°C | Umidade: %.0f%% | Chuva: %.0f%%", resp.Status, input.Current.Temp, input.Current.Humidity, input.Current.RainProbability)
-			resp.Body.Close()
+			d.Nack(false, true)
+			continue
 		}
 
+		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+			log.Printf("❌ API retornou erro: %d | Temp: %.1f°C | Umidade: %.0f%% | Chuva: %.0f%%", resp.StatusCode, input.Current.Temp, input.Current.Humidity, input.Current.RainProbability)
+			resp.Body.Close()
+			d.Nack(false, true)
+			continue
+		}
+
+		log.Printf("✅ Dados enviados para API! Status: %s | Temp: %.1f°C | Umidade: %.0f%% | Chuva: %.0f%%", resp.Status, input.Current.Temp, input.Current.Humidity, input.Current.RainProbability)
+		resp.Body.Close()
 		d.Ack(false)
 	}
 }

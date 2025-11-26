@@ -30,6 +30,7 @@ export declare const browserEmail: RegExp;
 export declare function emoji(): RegExp;
 export declare const ipv4: RegExp;
 export declare const ipv6: RegExp;
+export declare const mac: (delimiter?: string) => RegExp;
 export declare const cidrv4: RegExp;
 export declare const cidrv6: RegExp;
 export declare const base64: RegExp;
