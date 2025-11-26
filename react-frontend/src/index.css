@@ -9,26 +9,49 @@
 
   color-scheme: dark;
 
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%; 
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.4% 17.5%; 
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.4% 17.5%;
-  --muted-foreground: 210 40% 98%;
-  --accent: 217.2 32.4% 17.5%;
-  --accent-foreground: 210 40% 98%;
+  /* Cores padrão (usuário/dados brutos) */
+  --background: #0D1117; /* Preto grafite */
+  --foreground: #E5E7EB; /* Cinza claro */
+  --card: #161B22; /* Cards padrão */
+  --card-foreground: #E5E7EB;
+  --popover: #161B22;
+  --popover-foreground: #E5E7EB;
+  --primary: #3B82F6; /* Primary azul */
+  --primary-hover: #2563EB; /* Primary hover */
+  --primary-foreground: #E5E7EB;
+  --secondary: #1F2937; /* Bordas */
+  --secondary-foreground: #E5E7EB;
+  --muted: #1F2937;
+  --muted-foreground: #E5E7EB;
+  --accent: #1F2937;
+  --accent-foreground: #E5E7EB;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.4% 17.5%;
-  --input: 217.2 32.4% 17.5%;
-  --ring: 217.2 91.2% 59.8%;
+  --border: #1F2937; /* Bordas */
+  --input: #1F2937;
+  --ring: #3B82F6;
   --radius: 0.5rem;
+
+  /* Cores da IA - Ciano */
+  --ai-primary: #38BDF8; /* Ciano claro */
+  --ai-primary-hover: #0EA5E9; /* Ciano escuro */
+  --ai-icon: #7DD3FC; /* Ícones IA */
+  --ai-glow: #A5F3FC; /* Detalhes brilhantes */
+  --ai-bg: rgba(56, 189, 248, 0.08); /* Fundo IA translúcido */
+  --ai-border: rgba(56, 189, 248, 0.25); /* Borda IA */
+  --ai-shadow: 0 0 15px rgba(56, 189, 248, 0.15); /* Sombra leve */
+
+  /* Cores da IA - Roxo neural */
+  --ai-secondary: #8B5CF6; /* Roxo leve */
+  --ai-secondary-hover: #7C3AED; /* Roxo hover */
+  --ai-glow-purple: #C4B5FD; /* Glow roxo */
+
+  /* Cores para ícones de clima */
+  --weather-sun: #FACC15; /* Sol */
+  --weather-rain: #38BDF8; /* Chuva */
+  --weather-cloudy: #94A3B8; /* Nublado */
+  --weather-storm: #6366F1; /* Tempestade */
+  --weather-wind: #7DD3FC; /* Vento */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -48,10 +71,12 @@ a:hover {
 html, body {
   margin: 0;
   min-height: 100vh;
+  background-color: var(--background); /* Preto grafite */
+  color: var(--foreground); /* Cinza claro */
 }
 
 body {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; 
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 h1 {
@@ -75,4 +100,60 @@ button:hover {
 }
 button:focus, button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* AI Insights Styles */
+
+.speech-bubble {
+  position: relative;
+  background: var(--ai-bg); /* Fundo IA translúcido */
+  color: var(--foreground);
+  border: 1px solid var(--ai-border); /* Borda IA */
+  border-radius: .4em;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: var(--ai-shadow); /* Sombra leve da IA */
+}
+
+.speech-bubble:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-top-color: var(--ai-bg); /* Usar a mesma cor do background */
+  border-bottom: 0;
+  margin-left: -10px;
+  margin-bottom: -10px;
+}
+
+.ai-card {
+  background: var(--ai-bg); /* Fundo IA translúcido */
+  color: var(--foreground);
+  border: 1px solid var(--ai-border); /* Borda IA */
+  border-radius: 8px;
+  box-shadow: var(--ai-shadow); /* Sombra leve da IA */
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.ai-card h3 {
+  color: var(--ai-primary); /* Título em ciano */
+  margin-top: 0;
+}
+
+.ai-card ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.ai-card li {
+  margin-bottom: 5px;
+}
+
+.expandable-card-header-hover:hover {
+  background-color: var(--ai-bg); /* Hover com fundo IA */
+  border-color: var(--ai-primary); /* Borda ciano no hover */
 }

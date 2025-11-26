@@ -24,15 +24,15 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center w-full">
-      <Card className="w-full max-w-sm bg-card text-card-foreground shadow-lg rounded-lg">
+    <div className="min-h-screen flex items-center justify-center w-full bg-[#0D1117]">
+      <Card className="w-full max-w-sm bg-[#161B22] border-[#1F2937] text-[#E5E7EB] shadow-lg rounded-lg">
         <CardHeader>
-          <CardTitle className="text-2xl text-foreground text-center">Login</CardTitle>
+          <CardTitle className="text-2xl text-[#E5E7EB] text-center">Login</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">
             <div className="grid gap-2">
-              <label htmlFor="email" className="text-foreground">Email</label>
+              <label htmlFor="email" className="text-[#E5E7EB]">Email</label>
               <Input
                 id="email"
                 type="email"
@@ -40,28 +40,28 @@ export function LoginForm() {
                 required
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                className="bg-input text-foreground border-border"
+                className="bg-[#0D1117] text-[#E5E7EB] border-[#1F2937] placeholder:text-[#6B7280]"
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="password" className="text-foreground">Password</label>
+              <label htmlFor="password" className="text-[#E5E7EB]">Senha</label>
               <Input
                 id="password"
                 type="password"
                 required
                 value={password}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                className="bg-input text-foreground border-border"
+                className="bg-[#0D1117] text-[#E5E7EB] border-[#1F2937] placeholder:text-[#6B7280]"
               />
             </div>
-            {error && <p className="text-destructive text-sm">{error}</p>}
-            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
-              {loading ? 'Logging in...' : 'Login'}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm text-muted-foreground">
+          <div className="mt-4 text-center text-sm text-[#9CA3AF]">
             Não tem uma conta?{" "}
-            <a href="/register" className="underline text-primary hover:text-primary-foreground">
+            <a href="/register" className="underline text-[#3B82F6] hover:text-[#3B82F6]/80">
               Cadastre-se
             </a>
           </div>

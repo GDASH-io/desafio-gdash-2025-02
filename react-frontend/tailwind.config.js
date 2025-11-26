@@ -21,38 +21,56 @@ export default {
     },
     extend: {
       colors: {
-        border: "#3b82f6", // Um tom de azul para bordas
-        input: "#1a1a1a", // Preto para inputs
-        ring: "#3b82f6", // Azul para anéis de foco
-        background: "#121212", // Preto mais escuro para fundo geral
-        foreground: "#e0e0e0", // Cinza claro para texto
+        border: "#1F2937", // Bordas padrão
+        input: "#1F2937", // Inputs
+        ring: "#3B82F6", // Anéis de foco
+        background: "#0D1117", // Preto grafite
+        foreground: "#E5E7EB", // Cinza claro
         primary: {
-          DEFAULT: "#3b82f6", // Azul primário
-          foreground: "#ffffff", // Branco para texto sobre o primário
+          DEFAULT: "#3B82F6", // Primary azul
+          foreground: "#E5E7EB",
         },
         secondary: {
-          DEFAULT: "#1a1a1a", // Preto secundário
-          foreground: "#ffffff", // Branco para texto sobre o secundário
+          DEFAULT: "#1F2937", // Bordas
+          foreground: "#E5E7EB",
         },
         destructive: {
           DEFAULT: "#ef4444", // Vermelho padrão para destruição
           foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "#262626", // Cinza escuro para elementos mutados
-          foreground: "#e0e0e0",
+          DEFAULT: "#1F2937", // Cinza escuro para elementos mutados
+          foreground: "#E5E7EB",
         },
         accent: {
-          DEFAULT: "#3b82f6", // Azul para acentos
-          foreground: "#ffffff",
+          DEFAULT: "#1F2937", // Acentos
+          foreground: "#E5E7EB",
         },
         popover: {
-          DEFAULT: "#1a1a1a", // Preto para popovers
-          foreground: "#e0e0e0",
+          DEFAULT: "#161B22", // Cards padrão
+          foreground: "#E5E7EB",
         },
         card: {
-          DEFAULT: "#1a1a1a", // Preto para cards
-          foreground: "#e0e0e0",
+          DEFAULT: "#161B22", // Cards padrão
+          foreground: "#E5E7EB",
+        },
+        // Cores da IA
+        ai: {
+          primary: "#38BDF8", // Ciano claro
+          "primary-hover": "#0EA5E9", // Ciano escuro
+          icon: "#7DD3FC", // Ícones IA
+          glow: "#A5F3FC", // Detalhes brilhantes
+          secondary: "#8B5CF6", // Roxo leve
+          "secondary-hover": "#7C3AED", // Roxo hover
+          "glow-purple": "#C4B5FD", // Glow roxo
+        },
+        // Cores para ícones de clima
+        weather: {
+          sun: "#FACC15", // Sol
+          rain: "#38BDF8", // Chuva
+          cloudy: "#94A3B8", // Nublado
+          storm: "#6366F1", // Tempestade
+          wind: "#7DD3FC", // Vento
         },
       },
       borderRadius: {
