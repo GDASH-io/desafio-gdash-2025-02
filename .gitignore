@@ -1,3 +1,6 @@
+# ⚠️ SEGURANÇA: NUNCA fazer commit de arquivos .env com secrets!
+# Use .env.example como template e .env local (git-ignored) para development
+
 venv/
 mongo_data/
 __pycache__/
