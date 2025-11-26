@@ -5,12 +5,38 @@ import { WeatherLog } from './schemas/weather-log.schema';
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { stringify } from 'csv-stringify';
 import * as ExcelJS from 'exceljs';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class WeatherService {
+  private readonly OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
+
   constructor(
     @InjectModel(WeatherLog.name) private weatherLogModel: Model<WeatherLog>,
+    private readonly httpService: HttpService,
   ) {}
+
+  async getWeatherForecast(latitude: number, longitude: number): Promise<any> {
+    try {
+      const params = {
+        latitude,
+        longitude,
+        hourly: 'temperature_2m,weathercode,precipitation_probability,relativehumidity_2m',
+        daily: 'weathercode,temperature_2m_max,temperature_2m_min',
+        current_weather: true,
+        timezone: 'auto',
+      };
+
+      const response = await firstValueFrom(
+        this.httpService.get(this.OPEN_METEO_BASE_URL, { params }),
+      );
+      return response.data;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch weather forecast from Open-Meteo', error.message);
+    }
+  }
 
   async create(createWeatherLogDto: CreateWeatherLogDto): Promise<WeatherLog> {
     const createdWeatherLog = new this.weatherLogModel(createWeatherLogDto);

@@ -18,7 +18,7 @@ export class TmdbService {
   ) {
     this.TMDB_API_KEY = this.configService.get<string>('TMDB_API_KEY');
     if (!this.TMDB_API_KEY) {
-      throw new Error('TMDB_API_KEY is not defined in environment variables.');
+      throw new Error('TMDB_API_KEY não está definida nas variáveis de ambiente.');
     }
     this.fetchGenres();
   }
@@ -48,7 +48,7 @@ export class TmdbService {
     ).pipe(
       map(response => response.data),
       catchError(error => {
-        throw new InternalServerErrorException('Failed to fetch movies by genre from TMDB', error.message);
+        throw new InternalServerErrorException('Falha ao buscar filmes por gênero no TMDB', error.message);
       }),
     );
   }
@@ -59,7 +59,7 @@ export class TmdbService {
     ).pipe(
       map(response => response.data),
       catchError(error => {
-        throw new InternalServerErrorException('Failed to fetch popular movies from TMDB', error.message);
+        throw new InternalServerErrorException('Falha ao buscar filmes populares no TMDB', error.message);
       }),
     );
   }
@@ -70,7 +70,7 @@ export class TmdbService {
     ).pipe(
       map(response => response.data),
       catchError(error => {
-        throw new InternalServerErrorException('Failed to search movies from TMDB', error.message);
+        throw new InternalServerErrorException('Falha ao pesquisar filmes no TMDB', error.message);
       }),
     );
   }
@@ -81,7 +81,7 @@ export class TmdbService {
     ).pipe(
       map(response => response.data),
       catchError(error => {
-        throw new InternalServerErrorException('Failed to fetch movie details from TMDB', error.message);
+        throw new InternalServerErrorException('Falha ao buscar detalhes do filme no TMDB', error.message);
       }),
     );
   }

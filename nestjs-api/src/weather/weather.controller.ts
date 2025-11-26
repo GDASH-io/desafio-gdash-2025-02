@@ -1,14 +1,25 @@
-import { Controller, Get, Post, Body, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, HttpStatus, Query, ParseFloatPipe } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { WeatherLog } from './schemas/weather-log.schema';
 import { Response } from 'express';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Clima')
 @Controller('weather')
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
+
+  @Get('forecast')
+  @ApiOperation({ summary: 'Obter previsão do tempo por latitude e longitude' })
+  @ApiQuery({ name: 'latitude', type: Number, description: 'Latitude para a previsão do tempo' })
+  @ApiQuery({ name: 'longitude', type: Number, description: 'Longitude para a previsão do tempo' })
+  async getWeatherForecast(
+    @Query('latitude', ParseFloatPipe) latitude: number,
+    @Query('longitude', ParseFloatPipe) longitude: number,
+  ) {
+    return this.weatherService.getWeatherForecast(latitude, longitude);
+  }
 
   @Post('logs')
   @ApiOperation({ summary: 'Cria um novo registro de log de clima' })
