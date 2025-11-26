@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { parseISO, format } from 'date-fns';
-import { Cloud, Droplet, Wind, Sun, CloudRain, CloudSnow, CloudLightning } from 'lucide-react';
+import { Cloud, Droplet, Wind, Sun, CloudRain, CloudSnow, CloudLightning, ClipboardList, Smile, Bell, Film, Shirt, Activity, Heart } from 'lucide-react';
 import DaySummaryCard from '../components/ai/DaySummaryCard';
 import MoodInsights from '../components/ai/MoodInsights';
 import SmartAlerts from '../components/ai/SmartAlerts';
 import MovieRecommendations from '../components/ai/MovieRecommendations';
+import WeatherHistory from '../components/ai/WeatherHistory';
 import ExpandableCard from '../components/ui/expandable-card';
 
 interface HourlyForecast {
@@ -38,6 +39,7 @@ interface AiInsightsData {
   smartAlerts: string[];
   activityRecommendations: string[];
   clothingSuggestions: string;
+  detailedClothingSuggestions?: string[];
   daySummary: string;
   moodInsights: string;
   movieRecommendations: {
@@ -45,22 +47,31 @@ interface AiInsightsData {
     suggestions: string[];
     description: string;
   };
+  apparentTemperatureExplanation?: string;
+  apparent_temperature?: number;
+  uvIndexAlert?: {
+    level: string;
+    color: string;
+    message: string;
+  };
+  uv_index?: number;
+  healthAndWellnessConditions?: string[];
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 // Minha função para pegar o ícone certo do clima baseado no código.
-const getWeatherIcon = (weathercode: number, isDay: boolean = true) => {
+const getWeatherIcon = (weathercode: number, isDay: boolean = true, size: number = 24) => {
   switch (weathercode) {
     case 0: // Céu limpo
-      return isDay ? <Sun size={48} style={{ color: 'var(--weather-sun)' }} /> : <Cloud size={48} style={{ color: 'var(--weather-cloudy)' }} />;
+      return isDay ? <Sun size={size} style={{ color: 'var(--weather-sun)' }} /> : <Cloud size={size} style={{ color: 'var(--weather-cloudy)' }} />;
     case 1: // Mainly clear
     case 2: // Partly cloudy
     case 3: // Overcast
-      return <Cloud size={48} style={{ color: 'var(--weather-cloudy)' }} />;
+      return <Cloud size={size} style={{ color: 'var(--weather-cloudy)' }} />;
     case 45: // Fog
     case 48: // Depositing rime fog
-      return <Cloud size={48} style={{ color: 'var(--weather-cloudy)' }} />;
+      return <Cloud size={size} style={{ color: 'var(--weather-cloudy)' }} />;
     case 51: // Drizzle: Light
     case 53: // Drizzle: Moderate
     case 55: // Drizzle: Dense intensity
@@ -71,23 +82,23 @@ const getWeatherIcon = (weathercode: number, isDay: boolean = true) => {
     case 65: // Rain: Heavy intensity
     case 66: // Freezing Rain: Light
     case 67: // Freezing Rain: Heavy intensity
-      return <CloudRain size={48} style={{ color: 'var(--weather-rain)' }} />;
+      return <CloudRain size={size} style={{ color: 'var(--weather-rain)' }} />;
     case 71: // Snow fall: Slight
     case 73: // Snow fall: Moderate
     case 75: // Snow fall: Heavy intensity
     case 77: // Snow grains
-      return <CloudSnow size={48} style={{ color: 'var(--weather-cloudy)' }} />;
+      return <CloudSnow size={size} style={{ color: 'var(--weather-cloudy)' }} />;
     case 80: // Rain showers: Slight
     case 81: // Rain showers: Moderate
     case 82: // Rain showers: Violent
-      return <CloudRain size={48} style={{ color: 'var(--weather-rain)' }} />;
+      return <CloudRain size={size} style={{ color: 'var(--weather-rain)' }} />;
     case 85: // Snow showers: Slight
     case 86: // Snow showers: Heavy
-      return <CloudSnow size={48} style={{ color: 'var(--weather-cloudy)' }} />;
+      return <CloudSnow size={size} style={{ color: 'var(--weather-cloudy)' }} />;
     case 95: // Thunderstorm: Slight or moderate
     case 96: // Thunderstorm with slight hail
     case 99: // Thunderstorm with heavy hail
-      return <CloudLightning size={48} style={{ color: 'var(--weather-storm)' }} />;
+      return <CloudLightning size={size} style={{ color: 'var(--weather-storm)' }} />;
     default:
       return <Cloud size={48} style={{ color: 'var(--weather-cloudy)' }} />;
   }
@@ -96,21 +107,16 @@ const getWeatherIcon = (weathercode: number, isDay: boolean = true) => {
 // Este é o meu componente principal do painel de clima e recomendações de filmes.
 export function WeatherDashboard() {
   console.log('WeatherDashboard: Componente renderizado');
-  // Estados para guardar os dados do clima atual, previsão horária e diária, e a recomendação da IA.
   const [currentWeather, setCurrentWeather] = useState<any>(null);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
   const [movieRecommendations, setMovieRecommendations] = useState<Movie[]>([]);
   const [aiInsights, setAiInsights] = useState<AiInsightsData | null>(null);
-  // Estados para controlar o carregamento, erros e a localização do usuário.
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  // Estado para armazenar os gêneros de filmes disponíveis.
-  // const [genres, setGenres] = useState<Genre[]>([]); // Gêneros não são mais um estado direto aqui
-  const [genresLoaded, setGenresLoaded] = useState<boolean>(false); // Novo estado para controlar o carregamento dos gêneros
+  const [genresLoaded, setGenresLoaded] = useState<boolean>(false); 
 
-  // Efeito para buscar os gêneros apenas uma vez ao montar o componente
   useEffect(() => {
     console.log('WeatherDashboard: useEffect (fetchGenres) disparado');
     const fetchGenres = async () => {
@@ -186,6 +192,8 @@ export function WeatherDashboard() {
         is_day: aiInsightsResponse.data.weatherForecast.current_weather.is_day,
         humidity: aiInsightsResponse.data.weatherForecast.hourly?.relativehumidity_2m?.[0] ?? null,
         precipitation_probability: aiInsightsResponse.data.weatherForecast.hourly?.precipitation_probability?.[0] ?? null,
+        apparent_temperature: aiInsightsResponse.data.apparent_temperature ?? null,
+        uv_index: aiInsightsResponse.data.uv_index ?? null,
       });
 
       console.log('fetchWeatherData: Setando previsão horária...');
@@ -254,30 +262,64 @@ export function WeatherDashboard() {
 
   // Aqui começa o layout principal do meu painel.
   return (
-    <div className="w-full max-w-full mx-auto p-4 space-y-6">
-      <h2 className="text-4xl font-bold text-foreground text-center mb-8">Painel de Clima e Recomendações</h2>
+    <div className="w-full max-w-[1000px] mx-auto p-4 space-y-4">
+      <h2 className="text-2xl font-semibold text-[#E5E7EB] text-center mb-4">Painel de Clima e Recomendações</h2>
 
       {/* Esta seção mostra o clima atual e o humor sugerido pela IA. */}
       {currentWeather && aiInsights && (
-        <div className="flex flex-col items-center justify-center p-4 border-b border-border last:border-b-0">
-          <div className="flex items-center space-x-4 mb-4">
-            {getWeatherIcon(currentWeather.weathercode, currentWeather.is_day === 1)}
-            <p className="text-6xl font-extrabold">{currentWeather.temperature}°C</p>
+        <div className="p-4 border-b border-white/5">
+          {/* Linha principal: Ícone + Temperatura + Sensação Térmica */}
+          <div className="flex items-center justify-center space-x-3 mb-3">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2">
+                {getWeatherIcon(currentWeather.weathercode, currentWeather.is_day === 1, 32)}
+                <p className="text-3xl font-semibold text-[#E5E7EB]">{currentWeather.temperature}°C</p>
+              </div>
+              {aiInsights.apparent_temperature && aiInsights.apparent_temperature !== currentWeather.temperature && (
+                <>
+                  <span className="text-[#9CA3AF]">·</span>
+                  <span className="text-sm font-medium text-[#00D9FF]">Sensação {aiInsights.apparent_temperature}°C</span>
+                </>
+              )}
+            </div>
           </div>
-          <div className="text-center mb-4">
-            <p className="text-2xl font-semibold">Mood: {aiInsights?.movieRecommendations.mood}</p>
-            <p className="text-lg text-muted-foreground">{aiInsights?.movieRecommendations.description}</p>
+
+          {/* Mood em uma linha só */}
+          <div className="text-center mb-3">
+            <p className="text-sm font-light text-[#9CA3AF]">
+              Mood: <span className="text-[#E5E7EB] font-medium">{aiInsights?.movieRecommendations.mood}</span> — {aiInsights?.movieRecommendations.description}
+            </p>
           </div>
-          <div className="flex justify-around w-full text-foreground border-t border-border pt-4">
+
+          {/* Indicadores em uma linha compacta */}
+          <div className="flex items-center justify-center gap-4 text-[#E5E7EB] text-sm">
             <div className="flex items-center space-x-1">
-              <Droplet size={20} style={{ color: 'var(--weather-rain)' }} /><span className="text-lg">{currentWeather.humidity ?? 'N/A'}%</span>
+              <Droplet size={14} style={{ color: 'var(--weather-rain)' }} />
+              <span className="font-light">{currentWeather.humidity ?? 'N/A'}%</span>
             </div>
             <div className="flex items-center space-x-1">
-              <Wind size={20} style={{ color: 'var(--weather-wind)' }} /><span className="text-lg">{currentWeather.windspeed} km/h</span>
+              <Wind size={14} style={{ color: 'var(--weather-wind)' }} />
+              <span className="font-light">{currentWeather.windspeed} km/h</span>
             </div>
             {currentWeather.precipitation_probability !== null && (
               <div className="flex items-center space-x-1">
-                <CloudRain size={20} style={{ color: 'var(--weather-rain)' }} /><span className="text-lg">{currentWeather.precipitation_probability}%</span>
+                <CloudRain size={14} style={{ color: 'var(--weather-rain)' }} />
+                <span className="font-light">{currentWeather.precipitation_probability}%</span>
+              </div>
+            )}
+            {aiInsights.uv_index !== undefined && (
+              <div className="flex items-center space-x-1">
+                <Sun size={14} style={{ 
+                  color: aiInsights.uvIndexAlert?.color === 'green' ? '#22c55e' : 
+                         aiInsights.uvIndexAlert?.color === 'yellow' ? '#eab308' : 
+                         aiInsights.uvIndexAlert?.color === 'orange' ? '#f97316' : '#ef4444'
+                }} />
+                <span className="font-light">UV {aiInsights.uv_index}</span>
+                <span className="text-xs font-light" style={{
+                  color: aiInsights.uvIndexAlert?.color === 'green' ? '#22c55e' : 
+                         aiInsights.uvIndexAlert?.color === 'yellow' ? '#eab308' : 
+                         aiInsights.uvIndexAlert?.color === 'orange' ? '#f97316' : '#ef4444'
+                }}>({aiInsights.uvIndexAlert?.level})</span>
               </div>
             )}
           </div>
@@ -286,14 +328,14 @@ export function WeatherDashboard() {
 
       {/* Previsão Horária e Diária movidas para logo abaixo do painel principal */}
       {hourlyForecast.length > 0 && (
-        <div className="p-2 border border-border rounded-lg shadow-sm bg-background mt-4">
-          <h3 className="text-lg font-semibold mb-2 text-foreground">Previsão Horária</h3>
-          <div className="flex overflow-x-auto space-x-3 pb-1">
+        <div className="py-3 border-b border-white/5">
+          <h3 className="text-xs font-medium text-[#9CA3AF] mb-2 uppercase tracking-wide">Previsão Horária</h3>
+          <div className="flex overflow-x-auto space-x-4 pb-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             {next24HoursForecast.map((hour, index) => (
-              <div key={index} className="flex flex-col items-center flex-shrink-0 w-16 text-center text-sm">
-                <p className="text-muted-foreground">{format(parseISO(hour.time), 'HH:mm')}</p>
-                {getWeatherIcon(hour.weathercode, currentWeather?.is_day === 1)}
-                <p className="font-medium">{hour.temperature_2m}°C</p>
+              <div key={index} className="flex flex-col items-center flex-shrink-0 min-w-[60px] text-center">
+                <p className="text-xs font-light text-[#9CA3AF] mb-1">{format(parseISO(hour.time), 'HH:mm')}</p>
+                {getWeatherIcon(hour.weathercode, currentWeather?.is_day === 1, 20)}
+                <p className="text-sm font-medium text-[#E5E7EB] mt-1">{Math.round(hour.temperature_2m)}°C</p>
               </div>
             ))}
           </div>
@@ -301,46 +343,114 @@ export function WeatherDashboard() {
       )}
 
       {dailyForecast.length > 0 && (
-        <div className="p-2 border border-border rounded-lg shadow-sm bg-background mt-4">
-          <h3 className="text-lg font-semibold mb-2 text-foreground">Previsão Diária</h3>
-          <div className="flex overflow-x-auto space-x-3 pb-1">
-            {dailyForecast.map((day, index) => (
-              <div key={index} className="flex flex-col items-center flex-shrink-0 w-20 text-center text-sm p-1 border border-border rounded-md bg-accent/20">
-                <p className="font-medium text-foreground">{format(parseISO(day.time), 'dd/MM')}</p>
-                {getWeatherIcon(day.weathercode)}
-                <p className="font-semibold text-foreground">{day.temperature_2m_max}°C / {day.temperature_2m_min}°C</p>
-              </div>
-            ))}
+        <div className="py-3 border-b border-white/5">
+          <h3 className="text-xs font-medium text-[#9CA3AF] mb-2 uppercase tracking-wide">Previsão Diária</h3>
+          <div className="flex overflow-x-auto space-x-2 pb-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            {dailyForecast.map((day, index) => {
+              const isRainy = day.weathercode >= 51 && day.weathercode <= 82;
+              return (
+                <div 
+                  key={index} 
+                  className="flex flex-col items-center flex-shrink-0 w-[70px] text-center p-2 rounded-lg"
+                  style={{
+                    backgroundColor: isRainy ? 'rgba(41, 169, 244, 0.1)' : 'transparent',
+                    border: isRainy ? '1px solid rgba(41, 169, 244, 0.2)' : '1px solid rgba(255, 255, 255, 0.05)'
+                  }}
+                >
+                  <p className="text-xs font-medium text-[#E5E7EB] mb-1">{format(parseISO(day.time), 'dd/MM')}</p>
+                  {getWeatherIcon(day.weathercode, true, 18)}
+                  <p className="text-xs font-light text-[#E5E7EB] mt-1">{Math.round(day.temperature_2m_max)}° / {Math.round(day.temperature_2m_min)}°</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* Insights de IA agora envolvidos em ExpandableCard */}
       {aiInsights && (
-        <div className="ai-insights-section space-y-4 mt-6">
-          <div className="speech-bubble">
-            <p>{aiInsights.explainedWeather}</p>
+        <div className="ai-insights-section space-y-2 mt-3">
+          <div className="speech-bubble p-3 rounded-xl mb-2">
+            <p className="text-sm font-light text-[#E5E7EB]">{aiInsights.explainedWeather}</p>
           </div>
 
-          <ExpandableCard title="Resumo Inteligente do Dia">
+          <ExpandableCard title="Resumo Inteligente do Dia" icon={ClipboardList}>
             <DaySummaryCard summary={aiInsights.daySummary} />
           </ExpandableCard>
 
-          <ExpandableCard title="Insights de Humor">
+          <ExpandableCard title="Insights de Humor" icon={Smile}>
             <MoodInsights insights={aiInsights.moodInsights} />
           </ExpandableCard>
 
-          <ExpandableCard title="Alertas Inteligentes">
+          <ExpandableCard title="Alertas Inteligentes" icon={Bell}>
             <SmartAlerts healthAlerts={aiInsights.healthAlerts} smartAlerts={aiInsights.smartAlerts} />
           </ExpandableCard>
 
-          <ExpandableCard title="Recomendações de Filmes">
+          {aiInsights.uvIndexAlert && (
+            <ExpandableCard title="Índice UV - Alerta Inteligente" icon={Sun}>
+              <div className="space-y-2">
+                <div className={`px-3 py-1.5 rounded-full text-xs font-medium inline-block`} style={{
+                  backgroundColor: aiInsights.uvIndexAlert.color === 'green' ? '#22c55e20' : 
+                                   aiInsights.uvIndexAlert.color === 'yellow' ? '#eab30820' : 
+                                   aiInsights.uvIndexAlert.color === 'orange' ? '#f9731620' : '#ef444420',
+                  color: aiInsights.uvIndexAlert.color === 'green' ? '#22c55e' : 
+                         aiInsights.uvIndexAlert.color === 'yellow' ? '#eab308' : 
+                         aiInsights.uvIndexAlert.color === 'orange' ? '#f97316' : '#ef4444'
+                }}>
+                  UV {aiInsights.uv_index} - {aiInsights.uvIndexAlert.level}
+                </div>
+                <p className="text-sm font-light text-[#E5E7EB]">{aiInsights.uvIndexAlert.message}</p>
+              </div>
+            </ExpandableCard>
+          )}
+
+          <ExpandableCard title="Recomendações de Filmes" icon={Film}>
             <MovieRecommendations
               mood={aiInsights.movieRecommendations.mood}
               suggestions={aiInsights.movieRecommendations.suggestions}
               description={aiInsights.movieRecommendations.description}
               movies={movieRecommendations}
             />
+          </ExpandableCard>
+
+          {aiInsights.detailedClothingSuggestions && aiInsights.detailedClothingSuggestions.length > 0 && (
+            <ExpandableCard title="Roupas Recomendadas" icon={Shirt}>
+              <ul className="space-y-1.5">
+                {aiInsights.detailedClothingSuggestions.map((item, index) => (
+                  <li key={index} className="text-sm font-light text-[#E5E7EB]">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </ExpandableCard>
+          )}
+
+          {aiInsights.activityRecommendations && aiInsights.activityRecommendations.length > 0 && (
+            <ExpandableCard title="Atividades Recomendadas para o Dia" icon={Activity}>
+              <ul className="space-y-1.5">
+                {aiInsights.activityRecommendations.map((activity, index) => (
+                  <li key={index} className="text-sm font-light text-[#E5E7EB]">
+                    • {activity}
+                  </li>
+                ))}
+              </ul>
+            </ExpandableCard>
+          )}
+
+          {aiInsights.healthAndWellnessConditions && aiInsights.healthAndWellnessConditions.length > 0 && (
+            <ExpandableCard title="Condições de Saúde / Bem-Estar" icon={Heart}>
+              <ul className="space-y-2">
+                {aiInsights.healthAndWellnessConditions.map((condition, index) => (
+                  <li key={index} className="text-sm font-light text-[#E5E7EB]">
+                    {condition}
+                  </li>
+                ))}
+              </ul>
+            </ExpandableCard>
+          )}
+
+          <ExpandableCard title="Histórico de Clima + Insights da IA" icon={ClipboardList}>
+            <WeatherHistory />
           </ExpandableCard>
         </div>
       )}

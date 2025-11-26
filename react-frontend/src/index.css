@@ -105,28 +105,12 @@ button:focus, button:focus-visible {
 /* AI Insights Styles */
 
 .speech-bubble {
-  position: relative;
   background: var(--ai-bg); /* Fundo IA translúcido */
   color: var(--foreground);
   border: 1px solid var(--ai-border); /* Borda IA */
-  border-radius: .4em;
-  padding: 15px;
-  margin-bottom: 20px;
+  border-radius: 0.75rem;
+  padding: 12px 16px;
   box-shadow: var(--ai-shadow); /* Sombra leve da IA */
-}
-
-.speech-bubble:after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-top-color: var(--ai-bg); /* Usar a mesma cor do background */
-  border-bottom: 0;
-  margin-left: -10px;
-  margin-bottom: -10px;
 }
 
 .ai-card {
@@ -156,4 +140,27 @@ button:focus, button:focus-visible {
 .expandable-card-header-hover:hover {
   background-color: var(--ai-bg); /* Hover com fundo IA */
   border-color: var(--ai-primary); /* Borda ciano no hover */
+}
+
+/* Scrollbar personalizada para previsões */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }

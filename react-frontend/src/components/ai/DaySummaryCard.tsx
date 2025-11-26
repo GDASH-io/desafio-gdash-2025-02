@@ -6,9 +6,8 @@ interface DaySummaryCardProps {
 
 const DaySummaryCard: React.FC<DaySummaryCardProps> = ({ summary }) => {
   return (
-    <div className="ai-card">
-      <h3>Resumo Inteligente do Dia</h3>
-      <p>{summary}</p>
+    <div>
+      <p className="text-sm font-light text-[#E5E7EB] whitespace-pre-line">{summary}</p>
     </div>
   );
 };

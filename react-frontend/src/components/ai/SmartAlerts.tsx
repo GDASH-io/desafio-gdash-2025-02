@@ -8,16 +8,15 @@ interface SmartAlertsProps {
 const SmartAlerts: React.FC<SmartAlertsProps> = ({ healthAlerts, smartAlerts }) => {
   const allAlerts = [...healthAlerts, ...smartAlerts];
   return (
-    <div className="ai-card">
-      <h3>Alertas Inteligentes</h3>
+    <div>
       {allAlerts.length > 0 ? (
-        <ul>
+        <ul className="space-y-1.5">
           {allAlerts.map((alert, index) => (
-            <li key={index}>{alert}</li>
+            <li key={index} className="text-sm font-light text-[#E5E7EB]">• {alert}</li>
           ))}
         </ul>
       ) : (
-        <p>Nenhum alerta no momento.</p>
+        <p className="text-sm font-light text-[#9CA3AF]">Nenhum alerta no momento.</p>
       )}
     </div>
   );

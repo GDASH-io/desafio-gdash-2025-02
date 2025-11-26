@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface ExpandableCardProps {
   title: string;
   children: React.ReactNode;
   defaultExpanded?: boolean;
+  icon?: LucideIcon;
 }
 
 const ExpandableCard: React.FC<ExpandableCardProps> = ({
   title,
   children,
   defaultExpanded = false,
+  icon: Icon,
 }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
@@ -19,22 +22,26 @@ const ExpandableCard: React.FC<ExpandableCardProps> = ({
   };
 
   return (
-    <div className="ai-card w-full">
-      <div
-        className="flex items-center justify-between p-3 cursor-pointer expandable-card-header-hover rounded-md transition-all duration-200"
+    <div className="w-full">
+      <button
+        className="flex items-center justify-between w-full px-4 py-3 bg-[#0e1a24] hover:bg-[#11202d] rounded-xl border border-white/5 transition-all duration-200 text-left"
         onClick={toggleExpanded}
-        style={{
-          borderColor: 'var(--ai-border)',
-        }}
       >
-        <h3 className="text-lg font-semibold m-0" style={{ color: 'var(--ai-primary)' }}>{title}</h3>
+        <div className="flex items-center space-x-3">
+          {Icon && <Icon size={18} className="text-[#00D9FF]" />}
+          <span className="text-sm font-medium text-[#E5E7EB]">{title}</span>
+        </div>
         {isExpanded ? (
-          <ChevronDown size={20} style={{ color: 'var(--ai-icon)' }} />
+          <ChevronDown size={18} className="text-[#00D9FF]" />
         ) : (
-          <ChevronRight size={20} style={{ color: 'var(--ai-icon)' }} />
+          <ChevronRight size={18} className="text-[#00D9FF]" />
         )}
-      </div>
-      {isExpanded && <div className="p-3 border-t mt-2 pt-2" style={{ borderColor: 'var(--ai-border)' }}>{children}</div>}
+      </button>
+      {isExpanded && (
+        <div className="mt-2 px-4 py-3 bg-[#0D1117] border border-white/5 rounded-xl">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
