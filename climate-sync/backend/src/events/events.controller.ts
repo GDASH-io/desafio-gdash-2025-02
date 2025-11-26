@@ -1,12 +1,13 @@
 import {
   Controller,
-  Get,
   Sse,
-  MessageEvent
+  UseGuards
 } from '@nestjs/common';
 import { interval, map } from 'rxjs';
+import { SseAuthGuard } from '../auth/sse-auth.guard';
 
 @Controller('events')
+//@UseGuards(SseAuthGuard)
 export class EventsController {
   @Sse('stream')
   stream(): any {

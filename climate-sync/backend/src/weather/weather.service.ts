@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { Weather, WeatherDocument } from '../weather/schema/weather.schema'
+import { Weather, WeatherDocument } from './schema/weather.schema'
 import { Subject } from 'rxjs'
+import { AiService } from './ai.service'
 
 @Injectable()
 export class WeatherService {
@@ -11,7 +12,8 @@ export class WeatherService {
   public readonly weatherUpdates$ = new Subject<any>()
 
   constructor(
-    @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>
+    @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>,
+    private aiService: AiService
   ) {}
 
   private getWindSpeed(data: any): number {
@@ -20,7 +22,7 @@ export class WeatherService {
   }
 
   async saveWeather(payload: any) {
-    this.logger.log('📝 Salvando dados meteorológicos:')
+    this.logger.log('Salvando dados meteorológicos:')
     this.logger.log('Payload completo:', JSON.stringify(payload, null, 2))
 
     const normalized = {
@@ -256,6 +258,147 @@ export class WeatherService {
     } catch (error) {
       this.logger.error('Erro ao buscar último registro:', error)
       return null
+    }
+  }
+
+  async getInsights() {
+    try {
+      this.logger.log('🧠 Gerando insights...')
+
+      // Buscar dados das últimas 24h
+      const now = new Date()
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+      const last24hData = await this.weatherModel
+        .find({
+          timestamp: { $gte: yesterday.toISOString() },
+        })
+        .lean()
+        .exec()
+
+      // Tentar gerar insights com IA
+      const aiInsights = await this.aiService.generateInsights(last24hData)
+      
+      if (aiInsights) {
+        this.logger.log('✅ Insights gerados com IA')
+        return aiInsights
+      }
+
+      // Fallback: usar análise estatística
+      this.logger.log('📊 Usando análise estatística como fallback')
+      return this.getStatisticalInsights(last24hData)
+
+    } catch (error) {
+      this.logger.error('Erro ao gerar insights:', error)
+      return {
+          summary: "Não foi possível gerar insights no momento.",
+          details: [],
+          error: error.message
+      }
+    }
+  }
+
+  private async getStatisticalInsights(last24hData: any[]) {
+    try {
+      const now = new Date()
+      const dayBeforeYesterday = new Date(now.getTime() - 48 * 60 * 60 * 1000)
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+      const previous24hData = await this.weatherModel
+        .find({
+          timestamp: {
+            $gte: dayBeforeYesterday.toISOString(),
+            $lt: yesterday.toISOString(),
+          },
+        })
+        .lean()
+        .exec()
+
+      const insights = []
+      const summaryParts = []
+
+      // 1. Análise de Tendência de Temperatura
+      if (last24hData.length > 0 && previous24hData.length > 0) {
+        const avgTempLast24 =
+          last24hData.reduce((acc, curr) => acc + (curr.data?.temperature || 0), 0) /
+          last24hData.length
+        const avgTempPrev24 =
+          previous24hData.reduce((acc, curr) => acc + (curr.data?.temperature || 0), 0) /
+          previous24hData.length
+
+        const diff = avgTempLast24 - avgTempPrev24
+        
+        if (Math.abs(diff) > 2) {
+            const trend = diff > 0 ? 'subindo' : 'caindo';
+            insights.push({
+                type: 'trend',
+                category: 'temperature',
+                message: `A temperatura média está ${trend} em relação a ontem (${Math.abs(diff).toFixed(1)}°C de diferença).`
+            });
+            summaryParts.push(`temperatura ${trend}`);
+        }
+      }
+
+      // 2. Extremos Recentes
+      if (last24hData.length > 0) {
+          const maxTemp = Math.max(...last24hData.map(d => d.data?.temperature || 0));
+          const minTemp = Math.min(...last24hData.map(d => d.data?.temperature || 0));
+          
+          if (maxTemp > 35) {
+              insights.push({
+                  type: 'warning',
+                  category: 'temperature',
+                  message: `Calor extremo detectado nas últimas 24h (Máxima: ${maxTemp}°C).`
+              });
+              summaryParts.push('calor intenso');
+          }
+          
+          if (minTemp < 5) {
+               insights.push({
+                  type: 'warning',
+                  category: 'temperature',
+                  message: `Frio intenso detectado nas últimas 24h (Mínima: ${minTemp}°C).`
+              });
+              summaryParts.push('frio intenso');
+          }
+      }
+
+      // 3. Análise de Vento
+      if (last24hData.length > 0) {
+           const maxWind = Math.max(...last24hData.map(d => this.getWindSpeed(d.data)));
+           if (maxWind > 20) {
+               insights.push({
+                   type: 'alert',
+                   category: 'wind',
+                   message: `Rajadas de vento fortes detectadas (${maxWind} km/h).`
+               });
+               summaryParts.push('ventos fortes');
+           }
+      }
+
+      // Gerar Resumo
+      let summary = "Condições estáveis observadas nas últimas 24 horas.";
+      if (summaryParts.length > 0) {
+          summary = `Destaques recentes: ${summaryParts.join(', ')}.`;
+      }
+
+      return {
+        summary,
+        details: insights,
+        generated_at: new Date().toISOString(),
+        context: {
+            dataPointsAnalyzed: last24hData.length,
+            method: 'statistical'
+        }
+      }
+
+    } catch (error) {
+      this.logger.error('Erro ao gerar insights estatísticos:', error)
+      return {
+          summary: "Não foi possível gerar insights no momento.",
+          details: [],
+          error: error.message
+      }
     }
   }
 }

@@ -8,19 +8,25 @@ import {
   MessageEvent,
   Res,
   Query,
+  UseGuards,
 } from '@nestjs/common'
 import { WeatherService } from './weather.service'
 import { Observable } from 'rxjs'
 import { map, startWith } from 'rxjs/operators'
 import { Response } from 'express'
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'
+import { Public } from '../auth/public.decorator'
+import { SseAuthGuard } from '../auth/sse-auth.guard'
 
 @Controller('weather')
+
 export class WeatherController {
   private readonly logger = new Logger(WeatherController.name)
 
   constructor(private readonly weatherService: WeatherService) {}
 
   // Endpoint chamado pelo Go Worker para salvar dados
+
   @Post('logs')
   async saveWeatherLog(@Body() weatherData: any) {
     this.logger.log('Recebendo dados via POST /weather/logs (do Go Worker)')
@@ -42,6 +48,7 @@ export class WeatherController {
     return this.weatherService.findAll(Number(limit), Number(skip))
   }
 
+  
   @Get('export.csv')
   async exportCsv(@Res() res: Response) {
     const data = await this.weatherService.getExportData()
@@ -70,11 +77,13 @@ export class WeatherController {
     res.end()
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('export.xlsx')
   async exportXlsx(@Res() res: Response) {
     return this.exportCsv(res)
   }
 
+ 
   @Get('dashboard')
   async getDashboard() {
     this.logger.log('Requisição para /weather/dashboard')
@@ -95,6 +104,7 @@ export class WeatherController {
     }
   }
 
+  
   @Get('analytics')
   async getAnalytics() {
     this.logger.log('📈 Requisição para /weather/analytics')
@@ -108,6 +118,26 @@ export class WeatherController {
     }
   }
 
+ 
+  @Get('insights')
+  async getInsights() {
+    this.logger.log('🧠 Requisição para /weather/insights')
+    try {
+      const insights = await this.weatherService.getInsights()
+      return { data: insights }
+    } catch (error) {
+      this.logger.error('❌ Erro em /insights:', error)
+      return {
+        data: {
+          summary: 'Erro ao gerar insights',
+          details: [],
+          error: error.message,
+        },
+      }
+    }
+  }
+
+ 
   @Get()
   async getAll() {
     this.logger.log('🌤️  Requisição para /weather')
@@ -121,6 +151,7 @@ export class WeatherController {
     }
   }
 
+  
   @Get('recent')
   async getRecent() {
     this.logger.log('🕒 Requisição para /weather/recent')
@@ -135,6 +166,8 @@ export class WeatherController {
   }
 
   // SSE para dados em tempo real (Event-Driven)
+  @UseGuards(SseAuthGuard)
+
   @Sse('realtime')
   async streamWeatherUpdates(): Promise<Observable<MessageEvent>> {
     this.logger.log('Cliente conectado ao SSE /weather/realtime')

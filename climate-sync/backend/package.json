@@ -20,6 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
+  "@google/generative-ai": "^0.21.0",
     "@nestjs/config": "^4.0.2",
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/microservices": "^11.1.9",

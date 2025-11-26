@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
+import { SseAuthGuard } from './sse-auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -21,7 +22,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, SseAuthGuard],
   controllers: [AuthController],
+  exports: [AuthService, JwtModule, SseAuthGuard], // ← Adicione esta linha
 })
 export class AuthModule {}
