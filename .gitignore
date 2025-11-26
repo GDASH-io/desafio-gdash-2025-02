@@ -1,0 +1,51 @@
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Videos (demonstrações)
+videos/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Coverage
+coverage/
+.nyc_output/
+*.coverage
+htmlcov/
+
+# Test artifacts
+.pytest_cache/
+.tox/
+
