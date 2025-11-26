@@ -1,0 +1,73 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weather-network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  weather-collector:
+    build:
+      context: ./weather-collector
+      dockerfile: Dockerfile
+    container_name: weather-collector
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      LATITUDE: "-5.795"
+      LONGITUDE: "-35.209"
+      CITY_NAME: "Natal"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_QUEUE: weather_data
+      COLLECTION_INTERVAL: 60
+    restart: unless-stopped
+    networks:
+      - weather-network
+
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: worker-go
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_QUEUE: weather_data
+
+      API_URL: http://api:3000/api/weather/logs
+      API_TIMEOUT: 30
+
+      MAX_RETRIES: 3
+      RETRY_DELAY_SECONDS: 2
+    restart: unless-stopped
+    networks:
+      - weather-network
+
+volumes:
+  rabbitmq_data:
+    driver: local
+
+networks:
+  weather-network:
+    driver: bridge
