@@ -11,13 +11,16 @@ export class AuthController {
 	@Post('login')
 	async login(@Body() body: LoginDto, @Res() res: Response) {
 		const { user, accessToken, expiresIn } = await this.authService.login(body);
+
+		const safeUser = { id: user.id, email: user.email, role: user.role };
+
 		res.cookie('access_token', accessToken, {
 			httpOnly: true,
 			secure: true, // ajuste para false em dev sem HTTPS se necessário
 			sameSite: 'lax',
 			maxAge: expiresIn * 1000
 		});
-		return res.json({ user, expiresIn });
+		return res.json({ user: safeUser });
 	}
 
 	@Post('logout')
@@ -30,8 +33,10 @@ export class AuthController {
 	@Get('me')
 	@UseGuards(JwtAuthGuard)
 	async me(@Res() res: Response) {
-		// usuário já validado pela estratégia; payload está em req.user
+		
 		const req: any = res.req;
-		return res.json({ user: req.user });
+		const payload = req.user || {};
+		const safeUser = { id: payload.userId || payload.id, email: payload.email, role: payload.role };
+		return res.json({ user: safeUser });
 	}
 }

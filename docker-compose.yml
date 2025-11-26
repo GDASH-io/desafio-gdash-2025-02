@@ -31,6 +31,11 @@ services:
       NODE_ENV: development
     ports:
       - "3000:3000"
+    # Monta o código como volume para refletir alterações sem rebuild
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: ["npm","run","start:dev"]
     # command: ["sh","-c","npm run start:dev"]  # será ajustado após bootstrap NestJS
 
   frontend:
@@ -41,6 +46,10 @@ services:
     env_file: .env
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm","run","dev","--","--host"]
     # command: ["sh","-c","npm run dev -- --host"]  # ajustaremos após criar projeto
 
   python_collector:
