@@ -11,7 +11,6 @@ import NotFound from './pages/NotFound'
 const queryClient = new QueryClient()
 
 // Layout component para envolver as rotas com a estrutura comum
-
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <SidebarProvider>
     <div className="flex min-h-screen w-full bg-background">
