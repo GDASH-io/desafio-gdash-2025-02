@@ -8,6 +8,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: frontend
     ports:
       - "${FRONTEND_PORT}:80"
     depends_on:
@@ -24,11 +25,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: backend
     command: npm run start
     ports:
       - "${BACKEND_PORT}:3000"
     env_file:
-      - .env
+      - ./backend/.env
     environment:
       MONGO_URL: ${MONGO_URL}
       RABBITMQ_URL: ${RABBITMQ_URL}
@@ -44,6 +46,7 @@ services:
   mongo:
     image: mongo:6.0
     restart: always
+    container_name: database
     ports:
       - "${MONGO_PORT}:27017"
     env_file:
@@ -62,6 +65,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     restart: always
+    container_name: rabbitmq
     ports:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_DASHBOARD}:15672"
@@ -75,6 +79,7 @@ services:
     build:
       context: ./worker
       dockerfile: Dockerfile
+    container_name: worker
     depends_on:
       - rabbitmq
     env_file:
