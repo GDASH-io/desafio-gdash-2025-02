@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL: 'http://localhost:3000/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -125,6 +125,67 @@ export const weatherApi = {
     api.get<{ data: AnalyticsData }>('/analytics').then(res => res.data),
   getInsights: () =>
     api.get<BackendInsightsResponse>('/weather/insights').then(res => res.data),
+}
+
+export interface User {
+  _id: string
+  name: string
+  email: string
+}
+
+export interface CreateUserDto {
+  name: string
+  email: string
+  password: string
+}
+
+export interface UpdateUserDto {
+  name?: string
+  email?: string
+  password?: string
+}
+
+export const userApi = {
+  getAll: () => api.get<User[]>('/users').then(res => res.data),
+  create: (data: CreateUserDto) => api.post<User>('/users', data).then(res => res.data),
+  patch: (id: string, data: UpdateUserDto) => api.patch<User>(`/users/${id}`, data).then(res => res.data),
+  delete: (id: string) => api.delete(`/users/${id}`).then(res => res.data),
+}
+
+export interface Character {
+  id: number
+  name: string
+  status: string
+  species: string
+  type: string
+  gender: string
+  origin: {
+    name: string
+    url: string
+  }
+  location: {
+    name: string
+    url: string
+  }
+  image: string
+  episode: string[]
+  url: string
+  created: string
+}
+
+export interface RickAndMortyResponse {
+  info: {
+    count: number;
+    pages: number;
+    next: string | null;
+    prev: string | null;
+  };
+  results: Character[]
+}
+
+export const rickAndMortyApi = {
+  getCharacters: (page: number = 1) =>
+    api.get<RickAndMortyResponse>(`/rick-and-morty/characters?page=${page}`).then(res => res.data),
 }
 
 export const REALTIME_WEATHER_URL = `${api.defaults.baseURL}/weather/realtime`

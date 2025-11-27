@@ -1,5 +1,5 @@
-import { useState, type SetStateAction } from "react";
-import { useNavigate} from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,7 +62,7 @@ const Login = () => {
                 type="email" 
                 placeholder="seu@email.com" 
                 value={email}
-                onChange={(e: { target: { value: SetStateAction<string>; }; }) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="focus-visible:ring-primary"
               />
@@ -78,7 +78,7 @@ const Login = () => {
                 id="password" 
                 type="password" 
                 value={password}
-                onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 className="focus-visible:ring-primary"
               />

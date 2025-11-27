@@ -1,4 +1,4 @@
-import { LayoutDashboard, Cloud, Activity, LogOut } from "lucide-react";
+import { LayoutDashboard, Cloud, Activity, LogOut, Users, Info, Server, Globe } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,6 +19,10 @@ const items = [
   { title: "Painel", url: "/dashboard", icon: LayoutDashboard },
   { title: "Dados Climáticos", url: "/weather", icon: Cloud },
   { title: "Tempo Real", url: "/realtime", icon: Activity },
+  { title: "Usuários", url: "/users", icon: Users },
+  { title: "Sobre o Projeto", url: "/about", icon: Info },
+  { title: "Arquitetura", url: "/architecture", icon: Server },
+  { title: "Ref. Rick & Morty", url: "/rick-and-morty", icon: Globe },
 ];
 
 export function AppSidebar() {
