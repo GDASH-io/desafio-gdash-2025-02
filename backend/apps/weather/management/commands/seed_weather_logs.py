@@ -44,9 +44,9 @@ class Command(BaseCommand):
 
             for hour in range(0, 24, step):
                 dt = base + timedelta(hours=hour)
-                temp = random.uniform(18, 34)          # °C
-                humidity = random.uniform(30, 90)      # %
-                wind = random.uniform(0, 12)           # m/s (ou algo assim)
+                temp = random.uniform(18, 34)
+                humidity = random.uniform(30, 90)
+                wind = random.uniform(0, 12)
                 rain_prob = random.choice([0, 10, 20, 30, 40, 60, 80, 100])
                 condition_code = random.choice(["0", "1", "2", "3", "45", "61"]) # noqa E501
 

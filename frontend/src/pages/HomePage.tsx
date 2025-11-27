@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import AppHeader from "@/components/layout/AppHeader";
 import { weatherService } from "@/services/weatherService";
-import type {
-  WeatherLog,
-  WeatherInsightsResponse,
-} from "@/interfaces/weather";
+import type { WeatherLog } from "@/interfaces/weather";
 import { toast } from "sonner";
 
 import { WeatherFilterBar } from "@/components/layout/weather/WeatherFilterBar";
@@ -17,7 +14,9 @@ function HomePage() {
   const [logs, setLogs] = useState<WeatherLog[]>([]);
   const [insights, setInsights] = useState<string>("");
   const [days, setDays] = useState<number>(3);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isInsightsLoading, setIsInsightsLoading] = useState<boolean>(false);
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
   const [page, setPage] = useState<number>(1);
@@ -30,8 +29,7 @@ function HomePage() {
     if (!logs.length) return null;
     return [...logs].sort(
       (a, b) =>
-        new Date(b.collected_at).getTime() -
-        new Date(a.collected_at).getTime()
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )[0];
   }, [logs]);
 
@@ -46,18 +44,17 @@ function HomePage() {
         .slice()
         .sort(
           (a, b) =>
-            new Date(a.collected_at).getTime() -
-            new Date(b.collected_at).getTime()
+            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         )
         .map((log) => ({
-          time: new Date(log.collected_at).toLocaleString("pt-BR", {
+          time: new Date(log.timestamp).toLocaleString("pt-BR", {
             day: "2-digit",
             month: "2-digit",
             hour: "2-digit",
             minute: "2-digit",
           }),
           temperature: log.temperature,
-          rain_probability: log.rain_probability,
+          rain_probability: 0,
         })),
     [logs]
   );
@@ -66,17 +63,19 @@ function HomePage() {
     try {
       setIsLoading(true);
 
-      const [logsResponse, insightsResponse] = await Promise.all([
+      const [logsResponse, latestInsight] = await Promise.all([
         weatherService.listWeatherLogs({
           limit: pageSize,
           offset: (page - 1) * pageSize,
         }),
-        weatherService.getWeatherInsights({ days }),
+        weatherService
+          .getLatestWeatherInsight()
+          .catch(() => null),
       ]);
 
       setLogs(logsResponse.results);
       setTotalCount(logsResponse.count);
-      setInsights((insightsResponse as WeatherInsightsResponse).insights);
+      setInsights(latestInsight?.text ?? "");
     } catch (error) {
       toast.error("Erro ao carregar dados de clima", {
         description:
@@ -128,6 +127,23 @@ function HomePage() {
     }
   };
 
+  const regenerarInsight = async () => {
+    try {
+      setIsInsightsLoading(true);
+      const hours = days * 24;
+      const insight = await weatherService.generateWeatherInsight(hours);
+      setInsights(insight.text);
+      toast.success("Insight de clima gerado com IA!");
+    } catch (error) {
+      toast.error("Erro ao gerar insight de clima", {
+        description:
+          error instanceof Error ? error.message : "Tente novamente mais tarde.",
+      });
+    } finally {
+      setIsInsightsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
       <AppHeader />
@@ -145,8 +161,12 @@ function HomePage() {
         <WeatherSummaryCards log={currentLog} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <WeatherTemperatureChart data={chartData} isLoading={isLoading}/>
-          <WeatherInsightsCard insights={insights} isLoading={isLoading} />
+          <WeatherTemperatureChart data={chartData} isLoading={isLoading} />
+          <WeatherInsightsCard
+            insights={insights}
+            isLoading={isInsightsLoading}
+            onGenerate={regenerarInsight}
+          />
         </div>
 
         <WeatherTable

@@ -4,24 +4,28 @@ from celery.schedules import crontab
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
-# Nome igual ao projeto Django
 app = Celery("core")
 
-# Lê configurações que começam com CELERY_ no settings.py
 app.config_from_object("django.conf:settings", namespace="CELERY")
-
-# Descobre automaticamente tasks.py de cada app registrado em INSTALLED_APPS
 app.autodiscover_tasks()
 
-# Agendamento do Celery Beat
+app.conf.timezone = "America/Sao_Paulo"
+app.conf.enable_utc = False
+
 app.conf.beat_schedule = {
+    # Coleta dados de clima 1x por hora (no minuto 0 de toda hora)
     "collect-weather-every-hour": {
         "task": "apps.weather.tasks.collect_weather_task",
-        "schedule": crontab(minute=0, hour="*"),  # a cada 1h
+        "schedule": crontab(minute=0, hour="*"),
     },
-    "generate-weather-insights-every-3-hours": {
+
+    # Gera insight a cada 2 horas
+    "generate-weather-insights-every-2-hours": {
         "task": "apps.weather.tasks.generate_insights_task",
-        "schedule": crontab(minute=5, hour="*/3"),
-        "args": (24,),  # últimos 24h
+        "schedule": crontab(minute=0, hour="*/2"),
+        "kwargs": {
+            "hours": 24,
+            "force_collect": True,
+        },
     },
 }

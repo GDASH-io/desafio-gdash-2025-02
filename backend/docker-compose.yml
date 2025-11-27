@@ -10,9 +10,8 @@ services:
       - .env
     depends_on:
       - rabbitmq
-    # opcional para desenvolvimento (hot reload):
-    # volumes:
-    #   - .:/app
+    volumes:
+       - .:/app
 
   celery:
     build: .
@@ -21,6 +20,8 @@ services:
       - .env
     depends_on:
       - rabbitmq
+    volumes:
+       - .:/app
 
   beat:
     build: .
@@ -29,11 +30,12 @@ services:
       - .env
     depends_on:
       - rabbitmq
+    volumes:
+       - .:/app
 
   rabbitmq:
     image: rabbitmq:3.13-management
     ports:
-      - "5672:5672"   # broker (Celery)
-      - "15672:15672" # painel web
-    # opcional: nome fixo do container
+      - "5672:5672"
+      - "15672:15672" 
     container_name: rabbitmq

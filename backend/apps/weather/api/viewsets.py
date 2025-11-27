@@ -1,21 +1,46 @@
+import requests
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import HttpResponse
 import csv
 from openpyxl import Workbook
+from apps.weather.services.openweather import store_weather_for_city
+from apps.weather.tasks import generate_insights_task
 from ..models import WeatherLog, WeatherInsight
 from .serializers import WeatherLogSerializer, WeatherInsightSerializer
-from ..services.insights import generate_insights_for_last_hours
 
 
 class WeatherLogViewSet(viewsets.ModelViewSet):
-    """
-    GET /api/weather/logs/          -> lista registros
-    POST /api/weather/logs/         -> cria registro (pode ser usado por outros serviços) # noqa E501
-    """
     queryset = WeatherLog.objects.all()
     serializer_class = WeatherLogSerializer
+
+    @action(detail=False, methods=["post"], url_path="fetch-city")
+    def fetch_city(self, request):
+        city = request.data.get("city")
+        country = request.data.get("country", "BR")
+
+        if not city:
+            return Response(
+                {"detail": "Campo 'city' é obrigatório."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            log = store_weather_for_city(city_name=city, country_code=country)
+        except ValueError as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except requests.RequestException:
+            return Response(
+                {"detail": "Erro ao consultar a API de geocoding/clima."},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        serializer = self.get_serializer(log)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["get"], url_path="export-csv")
     def export_csv(self, request):
@@ -80,11 +105,6 @@ class WeatherLogViewSet(viewsets.ModelViewSet):
 
 
 class WeatherInsightViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    GET /api/weather/insights/           -> lista todos
-    GET /api/weather/insights/latest/    -> último insight
-    POST /api/weather/insights/generate/ -> gera insight sob demanda
-    """
     queryset = WeatherInsight.objects.all().order_by("-generated_at")
     serializer_class = WeatherInsightSerializer
 
@@ -102,9 +122,23 @@ class WeatherInsightViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["post"], url_path="generate")
     def generate(self, request):
         hours = int(request.data.get("hours", 24))
-        from ..models import WeatherInsight
+        city = request.data.get("city") or None
 
-        text = generate_insights_for_last_hours(hours=hours)
-        insight = WeatherInsight.objects.create(text=text)
-        serializer = self.get_serializer(insight)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # se city vier preenchida, não forço coleta automática
+        force_collect = not bool(city)
+
+        task = generate_insights_task.delay(
+            hours=hours,
+            force_collect=force_collect,
+            city=city,
+        )
+
+        return Response(
+            {
+                "detail": "Tarefa de geração de insight enviada.",
+                "task_id": str(task.id),
+                "city": city,
+                "hours": hours,
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )

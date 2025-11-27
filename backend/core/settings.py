@@ -201,4 +201,11 @@ OPENWEATHER_CONFIG = {
     "units": env("OPENWEATHER_UNITS"),
     "lang": env("OPENWEATHER_LANG"),
     "base_url": "https://api.openweathermap.org/data/2.5/weather",
+    "geocode_url": "https://api.openweathermap.org/geo/1.0/direct",
+}
+
+# OpenAI API
+OPENAI_CONFIG = {
+    "api_key": env("OPENAI_API_KEY", default=""),
+    "model": env("OPENAI_MODEL", default="gpt-4.1-mini"),
 }

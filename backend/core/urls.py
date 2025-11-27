@@ -40,6 +40,7 @@ urlpatterns = [
     path("api/v1/weather/logs/", WeatherLogViewSet.as_view({"get": "list", "post": "create"}), name="weather-logs-list"), # noqa E501
     path("api/v1/weather/logs/export.csv/", WeatherLogViewSet.as_view({"get": "export_csv"}), name="weather-logs-export-csv"), # noqa E501
     path("api/v1/weather/logs/export.xlsx/", WeatherLogViewSet.as_view({"get": "export_xlsx"}), name="weather-logs-export-xlsx"), # noqa E501
+    path("api/v1/weather/logs/fetch-city/", WeatherLogViewSet.as_view({"post": "fetch_city"}), name="weather-logs-fetch-city"), # noqa E501
     # Weather insights
     path("api/v1/weather/logs/insights/", WeatherInsightViewSet.as_view({"get": "list", "post": "generate"}), name="weather-logs-insights"), # noqa E501
     path("api/v1/weather/logs/insights/latest/", WeatherInsightViewSet.as_view({"get": "latest"}), name="weather-logs-insights-latest"), # noqa E501

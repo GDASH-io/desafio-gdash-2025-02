@@ -3,6 +3,7 @@ import { API_BASE_URL } from "@/config/api";
 import type {
   WeatherListResponse,
   WeatherInsightsResponse,
+  WeatherInsight,
 } from "@/interfaces/weather";
 
 const AUTH_TOKEN_KEY = "authToken";
@@ -132,9 +133,28 @@ export async function exportWeatherXlsx(params?: {
   }
 }
 
+// busca o último insight salvo
+export async function getLatestWeatherInsight(): Promise<WeatherInsight | null> {
+  const { data } = await weatherApi.get<WeatherInsight>(
+    "/weather/logs/insights/latest/"
+  );
+  return data;
+}
+
+// gera um novo insight com IA sob demanda
+export async function generateWeatherInsight(hours = 24): Promise<WeatherInsight> {
+  const { data } = await weatherApi.post<WeatherInsight>(
+    "/weather/logs/insights/generate/",
+    { hours }
+  );
+  return data;
+}
+
 export const weatherService = {
   listWeatherLogs,
   getWeatherInsights,
   exportWeatherCsv,
   exportWeatherXlsx,
+  getLatestWeatherInsight,
+  generateWeatherInsight,
 };

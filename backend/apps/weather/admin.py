@@ -14,9 +14,8 @@ class WeatherLogAdmin(admin.ModelAdmin):
         "condition",
         "created_at",
     )
-    list_filter = ("city", "condition", "timestamp", "created_at")
+    list_filter = ("city", "condition")
     search_fields = ("city", "condition")
-    date_hierarchy = "timestamp"
     ordering = ("-timestamp",)
     readonly_fields = ("created_at",)
 
@@ -24,12 +23,9 @@ class WeatherLogAdmin(admin.ModelAdmin):
 @admin.register(WeatherInsight)
 class WeatherInsightAdmin(admin.ModelAdmin):
     list_display = ("generated_at", "short_text")
-    date_hierarchy = "generated_at"
     ordering = ("-generated_at",)
 
-    readonly_fields = ("generated_at",)
-
     def short_text(self, obj):
-        return (obj.text[:75] + "...") if len(obj.text) > 75 else obj.text
+        return (obj.text[:60] + "...") if len(obj.text) > 60 else obj.text
 
-    short_text.short_description = "Insight"
+    short_text.short_description = "Texto"
