@@ -38,6 +38,35 @@ export class WeatherService {
     }
   }
 
+  async getWeatherHistory(latitude: number, longitude: number, days: number = 7): Promise<any> {
+    try {
+      // Calcular datas: hoje e X dias atrás
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      
+      // Formato YYYY-MM-DD
+      const startDateStr = startDate.toISOString().split('T')[0];
+      const endDateStr = endDate.toISOString().split('T')[0];
+
+      const params = {
+        latitude,
+        longitude,
+        daily: 'weathercode,temperature_2m_max,temperature_2m_min',
+        start_date: startDateStr,
+        end_date: endDateStr,
+        timezone: 'auto',
+      };
+
+      const response = await firstValueFrom(
+        this.httpService.get(this.OPEN_METEO_BASE_URL, { params }),
+      );
+      return response.data;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to fetch weather history from Open-Meteo', error.message);
+    }
+  }
+
   async create(createWeatherLogDto: CreateWeatherLogDto): Promise<WeatherLog> {
     const createdWeatherLog = new this.weatherLogModel(createWeatherLogDto);
     return createdWeatherLog.save();

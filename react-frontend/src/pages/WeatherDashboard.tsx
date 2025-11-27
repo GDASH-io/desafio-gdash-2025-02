@@ -450,7 +450,10 @@ export function WeatherDashboard() {
           )}
 
           <ExpandableCard title="Histórico de Clima + Insights da IA" icon={ClipboardList}>
-            <WeatherHistory />
+            <WeatherHistory 
+              latitude={userLocation?.latitude} 
+              longitude={userLocation?.longitude} 
+            />
           </ExpandableCard>
         </div>
       )}

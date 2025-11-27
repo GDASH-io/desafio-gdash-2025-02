@@ -111,50 +111,117 @@ export class WeatherController {
 
   @Get('history-insights')
   @ApiOperation({ summary: 'Retorna histórico de clima com insights da IA' })
-  async getHistoryInsights() {
-    const logs = await this.weatherService.findAll();
-    
-    // Ordenar por timestamp (mais recente primeiro) e pegar últimos 7 dias
-    const sortedLogs = logs
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, 7);
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (padrão: -12.9714)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (padrão: -38.5014)' })
+  async getHistoryInsights(
+    @Query('latitude') latitude?: number,
+    @Query('longitude') longitude?: number,
+  ) {
+    // Usar latitude/longitude padrão de Salvador se não fornecidos
+    const lat = latitude ?? -12.9714;
+    const lon = longitude ?? -38.5014;
 
-    if (sortedLogs.length < 2) {
+    try {
+      // Buscar dados históricos dos últimos 7 dias da API
+      const historyData = await this.weatherService.getWeatherHistory(lat, lon, 7);
+
+      if (!historyData || !historyData.daily || !historyData.daily.time || historyData.daily.time.length === 0) {
+        return {
+          logs: [],
+          insights: "Dados insuficientes para gerar insights. Não foi possível obter dados históricos da API.",
+          temperatureTrend: "Dados insuficientes",
+          averageTemperature: 0,
+          temperatureData: [],
+        };
+      }
+
+      // Processar dados diários da API
+      const { time, temperature_2m_max, temperature_2m_min } = historyData.daily;
+      
+      // Criar array com dados de cada dia (temperatura média = (max + min) / 2)
+      const dailyData = time.map((date: string, index: number) => {
+        const max = temperature_2m_max[index];
+        const min = temperature_2m_min[index];
+        const avg = (max + min) / 2;
+        
+        return {
+          date,
+          averageTemperature: avg,
+          maxTemperature: max,
+          minTemperature: min,
+        };
+      }).reverse(); // Reverter para ter o mais recente primeiro
+
+      if (dailyData.length < 2) {
+        const day = dailyData[0];
+        const variation = day.maxTemperature - day.minTemperature;
+        const trendMessage = variation > 2 
+          ? `A temperatura variou ${variation.toFixed(1)}°C durante o dia.`
+          : `A temperatura está relativamente estável, variando apenas ${variation.toFixed(1)}°C durante o dia.`;
+        
+        const insights = `Temperatura média: ${day.averageTemperature.toFixed(1)}°C. ${trendMessage}`;
+        
+        return {
+          logs: [{
+            _id: `day-${day.date}`,
+            timestamp: `${day.date}T12:00:00.000Z`,
+            temperature: day.averageTemperature,
+          }],
+          insights,
+          temperatureTrend: trendMessage,
+          averageTemperature: parseFloat(day.averageTemperature.toFixed(2)),
+          temperatureData: [{
+            date: `${day.date}T12:00:00.000Z`,
+            temperature: day.averageTemperature,
+          }],
+        };
+      }
+
+      // Calcular tendência de temperatura entre os dias
+      const temperatures = dailyData.map(day => day.averageTemperature);
+      const avgTemp = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
+      const firstTemp = temperatures[temperatures.length - 1]; // Dia mais antigo
+      const lastTemp = temperatures[0]; // Dia mais recente
+      const tempChange = lastTemp - firstTemp;
+
+      let trendMessage = "";
+      if (tempChange > 2) {
+        trendMessage = `A temperatura subiu ${tempChange.toFixed(1)}°C nos últimos ${dailyData.length} dias. O clima está ficando mais quente.`;
+      } else if (tempChange < -2) {
+        trendMessage = `A temperatura caiu ${Math.abs(tempChange).toFixed(1)}°C nos últimos ${dailyData.length} dias. O clima está ficando mais frio.`;
+      } else {
+        trendMessage = `A temperatura está relativamente estável, variando apenas ${Math.abs(tempChange).toFixed(1)}°C nos últimos ${dailyData.length} dias.`;
+      }
+
+      const insights = `Temperatura média: ${avgTemp.toFixed(1)}°C. ${trendMessage}`;
+
+      // Criar logs representativos para cada dia
+      const representativeLogs = dailyData.map(day => ({
+        _id: `day-${day.date}`,
+        timestamp: `${day.date}T12:00:00.000Z`,
+        temperature: day.averageTemperature,
+      }));
+
       return {
-        logs: sortedLogs,
-        insights: "Dados insuficientes para gerar insights. Continue coletando dados para ver análises mais detalhadas.",
-        temperatureTrend: "Dados insuficientes",
+        logs: representativeLogs,
+        insights,
+        temperatureTrend: trendMessage,
+        averageTemperature: parseFloat(avgTemp.toFixed(2)),
+        temperatureData: dailyData.map(day => ({
+          date: `${day.date}T12:00:00.000Z`,
+          temperature: day.averageTemperature,
+        })),
+      };
+    } catch (error) {
+      console.error('[history-insights] Erro ao buscar dados históricos:', error);
+      return {
+        logs: [],
+        insights: "Erro ao buscar dados históricos da API. Tente novamente mais tarde.",
+        temperatureTrend: "Erro ao buscar dados",
+        averageTemperature: 0,
+        temperatureData: [],
       };
     }
-
-    // Calcular tendência de temperatura
-    const temperatures = sortedLogs.map(log => log.temperature);
-    const avgTemp = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
-    const firstTemp = temperatures[temperatures.length - 1];
-    const lastTemp = temperatures[0];
-    const tempChange = lastTemp - firstTemp;
-
-    let trendMessage = "";
-    if (tempChange > 2) {
-      trendMessage = `A temperatura subiu ${tempChange.toFixed(1)}°C nos últimos ${sortedLogs.length} dias. O clima está ficando mais quente.`;
-    } else if (tempChange < -2) {
-      trendMessage = `A temperatura caiu ${Math.abs(tempChange).toFixed(1)}°C nos últimos ${sortedLogs.length} dias. O clima está ficando mais frio.`;
-    } else {
-      trendMessage = `A temperatura está relativamente estável, variando apenas ${Math.abs(tempChange).toFixed(1)}°C nos últimos ${sortedLogs.length} dias.`;
-    }
-
-    const insights = `Temperatura média: ${avgTemp.toFixed(1)}°C. ${trendMessage}`;
-
-    return {
-      logs: sortedLogs,
-      insights,
-      temperatureTrend: trendMessage,
-      averageTemperature: parseFloat(avgTemp.toFixed(2)),
-      temperatureData: sortedLogs.map(log => ({
-        date: log.timestamp,
-        temperature: log.temperature,
-      })),
-    };
   }
 
   @Get('export.csv')

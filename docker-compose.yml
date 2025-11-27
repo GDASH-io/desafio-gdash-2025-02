@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python-collector:
+    build: ./python-collector
+    container_name: python-collector
+    restart: on-failure
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      OPEN_METEO_API_URL: https://api.open-meteo.com/v1/forecast
+      LATITUDE: -12.9714
+      LONGITUDE: -38.5014
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  go-worker:
+    build: ./go-worker
+    container_name: go-worker
+    restart: on-failure
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      NESTJS_API_URL: http://nestjs-api:3000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      nestjs-api:
+        condition: service_healthy
+
+  nestjs-api:
+    build: ./nestjs-api
+    container_name: nestjs-api
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: mongodb://root:rootpassword@mongodb:27017/weather_db?authSource=admin
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      JWT_SECRET: supersecretjwtkey
+      DEFAULT_ADMIN_EMAIL: admin@example.com
+      DEFAULT_ADMIN_PASSWORD: 123456
+      TMDB_API_KEY: "54c4288f360f9ff5e93eac0fac88d51b"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  react-frontend:
+    build: ./react-frontend
+    container_name: react-frontend
+    ports:
+      - "5173:80"
+    environment:
+      VITE_API_BASE_URL: http://nestjs-api:3000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      nestjs-api:
+        condition: service_healthy
+
+volumes:
+  mongodb_data:

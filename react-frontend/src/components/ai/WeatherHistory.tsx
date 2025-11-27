@@ -19,7 +19,12 @@ interface WeatherHistoryData {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-export default function WeatherHistory() {
+interface WeatherHistoryProps {
+  latitude?: number;
+  longitude?: number;
+}
+
+export default function WeatherHistory({ latitude, longitude }: WeatherHistoryProps = {}) {
   const [historyData, setHistoryData] = useState<WeatherHistoryData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +33,12 @@ export default function WeatherHistory() {
     const fetchHistory = async () => {
       try {
         setLoading(true);
-        const response = await axios.get<WeatherHistoryData>(`${API_BASE_URL}/api/weather/history-insights`);
+        const params = new URLSearchParams();
+        if (latitude !== undefined) params.append('latitude', latitude.toString());
+        if (longitude !== undefined) params.append('longitude', longitude.toString());
+        
+        const url = `${API_BASE_URL}/api/weather/history-insights${params.toString() ? `?${params.toString()}` : ''}`;
+        const response = await axios.get<WeatherHistoryData>(url);
         setHistoryData(response.data);
       } catch (err) {
         setError('Falha ao buscar histórico de clima.');
@@ -38,11 +48,11 @@ export default function WeatherHistory() {
       }
     };
     fetchHistory();
-  }, []);
+  }, [latitude, longitude]);
 
   if (loading) return <p className="text-[#E5E7EB]">Carregando histórico...</p>;
   if (error) return <p className="text-red-500">Erro: {error}</p>;
-  if (!historyData || historyData.logs.length === 0) {
+  if (!historyData || !historyData.temperatureData || historyData.temperatureData.length === 0) {
     return (
       <div className="p-4 bg-[#0D1117] border border-[#1F2937] rounded-lg">
         <p className="text-[#E5E7EB]">Dados insuficientes para exibir histórico. Continue coletando dados para ver análises mais detalhadas.</p>
@@ -64,7 +74,7 @@ export default function WeatherHistory() {
 
       {/* Mini-gráfico de temperatura */}
       <div className="space-y-2">
-        <h5 className="text-xs font-medium text-[#E5E7EB]">Temperatura nos últimos {historyData.logs.length} dias</h5>
+        <h5 className="text-xs font-medium text-[#E5E7EB]">Temperatura nos últimos {historyData.temperatureData.length} dias</h5>
         <div className="flex items-end space-x-2 h-24 border-b border-white/5 pb-2">
           {historyData.temperatureData.map((data, index) => {
             const height = ((data.temperature - minTemp) / range) * 100;
@@ -73,10 +83,10 @@ export default function WeatherHistory() {
                 <div 
                   className="w-full bg-[#3B82F6] rounded-t transition-all hover:bg-[#3B82F6]/80"
                   style={{ height: `${Math.max(height, 5)}%` }}
-                  title={`${data.temperature}°C - ${format(parseISO(data.date), 'dd/MM')}`}
+                  title={`${data.temperature.toFixed(1)}°C - ${format(parseISO(data.date), 'dd/MM')}`}
                 />
                 <span className="text-xs text-[#9CA3AF]">{format(parseISO(data.date), 'dd/MM')}</span>
-                <span className="text-xs font-semibold text-[#E5E7EB]">{data.temperature}°C</span>
+                <span className="text-xs font-semibold text-[#E5E7EB]">{data.temperature.toFixed(1)}°C</span>
               </div>
             );
           })}
@@ -101,13 +111,13 @@ export default function WeatherHistory() {
               </tr>
             </thead>
             <tbody>
-              {historyData.logs.slice(0, 7).map((log) => (
-                <tr key={log._id} className="border-b border-white/5">
+              {historyData.temperatureData.map((data, index) => (
+                <tr key={index} className="border-b border-white/5">
                   <td className="py-1.5 text-xs font-light text-[#9CA3AF]">
-                    {format(parseISO(log.timestamp), 'dd/MM/yyyy HH:mm')}
+                    {format(parseISO(data.date), 'dd/MM/yyyy HH:mm')}
                   </td>
                   <td className="text-right py-1.5 text-xs font-medium text-[#E5E7EB]">
-                    {log.temperature}°C
+                    {data.temperature.toFixed(1)}°C
                   </td>
                 </tr>
               ))}
