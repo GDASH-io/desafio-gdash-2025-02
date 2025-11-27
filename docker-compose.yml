@@ -1,0 +1,139 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:latest
+    container_name: gdash-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: gdash_weather
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - gdash-network
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+    ports:
+      - "5672:5672"
+      - "15672:15672"  # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - gdash-network
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: gdash-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass "password123"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gdash-network
+
+  # NestJS API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: gdash-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:password123@mongodb:27017/gdash_weather?authSource=admin
+      RABBITMQ_URL: amqp://admin:password123@rabbitmq:5672
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: password123
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      DEFAULT_USER_EMAIL: admin@gdash.com
+      DEFAULT_USER_PASSWORD: admin123
+      OPENWEATHER_API_KEY: 728d82f118a955537334a4d41b2298f7
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - redis
+    networks:
+      - gdash-network
+    volumes:
+      - ./api:/app
+      - api_node_modules:/app/node_modules
+
+  # React Frontend
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: gdash-web
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    networks:
+      - gdash-network
+    volumes:
+      - ./web:/app
+      - web_node_modules:/app/node_modules
+
+  # Python Weather Collector
+  weather-collector:
+    build:
+      context: ./weather-collector
+      dockerfile: Dockerfile
+    container_name: gdash-weather-collector
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://admin:password123@rabbitmq:5672
+      OPENWEATHER_API_KEY: 728d82f118a955537334a4d41b2298f7
+      COLLECTION_INTERVAL: 300  # 5 minutes in seconds
+      API_BASE_URL: http://api:3001
+    depends_on:
+      - rabbitmq
+    networks:
+      - gdash-network
+
+  # Go Weather Worker
+  weather-worker:
+    build:
+      context: ./weather-worker
+      dockerfile: Dockerfile
+    container_name: gdash-weather-worker
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://admin:password123@rabbitmq:5672
+      API_BASE_URL: http://api:3000
+    depends_on:
+      - rabbitmq
+      - api
+    networks:
+      - gdash-network
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
+  redis_data:
+  api_node_modules:
+  web_node_modules:
+
+networks:
+  gdash-network:
+    driver: bridge
