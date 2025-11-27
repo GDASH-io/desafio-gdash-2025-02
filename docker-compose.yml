@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+  # 1. Banco de Dados
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # 2. Fila de Mensagens
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. API Backend
+  nestjs-api:
+    build: ./nestjs-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/weatherdb
+    depends_on:
+      - mongodb
+
+  # 4. Coletor Python
+  python-collector:
+    build: ./python-collector
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  # 5. Worker Go
+  go-worker:
+    build: ./go-worker
+    restart: always
+    depends_on:
+      - rabbitmq
+      - nestjs-api
+
+  # 6. Frontend React (NOVO)
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - nestjs-api
+
+# Volumes (Fica sozinho no final, sem nada dentro além do mongo-data)
+volumes:
+  mongo-data:
