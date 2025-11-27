@@ -27,6 +27,7 @@
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.49.3",
+        "react-markdown": "^10.1.0",
         "react-router-dom": "^6.21.3",
         "recharts": "^2.10.4",
         "tailwind-merge": "^2.2.0",

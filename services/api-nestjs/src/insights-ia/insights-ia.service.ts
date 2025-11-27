@@ -91,7 +91,7 @@ O JSON deve conter exatamente:
 
 Regras:
 - Todos os números devem ser valores numéricos reais.
-- "conforto_climatico" deve ser um valor de 0 a 100.
+- "conforto_climatico" deve ser um valor de 0 a 100. Calculado da seguinte forma: 0,6 * Temperatura +0,4 * Umidade. Onde Temperatura e Umidade são as médias calculadas.
 - O campo "resumo" deve ser direto, conciso e obrigatório.
 
 INSTRUÇÕES DA ANÁLISE:

@@ -23,7 +23,6 @@ function App() {
     const { isDark, setTheme } = useThemeStore()
 
     useEffect(() => {
-        // Apply theme on mount
         setTheme(isDark)
     }, [])
 
@@ -32,7 +31,6 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
-
                     <Route element={<ProtectedRoute />}>
                         <Route element={<Layout />}>
                             <Route path="/dashboard" element={<DashboardPage />} />

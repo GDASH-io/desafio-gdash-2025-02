@@ -1,4 +1,4 @@
-import { Download, TrendingUp, Droplets, Wind, Thermometer, AlertCircle } from 'lucide-react'
+import { Download, TrendingUp, Droplets, Wind, Thermometer } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -14,6 +14,10 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import ReactMarkdown from 'react-markdown'
+
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
+
 
 export const DashboardPage = () => {
     const { data: weatherData, isLoading: isLoadingWeather } = useWeatherData()
@@ -23,16 +27,36 @@ export const DashboardPage = () => {
     const exportXLSX = useExportXLSX()
     const { toast } = useToast()
 
-    const insightsMock = [
-        { id: '1', type: 'alert', message: 'Alta chance de chuva nas próximas 24 horas.', createdAt: new Date()
+    const insightsMock = {
+        "estatisticas": {
+            "temperatura": {
+                "media": 29.3,
+                "max": 31.7,
+                "min": 28.2
+            },
+            "umidade": {
+                "media": 64.4,
+                "max": 65,
+                "min": 64
+            },
+            "vento": {
+                "media": 10.02,
+                "max": 14.6,
+                "min": 2.3
+            },
+            "probabilidade_chuva": {
+                "media": 0,
+                "max": 0,
+                "min": 0
+            }
         },
-        { id: '2', type: 'warning', message: 'Tendência de queda na temperatura nos próximos dias.', createdAt: new Date()
-        },
-        { id: '3', type: 'success', message: 'Período agradável esperado para o final de semana.', createdAt: new Date()
-        },
-    ]
-    // apenas para debug
-    console.log(insights)
+        "conforto_climatico": 69,
+        "resumo": "Clima quente e úmido com ventos variados de moderados a fracos e ausência de probabilidade de chuva.",
+        "analise_tecnica": "A análise dos registros climáticos de Teresina revela uma tendência geral de clima quente e úmido, característica da região no período observado. A temperatura média de 29.3°C, com picos de 31.7°C, indica um ambiente termicamente desafiador. A umidade relativa do ar manteve-se consistentemente elevada, com média de 64.4% e pouca variação, contribuindo para uma sensação térmica de abafamento.\n\nEm relação às anomalias e padrões, observa-se uma clara tendência de elevação da temperatura ao longo do período de coleta, que abrange da madrugada ao meio da manhã (00:39 a 09:51), consistente com o ciclo diurno de aquecimento solar. A umidade, por outro lado, demonstrou notável estabilidade. Uma anomalia significativa reside na variação do regime de ventos: enquanto os primeiros registros indicavam ventos moderados (acima de 14 km/h), os dados posteriores exibem uma diminuição drástica, com valores mínimos de 2.3 km/h. Esta redução do fluxo de ar é crucial para a percepção de conforto térmico. A probabilidade de chuva manteve-se nula em todos os registros, indicando condições de tempo estável e sem precipitação durante o período analisado.\n\nA interpretação prática desses dados sugere que, apesar da ausência de chuva ser favorável a atividades externas, o elevado gradiente térmico e a umidade constante, combinados com a redução dos ventos, criam um ambiente propenso ao desconforto térmico. As primeiras horas da manhã com ventos mais fortes podem oferecer algum alívio, mas o avanço do dia traz temperaturas mais altas e ventos mais fracos, intensificando a sensação de calor.\n\nOs riscos e implicações incluem um risco aumentado de estresse térmico e desidratação para indivíduos expostos por períodos prolongados, especialmente durante atividades físicas. A diminuição acentuada do vento nos registros mais recentes é um fator de risco, pois reduz a capacidade de resfriamento por convecção e evaporação. Recomenda-se hidratação contínua, uso de roupas leves e busca por ambientes com sombra ou climatizados, além de evitar esforço físico intenso nas horas de maior calor e menor ventilação."
+
+    }
+    const normalizedInsights = Array.isArray(insights) ? insights[0] : insights;
+
     const handleExportCSV = async () => {
         try {
             await exportCSV.mutateAsync()
@@ -146,7 +170,6 @@ export const DashboardPage = () => {
                 </Card>
             </div>
 
-            {/* Charts */}
             <div className="grid gap-4 md:grid-cols-2">
                 <Card className="sketch-card">
                     <CardHeader>
@@ -198,42 +221,6 @@ export const DashboardPage = () => {
                     </CardContent>
                 </Card>
             </div>
-
-            {/*
-            {insights && insights.length > 0 && (
-                <Card className="sketch-card">
-                    <CardHeader>
-                        <CardTitle className="font-hand">Insights de IA sobre o Clima</CardTitle>
-                        <CardDescription>Análise inteligente de padrões climáticos</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-3">
-                            {insights.map((insight) => (
-                                <div
-                                    key={insight.id}
-                                    className={`flex items-start gap-3 p-3 rounded-lg border-2 ${insight.type === 'alert'
-                                        ? 'bg-destructive/10 border-destructive'
-                                        : insight.type === 'warning'
-                                            ? 'bg-orange-500/10 border-orange-500'
-                                            : insight.type === 'success'
-                                                ? 'bg-primary/10 border-primary'
-                                                : 'bg-muted border-muted-foreground'
-                                        }`}
-                                >
-                                    <AlertCircle className="h-5 w-5 mt-0.5" />
-                                    <div className="flex-1">
-                                        <p className="font-medium">{insight.message}</p>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            {formatDate(insight.createdAt)}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-*/}
             <Card className="sketch-card">
                 <CardHeader>
                     <CardTitle className="font-hand">Insights de IA sobre o Clima</CardTitle>
@@ -241,27 +228,74 @@ export const DashboardPage = () => {
                 </CardHeader>
                 <CardContent>
                     <div className="grid gap-3">
-                        {insightsMock.map((insight) => (
-                            <div
-                                key={insight.id}
-                                className={`flex items-start gap-3 p-3 rounded-lg border-2 ${insight.type === 'alert'
-                                    ? 'bg-destructive/10 border-destructive'
-                                    : insight.type === 'warning'
-                                        ? 'bg-orange-500/10 border-orange-500'
-                                        : insight.type === 'success'
-                                            ? 'bg-primary/10 border-primary'
-                                            : 'bg-muted border-muted-foreground'
-                                    }`}
-                            >
-                                <AlertCircle className="h-5 w-5 mt-0.5" />
-                                <div className="flex-1">
-                                    <p className="font-medium">{insight.message}</p>
-                                    <p className="text-xs text-muted-foreground mt-1">
-                                        {formatDate(insight.createdAt)}
+                        {isLoadingInsights ? (
+                            <div className="flex flex-col items-center justify-center py-8">
+                                <LoadingSpinner size="md" />
+                                <span className="text-muted-foreground text-sm mt-2">Carregando insights de IA...</span>
+                            </div>
+                        ) : (
+                            <>
+                                <div>
+                                    <h3 className="text-lg font-medium font-hand">Resumo</h3>
+                                    <p className="text-sm text-muted-foreground mt-1">
+                                        {normalizedInsights?.resumo || insightsMock.resumo}
                                     </p>
                                 </div>
-                            </div>
-                        ))}
+                                <div>
+                                    <h3 className="text-lg font-medium font-hand">Estatísticas</h3>
+                                    <ul className="list-disc list-inside text-sm text-muted-foreground mt-1">
+                                        <li>Temperatura Média: {normalizedInsights?.estatisticas?.temperatura?.media}°C</li>
+                                        <li>Umidade Média: {normalizedInsights?.estatisticas?.umidade?.media}%</li>
+                                        <li>Velocidade Média do Vento: {normalizedInsights?.estatisticas?.vento?.media} km/h</li>
+                                        <li>Probabilidade Média de Chuva: {normalizedInsights?.estatisticas?.probabilidade_chuva?.media}%</li>
+                                        <li>
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="font-medium text-sm text-primary">Índice de Conforto Climático</span>
+                                                    <span className="relative group cursor-pointer" tabIndex={0} aria-label="Ajuda sobre conforto climático">
+                                                        <span className={`inline-block w-9 text-center font-bold text-base rounded transition-colors duration-300 ${(normalizedInsights?.conforto_climatico) < 40
+                                                                ? 'bg-red-100 text-red-700 border border-red-300'
+                                                                : (normalizedInsights?.conforto_climatico) < 70
+                                                                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                                                                    : 'bg-green-100 text-green-700 border border-green-300'
+                                                            }`}>
+                                                            <AnimatedNumber value={normalizedInsights?.conforto_climatico} />
+                                                        </span>
+                                                        <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block group-focus:block bg-background text-xs text-muted-foreground px-2 py-1 rounded shadow z-10 border border-border whitespace-nowrap">
+                                                            Quanto maior, mais confortável o clima
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                                <div className="relative w-full h-2 bg-muted rounded overflow-hidden border border-border mt-1">
+                                                    <div
+                                                        className={`absolute left-0 top-0 h-2 transition-all duration-300 rounded ${(normalizedInsights?.conforto_climatico) < 40
+                                                                ? 'bg-red-500'
+                                                                : (normalizedInsights?.conforto_climatico) < 70
+                                                                    ? 'bg-yellow-400'
+                                                                    : 'bg-green-500'
+                                                            }`}
+                                                        style={{ width: `${normalizedInsights?.conforto_climatico}%` }}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-between text-xs mt-1 text-muted-foreground">
+                                                    <span>Desconfortável</span>
+                                                    <span>Confortável</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-medium font-hand">Análise Técnica</h3>
+                                        <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
+                                            <ReactMarkdown>
+                                                {normalizedInsights?.analise_tecnica}
+                                            </ReactMarkdown>
+                                    </p>
+                                </div>
+                            </>
+                        )}
+
                     </div>
                 </CardContent>
             </Card>

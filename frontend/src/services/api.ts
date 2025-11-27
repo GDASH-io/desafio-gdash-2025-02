@@ -64,10 +64,15 @@ export interface WeatherData {
 }
 
 export interface WeatherInsight {
-    id: string
-    message: string
-    type: 'info' | 'warning' | 'alert' | 'success'
-    createdAt: string
+    estatisticas: {
+        temperatura: { media: number; max: number; min: number }
+        umidade: { media: number; max: number; min: number }
+        vento: { media: number; max: number; min: number }
+        probabilidade_chuva: { media: number; max: number; min: number }
+    }
+    conforto_climatico: number
+    resumo: string
+    analise_tecnica: string
 }
 
 export interface ChartDataPoint {
@@ -111,7 +116,7 @@ export const weatherAPI = {
     },
 
     getInsights: async (): Promise<WeatherInsight[]> => {
-        const response = await api.get('/weather/insights')
+        const response = await api.post('/weather/insights')
         return response.data
     },
 

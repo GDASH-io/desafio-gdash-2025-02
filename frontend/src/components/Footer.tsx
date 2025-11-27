@@ -6,7 +6,7 @@ export const Footer = () => {
 
                 </div>
                 <p className="text-sm text-muted-foreground">
-                    © {new Date().getFullYear()} Painel Meteorológico
+                    © {new Date().getFullYear()} João Pedro de Oliveira Matos. Todos os direitos reservados.
                 </p>
             </div>
         </footer>
