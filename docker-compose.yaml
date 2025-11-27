@@ -22,15 +22,21 @@ services:
       dockerfile: Dockerfile
     environment:
       - MONGO_URI=mongodb://mongo:27017/desafio_gdash
+    env_file:
+      - ./services/api-nestjs/.env
     ports: ["3000:3000"]
     depends_on: ["mongo","rabbitmq"]
     networks:
       - backend-network
+      - frontend-network
 
   python-collector:
     build:
-      context: ./services/python-collector
+      context: ./services/python-service
       dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=admin
     depends_on: ["rabbitmq"]
     networks:
       - backend-network
@@ -42,8 +48,18 @@ services:
     depends_on: ["rabbitmq","api"]
     networks:
       - backend-network
-    
-    
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports: ["5173:80"]
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on: ["api"]
+    networks:
+      - backend-network
+      - frontend-network
 
 volumes:
   mongo-data:

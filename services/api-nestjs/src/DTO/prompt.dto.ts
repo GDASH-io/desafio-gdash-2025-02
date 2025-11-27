@@ -3,7 +3,11 @@ import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class ChatResponseDto {
     @IsNotEmpty()
-    response: string;
+    estatisticas: string;
     @IsNotEmpty()
-    sessionId: string;
+    conforto_climatico: string;
+    @IsNotEmpty()
+    resumo: string;
+    @IsNotEmpty()
+    analise_tecnica: string;
 }

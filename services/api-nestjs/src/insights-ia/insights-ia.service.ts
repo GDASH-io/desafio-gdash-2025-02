@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { WeatherLogs } from 'src/schema/user.schema';
 import { ConfigService } from '@nestjs/config';
 import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
+import { json } from 'stream/consumers';
 
 
 @Injectable()
@@ -33,60 +34,94 @@ export class InsightsIaService implements OnModuleInit {
         });
     }
 
+    cleanedResponse(responseText: string): { json: any; analysis: string } {
+        const jsonMatch = responseText.match(/<JSON>([\s\S]*?)<\/JSON>/);
+        const analysisMatch = responseText.match(/<ANALISE>([\s\S]*?)<\/ANALISE>/);
+
+        if (!jsonMatch) {
+            throw new Error("JSON não encontrado na resposta do modelo.");
+        }
+
+        const jsonStr = jsonMatch[1].trim();
+        const analysis = analysisMatch ? analysisMatch[1].trim() : "";
+
+        try {
+            return {
+                json: JSON.parse(jsonStr),
+                analysis,
+            };
+        } catch (err) {
+            this.logger.error("Falha ao parsear JSON: " + err);
+            throw new Error("JSON inválido na resposta do modelo.");
+        }
+    }
+
+
     async generateInsights(): Promise<ChatResponseDto> {
         const logs = await this.weatherLogsModel.find().exec();
         const prompt = `
-        Você receberá uma lista chamada logs, onde cada item contém:
-            temperatura, umidade, vento, condicao, probabilidade_chuva, data_coleta, cidade.
-        Lista: ${JSON.stringify(logs)}
+        Você é um analista climático especializado em dados históricos e padrões meteorológicos.
 
-            Tarefas:
-            - Calcular estatísticas a partir dos logs:
-                Médias: temperatura, umidade, vento, probabilidade_chuva.
-                Máximos e mínimos (com timestamps): temperatura, umidade, vento.
-            - Tendência da temperatura: “subindo”, “caindo” ou “estavel” (use regressão simples ou comparação entre metades).
-            - Pontuação de conforto climático (0-100)
-            - Penalize desvios de 22°C e 50% umidade, picos de vento e variações bruscas.
-            Classificação do período:
-            - chuvoso: probabilidade_chuva alta ou condição indicando chuva.
-            - quente: média temp ≥ 28°C
-            - frio: média temp ≤ 15°C
-            - Senão, agradavel.
-            - Alertas (somente os aplicáveis):
-            - Alta chance de chuva (probabilidade média ≥ 60%)
-            - Calor extremo (temp_max ≥ 38°C)
-            - Frio intenso (temp_min ≤ 8°C)
-            - Vento forte (vento_max ≥ 35)
-            - Variação térmica acentuada (≥ 5°C)
-            Gerar o JSON final chamado resultado com:
-            "logs": [mesmos logs recebidos]
-            "estatisticas": {...} com todas as métricas acima.
+Siga estritamente o formato abaixo. Não adicione nada fora dos blocos. Não reordene. Não explique. Não escreva texto solto.
 
-            Retorne primeiro somente o JSON, sem texto extra.
+FORMATO DE RESPOSTA:
 
-            Após o JSON, escreva uma análise técnica, objetiva e profissional como um especialista em meteorologia, interpretando os valores, classificações e alertas.`
+<JSON>
+{ ...json válido, sem comentários, sem blocos extras... }
+</JSON>
 
+<ANALISE>
+texto técnico da análise
+</ANALISE>
+
+INSTRUÇÕES DO JSON:
+
+O JSON deve conter exatamente:
+
+{
+  "estatisticas": {
+    "temperatura": { "media": number, "max": number, "min": number },
+    "umidade": { "media": number, "max": number, "min": number },
+    "vento": { "media": number, "max": number, "min": number },
+    "probabilidade_chuva": { "media": number, "max": number, "min": number }
+  },
+  "conforto_climatico": number,
+  "resumo": string
+}
+
+Regras:
+- Todos os números devem ser valores numéricos reais.
+- "conforto_climatico" deve ser um valor de 0 a 100.
+- O campo "resumo" deve ser direto, conciso e obrigatório.
+
+INSTRUÇÕES DA ANÁLISE:
+No bloco <ANALISE> faça uma análise técnica de qualidade, cobrindo:
+- tendência geral
+- anomalias
+- padrões
+- interpretação prática dos dados
+- riscos e implicações
+DADOS:
+Cidade: Teresina, PI
+Registros (JSON): ${JSON.stringify(logs)}
+        `;
 
         try {
-            const sessionInUse = `session-${Date.now()}`;
-            let insightSession = this.chatSessions.get(sessionInUse);
-            if (!insightSession) {
-                insightSession = this.genModel.startChat();
-                this.chatSessions.set(sessionInUse, insightSession);
+            const result = await this.genModel.generateContent(prompt);
+            const response = await result.response;
+            const responseText = await response.text();
+            const cleanedResponse = this.cleanedResponse(responseText);
+
+            return {
+                estatisticas: cleanedResponse.json.estatisticas,
+                conforto_climatico: cleanedResponse.json.conforto_climatico,
+                resumo: cleanedResponse.json.resumo,
+                analise_tecnica: cleanedResponse.analysis,
             }
 
-            const message = await insightSession.sendMessage(prompt);
-            const response: ChatResponseDto = {
-                response: message.text,
-                sessionId: sessionInUse,
-            };
-            return response;
         } catch (error) {
             this.logger.error('Erro ao gerar insights com Gemini IA', error);
             throw new Error('Falha ao gerar insights com Gemini IA');
         }
-    }
-    clearSession(sessionId: string): Boolean {
-        return this.chatSessions.delete(sessionId);
     }
 }
