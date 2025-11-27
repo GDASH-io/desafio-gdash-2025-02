@@ -15,7 +15,7 @@ import { RickAndMortyModule } from './publicApi/rick-and-morty.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ['../../.env', '../.env', '.env'],
+      envFilePath: '../../.env',
     }),
 
     MongooseModule.forRootAsync({
