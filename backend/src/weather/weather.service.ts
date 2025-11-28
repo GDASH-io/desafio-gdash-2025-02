@@ -57,14 +57,22 @@ export class WeatherService {
         .sort({ fetched_at: -1 })
         .skip(skip)
         .limit(itemsPerPage)
+        .lean()
         .exec(),
       this.weatherModel.countDocuments(query).exec(),
     ]);
 
+    const translatedData = data.map((item) => ({
+      ...item,
+      weather_description: translateWeatherDescription(
+        item.weather_description,
+      ),
+    })) as WeatherDocument[];
+
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     return {
-      data,
+      data: translatedData,
       page,
       itemsPerPage,
       totalPages,
