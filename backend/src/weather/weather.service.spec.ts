@@ -128,7 +128,9 @@ describe('WeatherService', () => {
         sort: jest.fn().mockReturnValue({
           skip: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
-              exec: jest.fn().mockResolvedValue(mockWeatherList),
+              lean: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue(mockWeatherList),
+              }),
             }),
           }),
         }),
@@ -143,7 +145,10 @@ describe('WeatherService', () => {
 
       expect(weatherModel.find).toHaveBeenCalledWith({});
       expect(result).toEqual({
-        data: mockWeatherList,
+        data: [
+          { ...mockWeatherDocument, weather_description: 'Encoberto' },
+          { ...mockWeatherDocument2, weather_description: 'cloudy' },
+        ],
         page: 1,
         itemsPerPage: 10,
         totalPages: 1,
@@ -162,7 +167,9 @@ describe('WeatherService', () => {
         sort: jest.fn().mockReturnValue({
           skip: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
-              exec: jest.fn().mockResolvedValue(mockWeatherList),
+              lean: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue(mockWeatherList),
+              }),
             }),
           }),
         }),
@@ -182,7 +189,7 @@ describe('WeatherService', () => {
         },
       });
       expect(result).toEqual({
-        data: mockWeatherList,
+        data: [{ ...mockWeatherDocument, weather_description: 'Encoberto' }],
         page: 1,
         itemsPerPage: 10,
         totalPages: 1,
@@ -196,7 +203,9 @@ describe('WeatherService', () => {
         sort: jest.fn().mockReturnValue({
           skip: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
-              exec: jest.fn().mockResolvedValue(mockWeatherList),
+              lean: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue(mockWeatherList),
+              }),
             }),
           }),
         }),
@@ -210,7 +219,7 @@ describe('WeatherService', () => {
       const result = await service.getWeatherPaginated(2, 1);
 
       expect(result).toEqual({
-        data: mockWeatherList,
+        data: [{ ...mockWeatherDocument2, weather_description: 'cloudy' }],
         page: 2,
         itemsPerPage: 1,
         totalPages: 2,
@@ -225,7 +234,9 @@ describe('WeatherService', () => {
         sort: jest.fn().mockReturnValue({
           skip: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
-              exec: jest.fn().mockResolvedValue(mockWeatherList),
+              lean: jest.fn().mockReturnValue({
+                exec: jest.fn().mockResolvedValue(mockWeatherList),
+              }),
             }),
           }),
         }),
@@ -240,6 +251,7 @@ describe('WeatherService', () => {
 
       expect(result.page).toBe(1);
       expect(result.itemsPerPage).toBe(10);
+      expect(result.data[0].weather_description).toBe('Encoberto');
     });
   });
 

@@ -177,7 +177,9 @@ describe('UsersService', () => {
         .fn<Promise<UserDocument | null>, []>()
         .mockResolvedValue(mockUserDocument);
       mockUserModelConstructor.findById.mockReturnValue({
-        exec: execMock,
+        select: jest.fn().mockReturnValue({
+          exec: execMock,
+        }),
       } as unknown as ReturnType<Model<UserDocument>['findById']>);
 
       const result = await service.findUserById(userId);
@@ -193,7 +195,9 @@ describe('UsersService', () => {
         .fn<Promise<UserDocument | null>, []>()
         .mockResolvedValue(null);
       mockUserModelConstructor.findById.mockReturnValue({
-        exec: execMock,
+        select: jest.fn().mockReturnValue({
+          exec: execMock,
+        }),
       } as unknown as ReturnType<Model<UserDocument>['findById']>);
 
       const result = await service.findUserById(userId);
@@ -215,7 +219,9 @@ describe('UsersService', () => {
         .fn<Promise<UserDocument | null>, []>()
         .mockResolvedValue(updatedUser);
       mockUserModelConstructor.findByIdAndUpdate.mockReturnValue({
-        exec: execMock,
+        select: jest.fn().mockReturnValue({
+          exec: execMock,
+        }),
       } as unknown as ReturnType<Model<UserDocument>['findByIdAndUpdate']>);
 
       const result = await service.updateUser(userId, mockUser);
@@ -235,7 +241,9 @@ describe('UsersService', () => {
         .fn<Promise<UserDocument | null>, []>()
         .mockResolvedValue(null);
       mockUserModelConstructor.findByIdAndUpdate.mockReturnValue({
-        exec: execMock,
+        select: jest.fn().mockReturnValue({
+          exec: execMock,
+        }),
       } as unknown as ReturnType<Model<UserDocument>['findByIdAndUpdate']>);
 
       const result = await service.updateUser(userId, mockUser);
