@@ -1,0 +1,67 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument } from './schemas/user.schema';
+import { Model } from 'mongoose';
+import { PaginatedResponseDto } from '../utils/paginated-response.dto';
+
+@Injectable()
+export class UsersService {
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async createUser(userData: User): Promise<UserDocument> {
+    const newUser = new this.userModel(userData);
+    return newUser.save();
+  }
+
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
+
+  async findAllUsers(): Promise<UserDocument[]> {
+    return this.userModel.find().exec();
+  }
+
+  async findUsersPaginated(
+    page: number = 1,
+    itemsPerPage: number = 10,
+  ): Promise<PaginatedResponseDto<UserDocument>> {
+    const skip = (page - 1) * itemsPerPage;
+    const [data, totalItems] = await Promise.all([
+      this.userModel
+        .find()
+        .select('-password -__v')
+        .skip(skip)
+        .limit(itemsPerPage)
+        .exec(),
+      this.userModel.countDocuments().exec(),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    return {
+      data,
+      page,
+      itemsPerPage,
+      totalPages,
+      totalItems,
+    };
+  }
+
+  async updateUser(
+    id: string,
+    userData: Partial<User>,
+  ): Promise<UserDocument | null> {
+    return this.userModel
+      .findByIdAndUpdate(id, userData, { new: true })
+      .select('-password -__v')
+      .exec();
+  }
+
+  async deleteUser(id: string): Promise<UserDocument | null> {
+    return this.userModel.findByIdAndDelete(id).exec();
+  }
+
+  async findUserById(id: string): Promise<UserDocument | null> {
+    return this.userModel.findById(id).select('-password -__v').exec();
+  }
+}
