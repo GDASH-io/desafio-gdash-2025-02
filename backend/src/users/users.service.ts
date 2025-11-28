@@ -45,6 +45,11 @@ export class UsersService {
         return this.toPublic(user);
     }
 
+    async findByEmail(email: string): Promise<User | null> {
+        const user = await this.userModel.findOne({ email: email.toLowerCase() }).exec();
+        return user;
+    }
+
     async update(id: string, data: UpdateUserDto): Promise<UserPublic> {
         const update: Record<string, any> = {};
 
