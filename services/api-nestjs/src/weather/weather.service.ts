@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { logsWeatherDTO } from '../DTO/logsWeather.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { WeatherLogs } from 'src/schema/user.schema';
+import { WeatherLogs } from 'src/schema/weather.schema';
 
 @Injectable()
 export class WeatherService {
   constructor(
     @InjectModel('WeatherLogs')
     private weatherLogsModel: Model<WeatherLogs>,
-  ) {}
+  ) { }
 
   async logWeatherPost(logsWeather: logsWeatherDTO): Promise<WeatherLogs> {
     const createdLog = new this.weatherLogsModel(logsWeather);

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { pokemonAPI } from '@/services/api'
+import { pokemonAPI } from '@/core/api'
 
 export const usePokemonList = (page: number, limit = 20) => {
     const offset = page * limit

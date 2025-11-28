@@ -33,9 +33,10 @@ api.interceptors.response.use(
 
 export interface User {
     id: string
-    name: string
+    nome: string
     email: string
-    role?: string
+    senha?: string
+    funcao?: string
     createdAt?: string
 }
 
@@ -98,7 +99,6 @@ export const authAPI = {
     },
 }
 
-// Weather API
 export const weatherAPI = {
     getAll: async (): Promise<WeatherData[]> => {
         const response = await api.get('/weather/logs')
@@ -135,7 +135,6 @@ export const weatherAPI = {
     },
 }
 
-// Users API
 export const usersAPI = {
     getAll: async (): Promise<User[]> => {
         const response = await api.get('/users')
@@ -148,8 +147,13 @@ export const usersAPI = {
     },
 
     create: async (user: Omit<User, 'id' | 'createdAt'>): Promise<User> => {
-        const response = await api.post('/users', user)
-        return response.data
+        const response = await api.post('/users', {
+            nome: user.nome,
+            email: user.email,
+            funcao: user.funcao,
+            senha: user.senha,
+        });
+        return response.data;
     },
 
     update: async (id: string, user: Partial<User>): Promise<User> => {
@@ -162,7 +166,6 @@ export const usersAPI = {
     },
 }
 
-// Pokemon API (public)
 export interface Pokemon {
     name: string
     url: string

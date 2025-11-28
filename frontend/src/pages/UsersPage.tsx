@@ -33,14 +33,14 @@ import {
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from '@/hooks/useUsers'
 import { useToast } from '@/components/ui/use-toast'
-import { User } from '@/services/api'
+import { User } from '@/core/api'
 
 export const UsersPage = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const [formData, setFormData] = useState({ name: '', email: '', role: '' })
+    const [formData, setFormData] = useState({ nome: '', email: '', funcao: '' })
 
     const { data: users, isLoading } = useUsers()
     const createUser = useCreateUser()
@@ -57,7 +57,7 @@ export const UsersPage = () => {
                 description: 'Usuário criado com sucesso',
             })
             setIsCreateOpen(false)
-            setFormData({ name: '', email: '', role: '' })
+            setFormData({ nome: '', email: '', funcao: '' })
         } catch (error) {
             toast({
                 variant: 'destructive',
@@ -68,8 +68,14 @@ export const UsersPage = () => {
     }
 
     const handleEdit = async () => {
-        if (!selectedUser) return
-
+        if (!selectedUser || !selectedUser.id) {
+            toast({
+                variant: 'destructive',
+                title: 'Erro',
+                description: 'ID do usuário não encontrado para edição',
+            })
+            return;
+        }
         try {
             await updateUser.mutateAsync({ id: selectedUser.id, user: formData })
             toast({
@@ -79,7 +85,7 @@ export const UsersPage = () => {
             })
             setIsEditOpen(false)
             setSelectedUser(null)
-            setFormData({ name: '', email: '', role: '' })
+            setFormData({ nome: '', email: '', funcao: '' })
         } catch (error) {
             toast({
                 variant: 'destructive',
@@ -112,7 +118,7 @@ export const UsersPage = () => {
 
     const openEditDialog = (user: User) => {
         setSelectedUser(user)
-        setFormData({ name: user.name, email: user.email, role: user.role || '' })
+        setFormData({ nome: user.nome, email: user.email, funcao: user.funcao || '' })
         setIsEditOpen(true)
     }
 
@@ -156,9 +162,9 @@ export const UsersPage = () => {
                         <TableBody>
                             {users?.map((user) => (
                                 <TableRow key={user.id}>
-                                    <TableCell className="font-medium">{user.name}</TableCell>
+                                    <TableCell className="font-medium">{user.nome}</TableCell>
                                     <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.role || 'User'}</TableCell>
+                                    <TableCell>{user.funcao || 'User'}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button
@@ -184,7 +190,6 @@ export const UsersPage = () => {
                 </CardContent>
             </Card>
 
-            {/* Create User Dialog */}
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -197,9 +202,9 @@ export const UsersPage = () => {
                         <div className="grid gap-2">
                             <Label htmlFor="name">Nome</Label>
                             <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                id="nome"
+                                value={formData.nome}
+                                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                                 placeholder="João Silva"
                             />
                         </div>
@@ -216,9 +221,9 @@ export const UsersPage = () => {
                         <div className="grid gap-2">
                             <Label htmlFor="role">Função</Label>
                             <Input
-                                id="role"
-                                value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                id="funcao"
+                                value={formData.funcao}
+                                onChange={(e) => setFormData({ ...formData, funcao: e.target.value })}
                                 placeholder="Admin, Usuário, etc."
                             />
                         </div>
@@ -234,7 +239,6 @@ export const UsersPage = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Edit User Dialog */}
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -247,9 +251,9 @@ export const UsersPage = () => {
                         <div className="grid gap-2">
                             <Label htmlFor="edit-name">Nome</Label>
                             <Input
-                                id="edit-name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                id="edit-nome"
+                                value={formData.nome}
+                                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                             />
                         </div>
                         <div className="grid gap-2">
@@ -264,9 +268,9 @@ export const UsersPage = () => {
                         <div className="grid gap-2">
                             <Label htmlFor="edit-role">Role</Label>
                             <Input
-                                id="edit-role"
-                                value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                id="edit-funcao"
+                                value={formData.funcao}
+                                onChange={(e) => setFormData({ ...formData, funcao: e.target.value })}
                             />
                         </div>
                     </div>
@@ -281,14 +285,13 @@ export const UsersPage = () => {
                 </DialogContent>
             </Dialog>
 
-            {/* Delete Confirmation Dialog */}
             <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle className="font-hand">Tem certeza?</AlertDialogTitle>
                         <AlertDialogDescription>
                             Esta ação não pode ser desfeita. Isso excluirá permanentemente o usuário
-                            <strong> {selectedUser?.name}</strong> do sistema.
+                            <strong> {selectedUser?.nome}</strong> do sistema.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

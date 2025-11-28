@@ -3,7 +3,7 @@ import { logsWeatherDTO } from '../DTO/logsWeather.dto';
 import { ChatResponseDto } from 'src/DTO/prompt.dto';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { WeatherLogs } from 'src/schema/user.schema';
+import { WeatherLogs } from 'src/schema/weather.schema';
 import { ConfigService } from '@nestjs/config';
 import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
 import { json } from 'stream/consumers';

@@ -68,7 +68,6 @@ export const ExplorePage = () => {
                 })}
             </div>
 
-            {/* Pagination */}
             <div className="flex items-center justify-center gap-4">
                 <Button
                     variant="outline"
@@ -93,7 +92,6 @@ export const ExplorePage = () => {
                 </Button>
             </div>
 
-            {/* Pokemon Detail Dialog */}
             <Dialog open={!!selectedPokemon} onOpenChange={() => setSelectedPokemon(null)}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>

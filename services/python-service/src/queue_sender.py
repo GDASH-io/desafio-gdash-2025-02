@@ -7,7 +7,6 @@ from src.weather import get_time_info
 def connect_rmq():
     credentials = pk.PlainCredentials(os.getenv('RABBITMQ_USER'), os.getenv('RABBITMQ_PASSWORD'))
     parameters = pk.ConnectionParameters(host='rabbitmq', port=5672, virtual_host='/', credentials=credentials)
-    
     connection = pk.BlockingConnection(parameters)
     channel = connection.channel() 
     channel.exchange_declare(exchange='weather_exchange', exchange_type='direct', durable=True)

@@ -254,10 +254,10 @@ export const DashboardPage = () => {
                                                     <span className="font-medium text-sm text-primary">Índice de Conforto Climático</span>
                                                     <span className="relative group cursor-pointer" tabIndex={0} aria-label="Ajuda sobre conforto climático">
                                                         <span className={`inline-block w-9 text-center font-bold text-base rounded transition-colors duration-300 ${(normalizedInsights?.conforto_climatico) < 40
-                                                                ? 'bg-red-100 text-red-700 border border-red-300'
-                                                                : (normalizedInsights?.conforto_climatico) < 70
-                                                                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                                                                    : 'bg-green-100 text-green-700 border border-green-300'
+                                                            ? 'bg-red-100 text-red-700 border border-red-300'
+                                                            : (normalizedInsights?.conforto_climatico) < 70
+                                                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                                                                : 'bg-green-100 text-green-700 border border-green-300'
                                                             }`}>
                                                             <AnimatedNumber value={normalizedInsights?.conforto_climatico} />
                                                         </span>
@@ -269,10 +269,10 @@ export const DashboardPage = () => {
                                                 <div className="relative w-full h-2 bg-muted rounded overflow-hidden border border-border mt-1">
                                                     <div
                                                         className={`absolute left-0 top-0 h-2 transition-all duration-300 rounded ${(normalizedInsights?.conforto_climatico) < 40
-                                                                ? 'bg-red-500'
-                                                                : (normalizedInsights?.conforto_climatico) < 70
-                                                                    ? 'bg-yellow-400'
-                                                                    : 'bg-green-500'
+                                                            ? 'bg-red-500'
+                                                            : (normalizedInsights?.conforto_climatico) < 70
+                                                                ? 'bg-yellow-400'
+                                                                : 'bg-green-500'
                                                             }`}
                                                         style={{ width: `${normalizedInsights?.conforto_climatico}%` }}
                                                     />
@@ -287,10 +287,10 @@ export const DashboardPage = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-medium font-hand">Análise Técnica</h3>
-                                        <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
-                                            <ReactMarkdown>
-                                                {normalizedInsights?.analise_tecnica}
-                                            </ReactMarkdown>
+                                    <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
+                                        <ReactMarkdown>
+                                            {normalizedInsights?.analise_tecnica}
+                                        </ReactMarkdown>
                                     </p>
                                 </div>
                             </>

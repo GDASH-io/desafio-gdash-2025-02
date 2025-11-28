@@ -1,37 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
-import { v4 as uuidv4 } from 'uuid';
 
-export type WeatherLogsDocument = HydratedDocument<WeatherLogs>;
+export type UsersDocument = HydratedDocument<User>;
 
 @Schema({
   timestamps: true,
-  collection: 'weather_logs',
+  collection: 'users',
 })
-export class WeatherLogs {
+export class User {
+  @Prop({ required: true })
+  nome: string;
 
   @Prop({ required: true })
-  temperatura: number;
+  email: string;
 
   @Prop({ required: true })
-  umidade: number;
+  funcao: string;
 
-  @Prop({ required: true })
-  vento: number;
-
-  @Prop({ required: true })
-  condicao: string;
-
-  @Prop({ required: true })
-  probabilidade_chuva: number;
-
-  @Prop({ required: true })
-  data_coleta: string;
-
-  @Prop({ required: true })
-  cidade: string;
+  @Prop({ required: false })
+  senha: string;
 }
 
-export const WeatherLogsSchema = SchemaFactory.createForClass(
-  WeatherLogs,
+export const UsersSchema = SchemaFactory.createForClass(
+  User,
 ) as MongooseSchema;

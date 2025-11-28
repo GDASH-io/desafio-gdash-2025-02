@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { InsightsIaService } from './insights-ia.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { WeatherLogsSchema } from 'src/schema/user.schema';
+import { WeatherLogsSchema } from 'src/schema/weather.schema';
 
 @Module({
   imports: [

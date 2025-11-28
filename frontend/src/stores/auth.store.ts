@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { User, authAPI, LoginRequest } from '@/services/api'
+import { User, authAPI, LoginRequest } from '@/core/api'
 import { setToStorage, removeFromStorage } from '@/lib/utils'
 
 interface AuthState {

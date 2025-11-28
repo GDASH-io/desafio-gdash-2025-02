@@ -1,10 +1,10 @@
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { weatherAPI } from '@/services/api'
+import { weatherAPI } from '@/core/api'
 
 export const useWeatherData = () => {
     return useQuery({
-        queryKey: ['weather'], // isso é a chave da query
-        queryFn: weatherAPI.getAll, 
+        queryKey: ['weather'],
+        queryFn: weatherAPI.getAll,
         refetchInterval: 300000,
     })
 }

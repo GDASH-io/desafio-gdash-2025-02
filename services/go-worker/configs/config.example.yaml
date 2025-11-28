@@ -1,0 +1,8 @@
+rabbitmq:
+  URL:
+  EXCHANGE:
+worker:
+  retries:
+  interval_seconds:
+api:
+  LOGS_URL:

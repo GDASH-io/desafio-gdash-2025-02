@@ -78,32 +78,40 @@ def extract_data(func):
     hourly = func["hourly"]
     weather_code = current["weathercode"]
     condition = WEATHER_CODE.get(weather_code, "Desconhecido")
+
+
+    current_time = current["time"]
+    times = hourly["time"]
+    idx = 0
+    for i, t in enumerate(times):
+        if t <= current_time:
+            idx = i
+        else:
+            break
+    print(f"Debug: current_time = {current_time}")
+    print(f"Debug: hourly times = {times}")
+    print(f"Debug: precipitation idx = {idx}")
+
     return {
         "current": current,
         "hourly": hourly,
-        "condition": condition
+        "condition": condition,
+        "precipitation_idx": idx
     }
 
 
 def format_data(**kwargs):
     tz_brasil = timezone("America/Fortaleza")
     data_coleta = datetime.now(tz=tz_brasil).isoformat()
+    idx = kwargs.get("precipitation_idx", 0)
     data_formatted = {
         "temperatura": kwargs["current"]["temperature"],
-        "umidade": float(kwargs['hourly']['relative_humidity_2m'][0]),
+        "umidade": float(kwargs['hourly']['relative_humidity_2m'][idx]),
         "vento": kwargs["current"]["windspeed"],
         "condicao": kwargs["condition"],
-        "probabilidade_chuva": float(kwargs['hourly']['precipitation_probability'][0]),
+        "probabilidade_chuva": float(kwargs['hourly']['precipitation_probability'][idx]),
         "data_coleta": data_coleta,
         "cidade": "Teresina"
     }
 
     return data_formatted
-
-
-#if __name__ == "__main__":
-#    cordinates = get_coordinates()
-#    forecast = search_forecast(cordinates["latitude"], cordinates["longitude"], "America/Fortaleza")
-#    data = extract_data(forecast)
-#    formatted_data = format_data(**data)
-#    print(formatted_data)
