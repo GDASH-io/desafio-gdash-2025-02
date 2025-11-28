@@ -1,0 +1,31 @@
+# ===========================
+# 1. Configurações e Segredos
+# ===========================
+.env
+
+# ===========================
+# 2. Dependências e Builds (Node.js - Backend/Frontend)
+# ===========================
+node_modules/
+dist/
+npm-debug.log
+
+
+# ===========================
+# 3. Python (Producer)
+# ===========================
+__pycache__/
+*.pyc
+
+# ===========================
+# 4. Go (Worker)
+# ===========================
+# Binários gerados se você rodar 'go build' localmente
+*.exe
+
+# ===========================
+# 5. Sistema e IDE
+# ===========================
+.DS_Store
+Thumbs.db
+.vscode/

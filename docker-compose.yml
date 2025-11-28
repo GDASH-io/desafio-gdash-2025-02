@@ -1,0 +1,109 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: gdash_rabbitmq
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_UI_PORT}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - gdash-net
+  
+  mongodb:
+    image: mongo:6.0
+    container_name: gdash_mongo
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gdash-net
+
+  python-producer:
+    build:
+      context: ./python-producer
+      dockerfile: Dockerfile
+    container_name: gdash_python
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_QUEUE=weather_data
+      - LATITUDE=${LATITUDE}
+      - LONGITUDE=${LONGITUDE}
+    networks:
+      - gdash-net
+    restart: on-failure
+  
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: gdash_worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
+      - API_URL=http://nestjs-api:3000/api/weather/logs 
+    networks:
+      - gdash-net
+    restart: on-failure
+
+  nestjs-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gdash_api
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - gdash-net
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    container_name: gdash-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    depends_on:
+      - nestjs-api
+
+networks:
+  gdash-net:
+    driver: bridge
+
+volumes:
+  rabbitmq_data: 
+  mongo_data:
