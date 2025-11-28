@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    font-family:
+        'Inter',
+        system-ui,
+        -apple-system,
+        sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #344054;
+
+    /* Core palette */
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --surface: #f9fafb;
+    --text: #344054;
+    --muted: #667085;
+    --muted-2: #98a2b3;
+    --border: #e9ecf0;
+    --primary: #ffd700;
+    --primary-solid: #ffd700;
+    --primary-contrast: #1d2939;
+    --success: #12B76A;
+    --warning: #FEC84B;
+    --error: #F04438;
+
+    /* Table */
+    --table-bg: #ffffff;
+    --table-header: #F5F7FB;
+    --table-border: #E9ECF0;
+    --table-text: #475467;
+    --table-muted: #344054;
+    --table-row-hover: #f2f4f7;
+
+    /* Shadows */
+    --shadow-soft: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+:root[data-theme='dark'] {
+    --bg: #0f1729;
+    --card: #101827;
+    --surface: #0b1221;
+    --text: #e4e7ec;
+    --muted: #94a3b8;
+    --muted-2: #cbd5e1;
+    --border: #1f2937;
+    --primary: #ffd700;
+    --primary-solid: #ffd700;
+    --primary-contrast: #0f172a;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --table-bg: #0f1729;
+    --table-header: #111c2f;
+    --table-border: #1e293b;
+    --table-text: #e4e7ec;
+    --table-muted: #94a3b8;
+    --table-row-hover: #12213a;
+    --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.4);
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    border-radius: 0;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+    color: var(--text);
+}
+
+::placeholder {
+    color: var(--muted);
+}
+
+.theme-bg {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.theme-card {
+    background-color: var(--card);
+    color: var(--text);
+}
+
+.theme-surface {
+    background-color: var(--surface);
+    color: var(--text);
+}
+
+.theme-border {
+    border-color: var(--border);
+}
+
+.theme-muted {
+    color: var(--muted);
+}
