@@ -1,0 +1,92 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: gdash_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - gdash_net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER} 
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS} 
+    networks:
+      - gdash_net
+    healthcheck:
+        test: ["CMD", "rabbitmqctl", "status"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+
+  weather-collector:
+    build: ./weather-collector
+    container_name: gdash_collector
+    restart: on-failure
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASS: ${RABBITMQ_PASS}
+    networks:
+      - gdash_net
+
+  weather-worker:
+    build: ./weather-worker
+    container_name: gdash_worker
+    restart: on-failure
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    environment:
+      RABBITMQ_URL: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/
+      API_URL: http://backend:3000/weather
+    networks:
+      - gdash_net
+
+  backend:
+    build: ./backend
+    container_name: gdash_backend
+    restart: always
+    ports:
+      - "${PORT_BACKEND}:3000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/${MONGO_INITDB_DATABASE}
+    networks:
+      - gdash_net
+
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:${PORT_BACKEND}
+    container_name: gdash_frontend
+    restart: always
+    ports:
+      - "${PORT_FRONTEND}:80"
+    depends_on:
+      - backend
+    networks:
+      - gdash_net
+
+volumes:
+  mongo_data:
+
+networks:
+  gdash_net:
+    driver: bridge
