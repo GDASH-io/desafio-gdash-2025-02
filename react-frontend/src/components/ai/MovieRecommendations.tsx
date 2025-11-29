@@ -32,7 +32,7 @@ const MovieRecommendations: React.FC<MovieRecommendationsProps> = ({ mood, sugge
       
       {movies.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-3">
-          {movies.slice(0, 10).map((movie) => (
+          {movies.slice(0, 20).map((movie) => (
             <Link to={`/movies/${movie.id}`} key={movie.id} className="block">
               <div className="bg-[#161B22] border border-white/5 rounded-lg overflow-hidden shadow-md hover:shadow-lg hover:border-white/10 transition-all duration-300">
                 <img

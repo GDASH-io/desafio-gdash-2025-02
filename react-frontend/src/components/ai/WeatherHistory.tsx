@@ -20,11 +20,12 @@ interface WeatherHistoryData {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 interface WeatherHistoryProps {
+  city?: string | null;
   latitude?: number;
   longitude?: number;
 }
 
-export default function WeatherHistory({ latitude, longitude }: WeatherHistoryProps = {}) {
+export default function WeatherHistory({ city, latitude, longitude }: WeatherHistoryProps = {}) {
   const [historyData, setHistoryData] = useState<WeatherHistoryData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +35,12 @@ export default function WeatherHistory({ latitude, longitude }: WeatherHistoryPr
       try {
         setLoading(true);
         const params = new URLSearchParams();
-        if (latitude !== undefined) params.append('latitude', latitude.toString());
-        if (longitude !== undefined) params.append('longitude', longitude.toString());
+        if (city) {
+          params.append('city', city);
+        } else if (latitude !== undefined && longitude !== undefined) {
+          params.append('latitude', latitude.toString());
+          params.append('longitude', longitude.toString());
+        }
         
         const url = `${API_BASE_URL}/api/weather/history-insights${params.toString() ? `?${params.toString()}` : ''}`;
         const response = await axios.get<WeatherHistoryData>(url);
@@ -48,7 +53,7 @@ export default function WeatherHistory({ latitude, longitude }: WeatherHistoryPr
       }
     };
     fetchHistory();
-  }, [latitude, longitude]);
+  }, [city, latitude, longitude]);
 
   if (loading) return <p className="text-[#E5E7EB]">Carregando histórico...</p>;
   if (error) return <p className="text-red-500">Erro: {error}</p>;

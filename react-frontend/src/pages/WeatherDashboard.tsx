@@ -8,6 +8,7 @@ import SmartAlerts from '../components/ai/SmartAlerts';
 import MovieRecommendations from '../components/ai/MovieRecommendations';
 import WeatherHistory from '../components/ai/WeatherHistory';
 import ExpandableCard from '../components/ui/expandable-card';
+import CitySelector from '../components/weather/CitySelector';
 
 interface HourlyForecast {
   time: string;
@@ -33,7 +34,7 @@ interface Movie {
 }
 
 interface AiInsightsData {
-  weatherForecast: any; // Manter flexível ou definir uma interface mais detalhada se necessário
+  weatherForecast: any;
   explainedWeather: string;
   healthAlerts: string[];
   smartAlerts: string[];
@@ -42,9 +43,16 @@ interface AiInsightsData {
   detailedClothingSuggestions?: string[];
   daySummary: string;
   moodInsights: string;
-  movieRecommendations: {
-    mood: string;
-    suggestions: string[];
+  movieCriteria: {
+    tema: string;
+    generos_sugeridos: string[];
+    tons: string[];
+    popularidade_minima?: number;
+    vote_average_min?: number;
+    year_range?: {
+      min?: number;
+      max?: number;
+    };
     description: string;
   };
   apparentTemperatureExplanation?: string;
@@ -60,51 +68,49 @@ interface AiInsightsData {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
-// Minha função para pegar o ícone certo do clima baseado no código.
 const getWeatherIcon = (weathercode: number, isDay: boolean = true, size: number = 24) => {
   switch (weathercode) {
-    case 0: // Céu limpo
+    case 0:
       return isDay ? <Sun size={size} style={{ color: 'var(--weather-sun)' }} /> : <Cloud size={size} style={{ color: 'var(--weather-cloudy)' }} />;
-    case 1: // Mainly clear
-    case 2: // Partly cloudy
-    case 3: // Overcast
+    case 1:
+    case 2:
+    case 3:
       return <Cloud size={size} style={{ color: 'var(--weather-cloudy)' }} />;
-    case 45: // Fog
-    case 48: // Depositing rime fog
+    case 45:
+    case 48:
       return <Cloud size={size} style={{ color: 'var(--weather-cloudy)' }} />;
-    case 51: // Drizzle: Light
-    case 53: // Drizzle: Moderate
-    case 55: // Drizzle: Dense intensity
-    case 56: // Freezing Drizzle: Light
-    case 57: // Freezing Drizzle: Dense intensity
-    case 61: // Rain: Slight
-    case 63: // Rain: Moderate
-    case 65: // Rain: Heavy intensity
-    case 66: // Freezing Rain: Light
-    case 67: // Freezing Rain: Heavy intensity
+    case 51:
+    case 53:
+    case 55:
+    case 56:
+    case 57:
+    case 61:
+    case 63:
+    case 65:
+    case 66:
+    case 67:
       return <CloudRain size={size} style={{ color: 'var(--weather-rain)' }} />;
-    case 71: // Snow fall: Slight
-    case 73: // Snow fall: Moderate
-    case 75: // Snow fall: Heavy intensity
-    case 77: // Snow grains
+    case 71:
+    case 73:
+    case 75:
+    case 77:
       return <CloudSnow size={size} style={{ color: 'var(--weather-cloudy)' }} />;
-    case 80: // Rain showers: Slight
-    case 81: // Rain showers: Moderate
-    case 82: // Rain showers: Violent
+    case 80:
+    case 81:
+    case 82:
       return <CloudRain size={size} style={{ color: 'var(--weather-rain)' }} />;
-    case 85: // Snow showers: Slight
-    case 86: // Snow showers: Heavy
+    case 85:
+    case 86:
       return <CloudSnow size={size} style={{ color: 'var(--weather-cloudy)' }} />;
-    case 95: // Thunderstorm: Slight or moderate
-    case 96: // Thunderstorm with slight hail
-    case 99: // Thunderstorm with heavy hail
+    case 95:
+    case 96:
+    case 99:
       return <CloudLightning size={size} style={{ color: 'var(--weather-storm)' }} />;
     default:
       return <Cloud size={48} style={{ color: 'var(--weather-cloudy)' }} />;
   }
 };
 
-// Este é o meu componente principal do painel de clima e recomendações de filmes.
 export function WeatherDashboard() {
   console.log('WeatherDashboard: Componente renderizado');
   const [currentWeather, setCurrentWeather] = useState<any>(null);
@@ -115,113 +121,132 @@ export function WeatherDashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [genresLoaded, setGenresLoaded] = useState<boolean>(false); 
+  const [genresLoaded, setGenresLoaded] = useState<boolean>(false);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('WeatherDashboard: useEffect (fetchGenres) disparado');
-    const fetchGenres = async () => {
-      console.log('fetchGenres: Iniciado');
+    const savedLocation = localStorage.getItem('current_location');
+    if (savedLocation) {
+      try {
+        const location = JSON.parse(savedLocation);
+        if (location.city) {
+          setSelectedCity(location.city);
+          setUserLocation(null);
+        } else if (location.latitude && location.longitude) {
+          setUserLocation({ latitude: location.latitude, longitude: location.longitude });
+          setSelectedCity(null);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar localização do localStorage:', err);
+      }
+    }
+  }, []); 
+
+  useEffect(() => {
+    console.log('WeatherDashboard: useEffect (buscarGêneros) disparado');
+    const buscarGêneros = async () => {
+      console.log('buscarGêneros: Iniciado');
       try {
         await axios.get(`${API_BASE_URL}/api/tmdb/genres`);
-        console.log('fetchGenres: Gêneros buscados com sucesso, setando genresLoaded para true');
+        console.log('buscarGêneros: Gêneros buscados com sucesso, definindo genresLoaded como true');
         setGenresLoaded(true);
       } catch (err) {
-        console.error("fetchGenres: Erro ao buscar gêneros:", err);
-        setGenresLoaded(true); // Ainda assim marcar como carregado para não bloquear outros processos
+        console.error('buscarGêneros: Erro ao buscar gêneros:', err);
+        setGenresLoaded(true);
       }
     };
-    fetchGenres();
-  }, []); // Array de dependências vazio para executar apenas uma vez
+    buscarGêneros();
+  }, []);
 
-  // Efeito que busca os dados do clima e as recomendações quando a localização do usuário e os gêneros mudam.
   useEffect(() => {
-    console.log('WeatherDashboard: useEffect (fetchWeatherData) disparado. userLocation:', userLocation, 'genresLoaded:', genresLoaded);
-    if (userLocation && genresLoaded) {
-      console.log('WeatherDashboard: Chamando fetchWeatherData...');
+    if (genresLoaded && (userLocation || selectedCity)) {
+      console.log('WeatherDashboard: Chamando buscarDadosClima...');
       fetchWeatherData();
-    } else if (!userLocation) {
-      // Tenta obter a localização se ainda não estiver definida
+    } else if (!userLocation && !selectedCity) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Geolocation: Sucesso. userLocation definido.');
-          setUserLocation({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+          console.log('Geolocalização: Sucesso. Localização do usuário definida.');
+          const location = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+          setUserLocation(location);
+          if (!selectedCity) {
+            localStorage.setItem('current_location', JSON.stringify(location));
+          }
         },
         (err) => {
-          console.warn('Geolocation: Permissão de localização negada ou falha ao obter localização. Usando localização padrão.', err);
-          // Fallback para uma localização padrão (Salvador, Brasil)
+          console.warn('Geolocalização: Permissão de localização negada ou falha ao obter localização. Usando localização padrão (Salvador, Brasil).', err);
           setUserLocation({ latitude: -12.9714, longitude: -38.5014 });
-          setLoading(false); // Definir como falso para permitir que o dashboard tente carregar com a localização padrão
+          setLoading(false);
         }
       );
     }
-  }, [userLocation, genresLoaded]); // Re-executa se a localização ou o status de carregamento de gêneros mudar
+  }, [userLocation, selectedCity, genresLoaded]);
 
-  // Minha função que pega os IDs dos gêneros e retorna os nomes correspondentes.
-  // const getGenreNames = (genreIds: number[]) => { ... }; // Removida
-
-  // Minha função para definir a cor da nota do filme (verde, amarelo ou vermelho).
-  // const getRatingColor = (voteAverage: number) => { ... }; // Removida
-
-  // Função principal para buscar todos os dados de clima e recomendações de filmes.
   const fetchWeatherData = async () => {
-    console.log('fetchWeatherData: Iniciado');
+    console.log('buscarDadosClima: Iniciado');
     setLoading(true);
     setError(null);
-    if (!userLocation) {
-      console.log('fetchWeatherData: userLocation é null, retornando.');
-      setLoading(false); // Garantir que loading seja falso se não houver localização
+    
+    const usarCidade = selectedCity !== null;
+    const parametroLocalizacao = usarCidade 
+      ? `city=${encodeURIComponent(selectedCity!)}`
+      : `latitude=${userLocation!.latitude}&longitude=${userLocation!.longitude}`;
+    
+    if (!userLocation && !selectedCity) {
+      console.log('buscarDadosClima: Localização do usuário e cidade selecionada são nulas, retornando.');
+      setLoading(false);
       return;
     }
+    
     try {
-      console.log('fetchWeatherData: Buscando previsão do tempo...');
-      // Busco a previsão do tempo para a localização atual do usuário.
-      await axios.get(`${API_BASE_URL}/api/weather/forecast?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`);
+      console.log('buscarDadosClima: Buscando previsão do tempo...');
+      await axios.get(`${API_BASE_URL}/api/weather/forecast?${parametroLocalizacao}`);
 
-      console.log('fetchWeatherData: Buscando insights da IA...');
-      // Busco os insights da minha IA com base no clima atual.
-      const aiInsightsResponse = await axios.get<AiInsightsData>(`${API_BASE_URL}/api/weather/ai-insights?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`);
-      setAiInsights(aiInsightsResponse.data);
-      console.log('fetchWeatherData: Insights da IA recebidos:', aiInsightsResponse.data);
+      console.log('buscarDadosClima: Buscando insights da IA...');
+      const respostaInsights = await axios.get<AiInsightsData>(`${API_BASE_URL}/api/weather/ai-insights?${parametroLocalizacao}`);
+      setAiInsights(respostaInsights.data);
+      console.log('buscarDadosClima: Insights da IA recebidos:', respostaInsights.data);
 
-      console.log('fetchWeatherData: Setando clima atual...');
-      // Extraio o clima atual dos dados da previsão (agora de aiInsightsResponse.data.weatherForecast).
+      console.log('buscarDadosClima: Definindo clima atual...');
       setCurrentWeather({
-        temperature: aiInsightsResponse.data.weatherForecast.current_weather.temperature,
-        windspeed: aiInsightsResponse.data.weatherForecast.current_weather.windspeed,
-        weathercode: aiInsightsResponse.data.weatherForecast.current_weather.weathercode,
-        is_day: aiInsightsResponse.data.weatherForecast.current_weather.is_day,
-        humidity: aiInsightsResponse.data.weatherForecast.hourly?.relativehumidity_2m?.[0] ?? null,
-        precipitation_probability: aiInsightsResponse.data.weatherForecast.hourly?.precipitation_probability?.[0] ?? null,
-        apparent_temperature: aiInsightsResponse.data.apparent_temperature ?? null,
-        uv_index: aiInsightsResponse.data.uv_index ?? null,
+        temperature: respostaInsights.data.weatherForecast.current_weather.temperature,
+        windspeed: respostaInsights.data.weatherForecast.current_weather.windspeed,
+        weathercode: respostaInsights.data.weatherForecast.current_weather.weathercode,
+        is_day: respostaInsights.data.weatherForecast.current_weather.is_day,
+        humidity: respostaInsights.data.weatherForecast.hourly?.relativehumidity_2m?.[0] ?? null,
+        precipitation_probability: respostaInsights.data.weatherForecast.hourly?.precipitation_probability?.[0] ?? null,
+        apparent_temperature: respostaInsights.data.apparent_temperature ?? null,
+        uv_index: respostaInsights.data.uv_index ?? null,
       });
 
-      console.log('fetchWeatherData: Setando previsão horária...');
-      // Extraio a previsão horária e diária dos dados (agora de aiInsightsResponse.data.weatherForecast).
-      setHourlyForecast(aiInsightsResponse.data.weatherForecast.hourly.time.map((time: string, index: number) => ({
+      console.log('buscarDadosClima: Definindo previsão horária...');
+      setHourlyForecast(respostaInsights.data.weatherForecast.hourly.time.map((time: string, index: number) => ({
         time: time,
-        temperature_2m: aiInsightsResponse.data.weatherForecast.hourly.temperature_2m[index],
-        weathercode: aiInsightsResponse.data.weatherForecast.hourly.weathercode[index],
-        precipitation_probability: aiInsightsResponse.data.weatherForecast.hourly.precipitation_probability[index],
+        temperature_2m: respostaInsights.data.weatherForecast.hourly.temperature_2m[index],
+        weathercode: respostaInsights.data.weatherForecast.hourly.weathercode[index],
+        precipitation_probability: respostaInsights.data.weatherForecast.hourly.precipitation_probability[index],
       })));
 
-      console.log('fetchWeatherData: Setando previsão diária...');
-      setDailyForecast(aiInsightsResponse.data.weatherForecast.daily.time.map((time: string, index: number) => ({
+      console.log('buscarDadosClima: Definindo previsão diária...');
+      setDailyForecast(respostaInsights.data.weatherForecast.daily.time.map((time: string, index: number) => ({
         time: time,
-        weathercode: aiInsightsResponse.data.weatherForecast.daily.weathercode[index],
-        temperature_2m_max: aiInsightsResponse.data.weatherForecast.daily.temperature_2m_max[index],
-        temperature_2m_min: aiInsightsResponse.data.weatherForecast.daily.temperature_2m_min[index],
+        weathercode: respostaInsights.data.weatherForecast.daily.weathercode[index],
+        temperature_2m_max: respostaInsights.data.weatherForecast.daily.temperature_2m_max[index],
+        temperature_2m_min: respostaInsights.data.weatherForecast.daily.temperature_2m_min[index],
       })));
 
-      // Se a IA sugerir algum gênero, busco filmes com base nesses gêneros.
-      console.log('fetchWeatherData: Verificando sugestões de filmes...', aiInsightsResponse.data.movieRecommendations.suggestions);
-      if (aiInsightsResponse.data.movieRecommendations.suggestions.length > 0) {
-        const genreNames = aiInsightsResponse.data.movieRecommendations.suggestions.join(',');
-        console.log('fetchWeatherData: Buscando filmes para gêneros:', genreNames);
-        const moviesResponse = await axios.get(`${API_BASE_URL}/api/tmdb/by-genres?genres=${genreNames}`);
-        if (Array.isArray(moviesResponse.data.results)) {
-          console.log('fetchWeatherData: Filmes recebidos:', moviesResponse.data.results.length);
-          setMovieRecommendations(moviesResponse.data.results.map((movie: any) => ({
+      console.log('buscarDadosClima: Verificando critérios de filmes...', respostaInsights.data.movieCriteria);
+      if (respostaInsights.data.movieCriteria && respostaInsights.data.movieCriteria.generos_sugeridos.length > 0) {
+        const locationParam = selectedCity 
+          ? `city=${encodeURIComponent(selectedCity)}`
+          : userLocation 
+          ? `latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`
+          : '';
+        
+        console.log('buscarDadosClima: Buscando filmes com critérios da IA...');
+        const respostaFilmes = await axios.get(`${API_BASE_URL}/api/weather/movies-by-criteria?${locationParam}`);
+        if (Array.isArray(respostaFilmes.data.movies)) {
+          console.log('buscarDadosClima: Filmes recebidos:', respostaFilmes.data.movies.length);
+          setMovieRecommendations(respostaFilmes.data.movies.map((movie: any) => ({
             id: movie.id,
             title: movie.title,
             poster_path: movie.poster_path,
@@ -230,45 +255,52 @@ export function WeatherDashboard() {
             genre_ids: movie.genre_ids,
           })));
         } else {
-          console.warn("fetchWeatherData: API TMDB retornou 'results' inesperado ou nulo.", moviesResponse.data);
+          console.warn('buscarDadosClima: API retornou "movies" inesperado ou nulo.', respostaFilmes.data);
           setMovieRecommendations([]);
         }
       } else {
-        console.log('fetchWeatherData: Nenhuma sugestão de gênero, setando movieRecommendations como array vazio.');
+        console.log('buscarDadosClima: Nenhum critério de filme, definindo recomendações de filmes como array vazio.');
         setMovieRecommendations([]);
       }
 
     } catch (err) {
-      setError('fetchWeatherData: Falha ao buscar dados de clima ou recomendações.');
-      console.error(err);
+      setError('Falha ao buscar dados de clima ou recomendações.');
+      console.error('buscarDadosClima: Erro:', err);
     } finally {
-      console.log('fetchWeatherData: Finalizado, setando loading para false');
+      console.log('buscarDadosClima: Finalizado, definindo loading como false');
       setLoading(false);
     }
   };
 
-  console.log('WeatherDashboard: Renderizando. loading:', loading, 'genresLoaded:', genresLoaded, 'userLocation:', userLocation, 'error:', error);
-  // Se estiver carregando, mostro uma mensagem.
+  console.log('WeatherDashboard: Renderizando. Carregando:', loading, 'Gêneros carregados:', genresLoaded, 'Localização:', userLocation, 'Erro:', error);
+  
   if (loading || !genresLoaded) return <p>Carregando dados de clima e gêneros...</p>;
-  // Se tiver um erro, mostro a mensagem de erro.
+  
   if (error) return <p className="text-red-500">Erro: {error}</p>;
 
-  // Se não conseguir dados do clima, mostro uma mensagem.
   if (!currentWeather || !aiInsights) return <p className="text-foreground">Não foi possível obter dados de clima ou insights de IA.</p>;
 
-  // Calculo a hora atual e filtro a previsão horária para as próximas 24 horas.
   const currentHour = new Date().getHours();
   const next24HoursForecast = hourlyForecast.filter((_, index) => index >= currentHour && index < currentHour + 24);
 
-  // Aqui começa o layout principal do meu painel.
   return (
     <div className="w-full max-w-[1000px] mx-auto p-4 space-y-4">
-      <h2 className="text-2xl font-semibold text-[#E5E7EB] text-center mb-4">Painel de Clima e Recomendações</h2>
+      <div className="flex flex-col items-center gap-4 mb-4">
+        <h2 className="text-2xl font-semibold text-[#E5E7EB] text-center">Painel de Clima e Recomendações</h2>
+        <div className="w-full flex justify-center">
+          <CitySelector 
+            selectedCity={selectedCity} 
+            onCityChange={(city) => {
+              setSelectedCity(city);
+              setUserLocation(null);
+              localStorage.setItem('current_location', JSON.stringify({ city }));
+            }} 
+          />
+        </div>
+      </div>
 
-      {/* Esta seção mostra o clima atual e o humor sugerido pela IA. */}
       {currentWeather && aiInsights && (
         <div className="p-4 border-b border-white/5">
-          {/* Linha principal: Ícone + Temperatura + Sensação Térmica */}
           <div className="flex items-center justify-center space-x-3 mb-3">
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-2">
@@ -284,14 +316,12 @@ export function WeatherDashboard() {
             </div>
           </div>
 
-          {/* Mood em uma linha só */}
           <div className="text-center mb-3">
             <p className="text-sm font-light text-[#9CA3AF]">
-              Mood: <span className="text-[#E5E7EB] font-medium">{aiInsights?.movieRecommendations.mood}</span> — {aiInsights?.movieRecommendations.description}
+              Tema: <span className="text-[#E5E7EB] font-medium">{aiInsights?.movieCriteria.tema}</span> — {aiInsights?.movieCriteria.description}
             </p>
           </div>
 
-          {/* Indicadores em uma linha compacta */}
           <div className="flex items-center justify-center gap-4 text-[#E5E7EB] text-sm">
             <div className="flex items-center space-x-1">
               <Droplet size={14} style={{ color: 'var(--weather-rain)' }} />
@@ -326,7 +356,6 @@ export function WeatherDashboard() {
         </div>
       )}
 
-      {/* Previsão Horária e Diária movidas para logo abaixo do painel principal */}
       {hourlyForecast.length > 0 && (
         <div className="py-3 border-b border-white/5">
           <h3 className="text-xs font-medium text-[#9CA3AF] mb-2 uppercase tracking-wide">Previsão Horária</h3>
@@ -367,7 +396,6 @@ export function WeatherDashboard() {
         </div>
       )}
 
-      {/* Insights de IA agora envolvidos em ExpandableCard */}
       {aiInsights && (
         <div className="ai-insights-section space-y-2 mt-3">
           <div className="speech-bubble p-3 rounded-xl mb-2">
@@ -378,16 +406,12 @@ export function WeatherDashboard() {
             <DaySummaryCard summary={aiInsights.daySummary} />
           </ExpandableCard>
 
-          <ExpandableCard title="Insights de Humor" icon={Smile}>
-            <MoodInsights insights={aiInsights.moodInsights} />
-          </ExpandableCard>
-
           <ExpandableCard title="Alertas Inteligentes" icon={Bell}>
             <SmartAlerts healthAlerts={aiInsights.healthAlerts} smartAlerts={aiInsights.smartAlerts} />
           </ExpandableCard>
 
           {aiInsights.uvIndexAlert && (
-            <ExpandableCard title="Índice UV - Alerta Inteligente" icon={Sun}>
+            <ExpandableCard title="Índice UV – Alerta Inteligente" icon={Sun}>
               <div className="space-y-2">
                 <div className={`px-3 py-1.5 rounded-full text-xs font-medium inline-block`} style={{
                   backgroundColor: aiInsights.uvIndexAlert.color === 'green' ? '#22c55e20' : 
@@ -404,14 +428,17 @@ export function WeatherDashboard() {
             </ExpandableCard>
           )}
 
-          <ExpandableCard title="Recomendações de Filmes" icon={Film}>
-            <MovieRecommendations
-              mood={aiInsights.movieRecommendations.mood}
-              suggestions={aiInsights.movieRecommendations.suggestions}
-              description={aiInsights.movieRecommendations.description}
-              movies={movieRecommendations}
-            />
-          </ExpandableCard>
+          {aiInsights.healthAndWellnessConditions && aiInsights.healthAndWellnessConditions.length > 0 && (
+            <ExpandableCard title="Condições de Saúde / Bem-Estar" icon={Heart}>
+              <ul className="space-y-2">
+                {aiInsights.healthAndWellnessConditions.map((condition, index) => (
+                  <li key={index} className="text-sm font-light text-[#E5E7EB]">
+                    {condition}
+                  </li>
+                ))}
+              </ul>
+            </ExpandableCard>
+          )}
 
           {aiInsights.detailedClothingSuggestions && aiInsights.detailedClothingSuggestions.length > 0 && (
             <ExpandableCard title="Roupas Recomendadas" icon={Shirt}>
@@ -428,7 +455,7 @@ export function WeatherDashboard() {
           {aiInsights.activityRecommendations && aiInsights.activityRecommendations.length > 0 && (
             <ExpandableCard title="Atividades Recomendadas para o Dia" icon={Activity}>
               <ul className="space-y-1.5">
-                {aiInsights.activityRecommendations.map((activity, index) => (
+                {aiInsights.activityRecommendations.slice(0, 6).map((activity, index) => (
                   <li key={index} className="text-sm font-light text-[#E5E7EB]">
                     • {activity}
                   </li>
@@ -437,22 +464,24 @@ export function WeatherDashboard() {
             </ExpandableCard>
           )}
 
-          {aiInsights.healthAndWellnessConditions && aiInsights.healthAndWellnessConditions.length > 0 && (
-            <ExpandableCard title="Condições de Saúde / Bem-Estar" icon={Heart}>
-              <ul className="space-y-2">
-                {aiInsights.healthAndWellnessConditions.map((condition, index) => (
-                  <li key={index} className="text-sm font-light text-[#E5E7EB]">
-                    {condition}
-                  </li>
-                ))}
-              </ul>
-            </ExpandableCard>
-          )}
+          <ExpandableCard title="Insights de Humor" icon={Smile}>
+            <MoodInsights insights={aiInsights.moodInsights} />
+          </ExpandableCard>
+
+          <ExpandableCard title="Recomendações de Filmes" icon={Film}>
+            <MovieRecommendations
+              mood={aiInsights.movieCriteria.tema}
+              suggestions={aiInsights.movieCriteria.generos_sugeridos}
+              description={aiInsights.movieCriteria.description}
+              movies={movieRecommendations}
+            />
+          </ExpandableCard>
 
           <ExpandableCard title="Histórico de Clima + Insights da IA" icon={ClipboardList}>
             <WeatherHistory 
-              latitude={userLocation?.latitude} 
-              longitude={userLocation?.longitude} 
+              city={selectedCity}
+              latitude={!selectedCity ? userLocation?.latitude : undefined} 
+              longitude={!selectedCity ? userLocation?.longitude : undefined} 
             />
           </ExpandableCard>
         </div>
