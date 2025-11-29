@@ -16,7 +16,10 @@ import {
   listWeatherLogsQuerySchema,
   ListWeatherLogsQuery,
 } from "../schemas/weather-log.schema";
-import { CreateWeatherLogUseCase } from "src/domain/application/use-cases/create-weather-log.use-case";
+import { 
+  CreateWeatherLogUseCase,
+  CreateWeatherLogUseCaseRequest 
+} from "src/domain/application/use-cases/create-weather-log.use-case";
 import { WeatherLogPresenter } from "../presenters/weather-log.presenter";
 import { ListWeatherLogsUseCase } from "src/domain/application/use-cases/list-weather-logs.use-case";
 
@@ -37,7 +40,10 @@ export class WeatherController {
       `Recebendo dados: ${body.weather.temperature}°C - ${body.weather.condition} - ${body.location.city}`
     );
 
-    const result = await this.createWeatherLog.execute(body);
+    // Cast explícito para o tipo do Use Case
+    const result = await this.createWeatherLog.execute(
+      body as CreateWeatherLogUseCaseRequest
+    );
 
     if (result.isRight()) {
       const { weatherLog } = result.value;

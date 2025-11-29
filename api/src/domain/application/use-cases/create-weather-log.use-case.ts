@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { WeatherLogRepository } from "../repositories/weather-log-repository";
-import { WeatherLog } from "src/domain/enterprise/entities/weather-log";
-import { Either, right } from "src/core/either";
+import { Injectable } from '@nestjs/common';
+import { WeatherLogRepository } from '../repositories/weather-log-repository';
+import { WeatherLog } from '@/domain/enterprise/entities/weather-log';
+import { Either, right } from '@/core/either';
 
-interface CreateWeatherLogUseCaseRequest {
+export interface CreateWeatherLogUseCaseRequest {
   timestamp: string;
   location: {
     latitude: string;
@@ -35,7 +35,7 @@ export class CreateWeatherLogUseCase {
   constructor(private weatherLogRepository: WeatherLogRepository) {}
 
   async execute(
-    request: CreateWeatherLogUseCaseRequest
+    request: CreateWeatherLogUseCaseRequest,
   ): Promise<Either<null, CreateWeatherLogUseCaseResponse>> {
     const weatherLog = WeatherLog.create({
       temperature: request.weather.temperature,
