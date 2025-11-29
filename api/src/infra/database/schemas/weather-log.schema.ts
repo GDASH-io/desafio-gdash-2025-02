@@ -36,6 +36,5 @@ export class WeatherLogSchema {
 export const WeatherLogMongoSchema =
   SchemaFactory.createForClass(WeatherLogSchema);
 
-// Criar índices compostos
 WeatherLogMongoSchema.index({ location: 1, collectedAt: -1 });
 WeatherLogMongoSchema.index({ collectedAt: -1 });

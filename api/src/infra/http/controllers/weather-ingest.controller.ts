@@ -1,9 +1,7 @@
 import {
   Controller,
   Post,
-  Get,
   Body,
-  Query,
   HttpCode,
   HttpStatus,
   UsePipes,
@@ -13,24 +11,18 @@ import { ZodValidationPipe } from "../pipes/zod-validation.pipe";
 import {
   createWeatherLogSchema,
   CreateWeatherLogInput,
-  listWeatherLogsQuerySchema,
-  ListWeatherLogsQuery,
 } from "../schemas/weather-log.schema";
 import {
   CreateWeatherLogUseCase,
   CreateWeatherLogUseCaseRequest,
 } from "src/domain/application/use-cases/create-weather-log.use-case";
 import { WeatherLogPresenter } from "../presenters/weather-log.presenter";
-import { ListWeatherLogsUseCase } from "src/domain/application/use-cases/list-weather-logs.use-case";
 
 @Controller("api/weather")
-export class WeatherController {
-  private readonly logger = new Logger(WeatherController.name);
+export class WeatherIngestController {
+  private readonly logger = new Logger(WeatherIngestController.name);
 
-  constructor(
-    private createWeatherLog: CreateWeatherLogUseCase,
-    private listWeatherLogs: ListWeatherLogsUseCase
-  ) {}
+  constructor(private createWeatherLog: CreateWeatherLogUseCase) {}
 
   @Post("logs")
   @HttpCode(HttpStatus.CREATED)
@@ -52,27 +44,6 @@ export class WeatherController {
       return {
         message: "Weather log created successfully",
         data: WeatherLogPresenter.toHTTP(weatherLog),
-      };
-    }
-  }
-
-  @Get("logs")
-  @UsePipes(new ZodValidationPipe(listWeatherLogsQuerySchema))
-  async list(@Query() query: ListWeatherLogsQuery) {
-    const result = await this.listWeatherLogs.execute({
-      page: query.page,
-      limit: query.limit,
-      startDate: query.startDate,
-      endDate: query.endDate,
-      location: query.location,
-    });
-
-    if (result.isRight()) {
-      const { logs, pagination } = result.value;
-
-      return {
-        data: logs.map(WeatherLogPresenter.toHTTP),
-        pagination,
       };
     }
   }

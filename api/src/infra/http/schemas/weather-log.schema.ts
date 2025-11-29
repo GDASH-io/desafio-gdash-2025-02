@@ -11,26 +11,56 @@ export const createWeatherLogSchema = z.object({
   weather: z.object({
     temperature: z.number(),
     temperature_unit: z.string(),
-    humidity: z.number().min(0).max(100),
+    humidity: z.number(),
     humidity_unit: z.string(),
-    wind_speed: z.number().min(0),
+    wind_speed: z.number(),
     wind_speed_unit: z.string(),
     condition: z.string(),
     weather_code: z.number(),
-    precipitation: z.number().min(0),
+    precipitation: z.number(),
     precipitation_unit: z.string(),
-    rain_probability: z.number().min(0).max(100),
+    rain_probability: z.number(),
   }),
+  received_at: z.string().optional(),
+  processed_at: z.string().optional(),
 });
 
 export type CreateWeatherLogInput = z.infer<typeof createWeatherLogSchema>;
 
 export const listWeatherLogsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional().default(1),
-  limit: z.coerce.number().int().positive().max(100).optional().default(20),
-  startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date().optional(),
+  page: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 20)),
+  startDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  endDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
   location: z.string().optional(),
 });
 
 export type ListWeatherLogsQuery = z.infer<typeof listWeatherLogsQuerySchema>;
+
+export const exportWeatherLogsQuerySchema = z.object({
+  startDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  endDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  location: z.string().optional(),
+});
+
+export type ExportWeatherLogsQuery = z.infer<
+  typeof exportWeatherLogsQuerySchema
+>;
