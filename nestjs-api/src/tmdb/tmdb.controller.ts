@@ -42,7 +42,7 @@ export class TmdbController {
     return this.tmdbService.getMovieDetails(id);
   }
 
-  @Get('genres') // Novo endpoint para buscar todos os gêneros
+  @Get('genres') 
   getGenres(): Observable<any> {
     return this.tmdbService.getGenres();
   }
