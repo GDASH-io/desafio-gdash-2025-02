@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GroqService } from './groq.service';
 
 export interface FullWeatherData {
   temperature: number;
@@ -19,6 +20,19 @@ export interface WeatherRecommendation {
   description: string;
 }
 
+export interface MovieCriteria {
+  tema: string;
+  generos_sugeridos: string[];
+  tons: string[];
+  popularidade_minima?: number;
+  vote_average_min?: number;
+  year_range?: {
+    min?: number;
+    max?: number;
+  };
+  description: string;
+}
+
 interface WeatherDataForExplanation {
   temperature: number;
   rain: number;
@@ -28,39 +42,87 @@ interface WeatherDataForExplanation {
 
 @Injectable()
 export class AiService {
-  getMovieRecommendationsByWeather(weatherData: FullWeatherData): WeatherRecommendation {
-    const { temperature, weathercode, precipitation_probability } = weatherData;
+  constructor(
+    private groqService: GroqService,
+  ) {}
 
-    if (weathercode >= 51 && weathercode <= 67 || (precipitation_probability && precipitation_probability > 30)) { // Chuva leve, moderada ou forte
-      return {
-        mood: "aconchegante, introspectivo",
-        suggestions: ["Drama", "Romance", "Animação"],
-        description: "Clima chuvoso ou frio favorece filmes mais introspectivos."
-      };
-    } else if (temperature >= 25 && weathercode === 0) { 
-      return {
-        mood: "animado, energético",
-        suggestions: ["Ação", "Aventura", "Comédia"],
-        description: "Clima ensolarado e quente pede filmes animados."
-      };
-    } else if (weathercode >= 71 && weathercode <= 86) { 
-      return {
-        mood: "tenso, thriller",
-        suggestions: ["Suspense", "Terror", "Mistério"],
-        description: "Tempo tempestuoso ou com neve é ideal para filmes de suspense e terror."
-      };
-    } else { 
-      return {
-        mood: "neutro",
-        suggestions: ["Drama", "Sci-Fi", "Policial"],
-        description: "Clima nublado ou neutro para filmes mais diversos."
-      };
+  async getMovieRecommendationsByWeather(weatherData: FullWeatherData, cityName?: string): Promise<MovieCriteria> {
+    try {
+      return await this.groqService.generateMovieCriteria(weatherData, cityName);
+    } catch (error: any) {
+      console.error('❌ [AI] Groq falhou. Usando fallback estático.');
+      return this.groqService.getFallbackMovieCriteria(weatherData);
     }
   }
 
-  explainWeather(weatherData: WeatherDataForExplanation): string {
+  getMovieRecommendationsByWeatherLegacy(weatherData: FullWeatherData): WeatherRecommendation {
+    const { temperature, weathercode, precipitation_probability, humidity, wind_speed } = weatherData;
+    
+    const baseVariation = Math.floor((temperature * 7 + weathercode * 11 + (precipitation_probability || 0) * 3 + humidity * 5 + wind_speed * 2) % 5);
+    const timeVariation = Math.floor((new Date().getHours() / 5) % 5);
+    const variation = (baseVariation + timeVariation) % 5;
+
+    if (weathercode >= 51 && weathercode <= 67 || (precipitation_probability && precipitation_probability > 30)) {
+      const rainyMoods = [
+        { mood: "aconchegante, introspectivo", suggestions: ["Drama", "Romance", "Animação", "Musical", "Família"], description: "Clima chuvoso cria uma atmosfera perfeita para filmes emocionais e envolventes." },
+        { mood: "melancólico, contemplativo", suggestions: ["Drama", "Indie", "Romance", "Arte", "Biografia"], description: "A chuva convida à introspecção e filmes que tocam o coração." },
+        { mood: "nostálgico, romântico", suggestions: ["Romance", "Drama", "Comédia Romântica", "Clássico", "Musical"], description: "Dias chuvosos são ideais para histórias de amor e nostalgia." },
+        { mood: "relaxante, calmante", suggestions: ["Animação", "Família", "Comédia", "Documentário", "Natureza"], description: "O som da chuva combina perfeitamente com filmes leves e relaxantes." },
+        { mood: "profundo, filosófico", suggestions: ["Drama", "Sci-Fi", "Thriller Psicológico", "Arte", "Documentário"], description: "Clima chuvoso favorece filmes que fazem você refletir sobre a vida." },
+      ];
+      return rainyMoods[variation];
+    } else if (temperature >= 25 && weathercode === 0) {
+      const sunnyMoods = [
+        { mood: "animado, energético", suggestions: ["Ação", "Aventura", "Comédia", "Esportes", "Musical"], description: "Clima ensolarado e quente pede filmes cheios de energia e ação." },
+        { mood: "aventureiro, explorador", suggestions: ["Aventura", "Ação", "Fantasia", "Sci-Fi", "Thriller"], description: "Dias quentes e ensolarados são perfeitos para grandes aventuras cinematográficas." },
+        { mood: "festivo, descontraído", suggestions: ["Comédia", "Musical", "Família", "Aventura", "Romance"], description: "O calor convida a filmes leves, divertidos e cheios de diversão." },
+        { mood: "épico, grandioso", suggestions: ["Ação", "Aventura", "Fantasia", "Épico", "Guerra"], description: "Clima quente combina com filmes de grande escala e emoção." },
+        { mood: "esportivo, competitivo", suggestions: ["Esportes", "Ação", "Drama", "Biografia", "Documentário"], description: "Dias ensolarados são ideais para filmes sobre superação e competição." },
+      ];
+      return sunnyMoods[variation];
+    } else if (weathercode >= 71 && weathercode <= 86) {
+      const stormyMoods = [
+        { mood: "tenso, thriller", suggestions: ["Suspense", "Terror", "Mistério", "Thriller", "Crime"], description: "Tempo tempestuoso ou com neve cria a atmosfera perfeita para suspense." },
+        { mood: "sombrio, gótico", suggestions: ["Terror", "Thriller Psicológico", "Mistério", "Horror", "Gótico"], description: "Condições extremas do tempo combinam com filmes sombrios e intensos." },
+        { mood: "claustrofóbico, isolado", suggestions: ["Thriller", "Suspense", "Terror", "Drama", "Psicológico"], description: "Tempestades e neve criam sensação de isolamento perfeita para thrillers." },
+        { mood: "sobrevivência, resistência", suggestions: ["Ação", "Aventura", "Drama", "Suspense", "Thriller"], description: "Clima extremo combina com histórias de sobrevivência e coragem." },
+        { mood: "misterioso, enigmático", suggestions: ["Mistério", "Thriller", "Suspense", "Noir", "Crime"], description: "Tempo tempestuoso é ideal para filmes que mantêm você na ponta da cadeira." },
+      ];
+      return stormyMoods[variation];
+    } else if (temperature < 10) {
+      const coldMoods = [
+        { mood: "aconchegante, dramático", suggestions: ["Drama", "Romance", "Biografia", "Histórico", "Literatura"], description: "Temperaturas baixas pedem filmes envolventes e emocionais para assistir aconchegado." },
+        { mood: "íntimo, pessoal", suggestions: ["Drama", "Romance", "Indie", "Arte", "Comédia Dramática"], description: "O frio convida a filmes que exploram relacionamentos e emoções profundas." },
+        { mood: "clássico, atemporal", suggestions: ["Clássico", "Drama", "Romance", "Literatura", "Biografia"], description: "Clima frio é perfeito para filmes clássicos e histórias atemporais." },
+        { mood: "reflexivo, profundo", suggestions: ["Drama", "Arte", "Filosófico", "Documentário", "Indie"], description: "Temperaturas baixas favorecem filmes que fazem você pensar e sentir." },
+        { mood: "romântico, caloroso", suggestions: ["Romance", "Comédia Romântica", "Drama", "Família", "Musical"], description: "O frio de fora contrasta com o calor das histórias de amor e família." },
+      ];
+      return coldMoods[variation];
+    } else if (weathercode >= 1 && weathercode <= 3) {
+      const cloudyMoods = [
+        { mood: "contemplativo, artístico", suggestions: ["Drama", "Arte", "Documentário", "Indie", "Biografia"], description: "Clima nublado é perfeito para filmes mais contemplativos e artísticos." },
+        { mood: "equilibrado, diverso", suggestions: ["Drama", "Comédia", "Thriller", "Romance", "Aventura"], description: "Céu nublado permite explorar diferentes gêneros cinematográficos." },
+        { mood: "neutro, versátil", suggestions: ["Drama", "Comédia Dramática", "Thriller", "Sci-Fi", "Mistério"], description: "Clima neutro oferece liberdade para escolher entre diversos estilos." },
+        { mood: "sutil, elegante", suggestions: ["Drama", "Arte", "Indie", "Literatura", "Clássico"], description: "Dias nublados combinam com filmes de produção refinada e narrativa elegante." },
+        { mood: "flexível, adaptável", suggestions: ["Comédia", "Drama", "Aventura", "Romance", "Musical"], description: "Clima variável permite uma seleção ampla e variada de filmes." },
+      ];
+      return cloudyMoods[variation];
+    } else {
+      const variedMoods = [
+        { mood: "equilibrado, variado", suggestions: ["Comédia", "Drama", "Aventura", "Romance", "Thriller"], description: "Clima variável permite uma boa variedade de opções cinematográficas." },
+        { mood: "ecletismo, diversidade", suggestions: ["Drama", "Comédia", "Thriller", "Sci-Fi", "Mistério"], description: "Condições climáticas variadas abrem espaço para diferentes gêneros." },
+        { mood: "exploratório, curioso", suggestions: ["Documentário", "Drama", "Arte", "Indie", "Biografia"], description: "Clima instável convida a explorar filmes fora do comum." },
+        { mood: "adaptável, flexível", suggestions: ["Comédia", "Aventura", "Drama", "Romance", "Musical"], description: "Clima em transição permite escolher filmes conforme seu humor do momento." },
+        { mood: "surpresa, descoberta", suggestions: ["Thriller", "Mistério", "Drama", "Comédia", "Ação"], description: "Clima variável é ideal para descobrir filmes novos e surpreendentes." },
+      ];
+      return variedMoods[variation];
+    }
+  }
+
+  explainWeather(weatherData: WeatherDataForExplanation, cityName?: string): string {
     const { temperature, rain, wind, humidity } = weatherData;
-    let explanation = `Hoje em Salvador o clima será`;
+    const city = cityName || 'a localização';
+    let explanation = `Hoje em ${city} o clima será`;
 
     if (rain > 50) {
       explanation += ` chuvoso, com possibilidade de pancadas fortes.`;
@@ -122,33 +184,22 @@ export class AiService {
     return alerts;
   }
 
-  generateSmartAlerts(weatherData: FullWeatherData): string[] {
-    const smartAlerts: string[] = [];
-    const { rain, hourly } = weatherData;
-
-    if (rain > 0 && hourly && hourly.precipitation && hourly.precipitation.slice(0, 3).some(p => p > 0)) {
-      smartAlerts.push("Risco de chuva súbita nas próximas 3 horas.");
+  async generateSmartAlerts(weatherData: FullWeatherData, cityName: string): Promise<string[]> {
+    try {
+      return await this.groqService.generateSmartAlerts(weatherData, cityName);
+    } catch (error: any) {
+      console.error('❌ [AI] Groq falhou. Usando fallback estático.');
+      return this.groqService.getFallbackSmartAlerts(weatherData);
     }
-
-
-    return smartAlerts;
   }
 
-  getActivityRecommendations(weatherData: FullWeatherData): string[] {
-    const recommendations: string[] = [];
-    const { temperature, rain, weathercode } = weatherData;
-
-    if (rain > 0 || (weathercode >= 51 && weathercode <= 67)) { 
-      recommendations.push("Atividades internas: ler um livro, maratona de séries, jogos de tabuleiro.");
-    } else if (temperature >= 25 && weathercode === 0) { 
-      recommendations.push("Atividades ao ar livre: praia, piscina, caminhada no parque, piquenique.");
-    } else if (temperature >= 15 && temperature < 25 && weathercode === 0) { 
-      recommendations.push("Atividades moderadas ao ar livre: ciclismo, corrida leve, jardinagem.");
-    } else { 
-      recommendations.push("Atividades flexíveis: museus, cafés, compras, cinema.");
+  async getActivityRecommendations(weatherData: FullWeatherData, cityName: string): Promise<string[]> {
+    try {
+      return await this.groqService.generateActivityRecommendations(weatherData, cityName);
+    } catch (error: any) {
+      console.error('❌ [AI] Groq falhou. Usando fallback estático.');
+      return this.groqService.getFallbackActivityRecommendations(weatherData);
     }
-
-    return recommendations;
   }
 
   getClothingSuggestions(weatherData: FullWeatherData): string {
@@ -181,40 +232,21 @@ export class AiService {
     return "Roupas confortáveis para o dia.";
   }
 
-  getDaySummary(weatherData: FullWeatherData): string {
-    const { temperature, rain, weathercode, apparent_temperature } = weatherData;
-    let summary = this.explainWeather({
-      temperature: temperature,
-      rain: rain, 
-      wind: weatherData.wind_speed, 
-      humidity: weatherData.humidity,
-    });
-    summary += "\n\n";
-
-    const alerts = this.generateHealthAlerts(weatherData).concat(this.generateSmartAlerts(weatherData));
-    if (alerts.length > 0) {
-      summary += "Alertas de saúde e inteligentes:\n" + alerts.map(alert => `- ${alert}`).join("\n") + "\n\n";
+  async getDaySummary(weatherData: FullWeatherData, cityName: string): Promise<string> {
+    try {
+      return await this.groqService.generateDaySummary(weatherData, cityName);
+    } catch (error: any) {
+      console.error('❌ [AI] Groq falhou. Usando fallback estático.');
+      return this.groqService.getFallbackDaySummary(weatherData, cityName);
     }
-
-    const activities = this.getActivityRecommendations(weatherData);
-    summary += "Sugestões de atividades:\n" + activities.map(activity => `- ${activity}`).join("\n") + "\n\n";
-
-    summary += `Sugestão de roupa: ${this.getClothingSuggestions(weatherData)}`;
-
-    return summary;
   }
 
-  getMoodInsights(weatherData: FullWeatherData): string {
-    const { temperature, weathercode } = weatherData;
-
-    if (weathercode === 0 && temperature >= 25) {
-      return "O dia ensolarado e quente pode trazer mais energia e bom humor! Aproveite para recarregar as energias.";
-    } else if (weathercode >= 51 && weathercode <= 67) {
-      return "O clima chuvoso pode convidar à introspecção e ao relaxamento. Que tal um filme ou um livro?";
-    } else if (temperature < 15) {
-      return "Temperaturas mais baixas podem pedir mais conforto e aconchego. Cuide-se e mantenha-se aquecido.";
-    } else {
-      return "Clima neutro, seu humor provavelmente não será muito afetado pelo tempo hoje.";
+  async getMoodInsights(weatherData: FullWeatherData, cityName: string): Promise<string> {
+    try {
+      return await this.groqService.generateMoodInsights(weatherData, cityName);
+    } catch (error: any) {
+      console.error('❌ [AI] Groq falhou. Usando fallback estático.');
+      return this.groqService.getFallbackMoodInsights(weatherData);
     }
   }
 
@@ -279,7 +311,6 @@ export class AiService {
     const suggestions: string[] = [];
     const { temperature, rain, wind_speed, humidity, uv_index } = weatherData;
 
-    // Baseado na temperatura
     if (temperature >= 28) {
       suggestions.push('👕 Camiseta leve');
       suggestions.push('👖 Bermuda ou shorts');
@@ -305,19 +336,16 @@ export class AiService {
       suggestions.push('🧣 Cachecol (opcional)');
     }
 
-    // Baseado na chuva
     if (rain > 30 || (weatherData.precipitation_probability && weatherData.precipitation_probability > 50)) {
       suggestions.push('🌂 Guarda-chuva (chance alta de chuva)');
     } else if (rain > 0 || (weatherData.precipitation_probability && weatherData.precipitation_probability > 20)) {
       suggestions.push('🌂 Levar sombrinha (chance baixa de chuva, mas pode ter pancadas)');
     }
 
-    // Baseado no vento
     if (wind_speed > 30) {
       suggestions.push('🧥 Casaco corta-vento');
     }
 
-    // Baseado no UV
     if (uv_index && uv_index >= 6) {
       suggestions.push('🧴 Protetor solar (essencial)');
     }
@@ -325,39 +353,12 @@ export class AiService {
     return suggestions;
   }
 
-  getHealthAndWellnessConditions(weatherData: FullWeatherData): string[] {
-    const conditions: string[] = [];
-    const { temperature, apparent_temperature, humidity, wind_speed, uv_index } = weatherData;
-
-    // Calor
-    if (temperature >= 30 || apparent_temperature >= 35) {
-      conditions.push(`🌡️ Muito calor previsto — mantenha-se hidratado, beba água regularmente e evite atividades físicas intensas ao ar livre.`);
+  async getHealthAndWellnessConditions(weatherData: FullWeatherData, cityName: string): Promise<string[]> {
+    try {
+      return await this.groqService.generateHealthAndWellnessConditions(weatherData, cityName);
+    } catch (error: any) {
+      console.error('❌ [AI] Groq falhou. Usando fallback estático.');
+      return this.groqService.getFallbackHealthConditions(weatherData);
     }
-
-    // Umidade
-    if (humidity > 80) {
-      conditions.push(`💧 Umidade muito alta (${humidity}%) — pode causar sensação de abafamento e desconforto respiratório. Mantenha-se hidratado.`);
-    } else if (humidity < 30) {
-      conditions.push(`🌵 Ar muito seco (${humidity}%) — pode causar irritação nos olhos, pele seca e desconforto. Use hidratante e colírios se necessário.`);
-    }
-
-    // Vento
-    if (wind_speed > 40) {
-      conditions.push(`💨 Vento forte (${wind_speed} km/h) — pode agravar alergias e causar irritação nas vias respiratórias. Pessoas sensíveis devem evitar exposição prolongada.`);
-    }
-
-    // UV
-    if (uv_index && uv_index >= 8) {
-      conditions.push(`☀️ Índice UV extremo (${uv_index}) — risco alto de queimaduras solares. Evite exposição ao sol entre 10h e 16h.`);
-    } else if (uv_index && uv_index >= 6) {
-      conditions.push(`☀️ Índice UV alto (${uv_index}) — use protetor solar e evite exposição prolongada ao sol.`);
-    }
-
-    // Sensação térmica
-    if (apparent_temperature - temperature >= 5) {
-      conditions.push(`🌡️ Sensação térmica muito acima da temperatura real — a umidade alta está aumentando a sensação de calor. Vista-se com roupas leves e respiráveis.`);
-    }
-
-    return conditions;
   }
 }
