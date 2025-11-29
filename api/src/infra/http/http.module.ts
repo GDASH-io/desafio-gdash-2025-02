@@ -13,8 +13,10 @@ import { CreateWeatherLogUseCase } from "src/domain/application/use-cases/create
 import { ListWeatherLogsUseCase } from "src/domain/application/use-cases/list-weather-logs.use-case";
 import { ExportWeatherLogsCsvUseCase } from "src/domain/application/use-cases/export-weather-logs-csv.use-case";
 import { ExportWeatherLogsXlsxUseCase } from "src/domain/application/use-cases/export-weather-logs-xlsx.use-case";
+import { GenerateWeatherInsightsUseCase } from "src/domain/application/use-cases/generate-weather-insights.use-case";
 import { WeatherLogRepository } from "src/domain/application/repositories/weather-log-repository";
 import { MongoDBWeatherLogRepository } from "../database/repositories/mongodb-weather-log-repository";
+import { WeatherInsightsController } from "./controllers/weather-insights.controller";
 
 @Module({
   imports: [
@@ -28,12 +30,14 @@ import { MongoDBWeatherLogRepository } from "../database/repositories/mongodb-we
     WeatherQueryController,
     WeatherExportCSVController,
     WeatherExportXLSXController,
+    WeatherInsightsController,
   ],
   providers: [
     CreateWeatherLogUseCase,
     ListWeatherLogsUseCase,
     ExportWeatherLogsCsvUseCase,
     ExportWeatherLogsXlsxUseCase,
+    GenerateWeatherInsightsUseCase,
     {
       provide: WeatherLogRepository,
       useClass: MongoDBWeatherLogRepository,

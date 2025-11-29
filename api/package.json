@@ -21,6 +21,7 @@
     "@nestjs/core": "^10.3.0",
     "@nestjs/mongoose": "^10.0.10",
     "@nestjs/platform-express": "^10.3.0",
+    "groq-sdk": "^0.37.0",
     "mongoose": "^8.8.4",
     "papaparse": "^5.5.3",
     "reflect-metadata": "^0.2.2",

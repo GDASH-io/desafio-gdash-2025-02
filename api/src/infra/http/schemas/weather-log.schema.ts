@@ -64,3 +64,21 @@ export const exportWeatherLogsQuerySchema = z.object({
 export type ExportWeatherLogsQuery = z.infer<
   typeof exportWeatherLogsQuerySchema
 >;
+
+export const insightsQuerySchema = z.object({
+  startDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  endDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  location: z.string().optional(),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 100)),
+});
+
+export type InsightsQueryParams = z.infer<typeof insightsQuerySchema>;
