@@ -1,0 +1,67 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express:1
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "3000:3000"
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+
+  collector:
+    build:
+      context: ./services/collector
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - rabbitmq
+
+  worker:
+    build:
+      context: ./services/worker
+      dockerfile: Dockerfile
+    env_file: .env
+    depends_on:
+      - rabbitmq
+      - api
+
+volumes:
+  mongo_data:
+
