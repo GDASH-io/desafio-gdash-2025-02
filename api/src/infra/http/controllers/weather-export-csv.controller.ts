@@ -16,8 +16,8 @@ import {
 } from "../schemas/weather-log.schema";
 
 @Controller("api/weather")
-export class WeatherExportController {
-  private readonly logger = new Logger(WeatherExportController.name);
+export class WeatherExportCSVController {
+  private readonly logger = new Logger(WeatherExportCSVController.name);
 
   constructor(private exportWeatherLogsCsv: ExportWeatherLogsCsvUseCase) {}
 
