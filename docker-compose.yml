@@ -1,5 +1,4 @@
 services:
-  # ====== RabbitMQ ======
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -19,7 +18,6 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
-  # ====== MongoDB ======
   mongodb:
     image: mongo:7
     container_name: mongodb
@@ -39,7 +37,6 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-  # ====== Python Weather Collector ======
   weather-collector:
     build:
       context: ./weather-collector
@@ -62,7 +59,6 @@ services:
     networks:
       - weather-network
 
-  # ====== NestJS API ======
   api:
     build:
       context: ./api
@@ -77,11 +73,11 @@ services:
       NODE_ENV: production
       PORT: 3000
       MONGODB_URI: mongodb://root:example@mongodb:27017/weather?authSource=admin
+      GROQ_API_KEY: ${GROQ_API_KEY}
     restart: unless-stopped
     networks:
       - weather-network
 
-  # ====== Go Worker ======
   worker-go:
     build:
       context: ./worker-go
