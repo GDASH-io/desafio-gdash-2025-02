@@ -33,6 +33,7 @@
     "mongoose": "^9.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "vitest": "^4.0.14"
   }
 }
