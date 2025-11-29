@@ -140,7 +140,6 @@ Responda APENAS com o JSON, sem texto adicional.`;
     } catch (error) {
       console.error("Erro ao gerar insights com Groq:", error);
 
-      // Fallback com análise estatística simples
       return this.generateFallbackInsights();
     }
   }

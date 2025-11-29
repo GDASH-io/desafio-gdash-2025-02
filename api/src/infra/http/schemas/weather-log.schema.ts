@@ -82,3 +82,39 @@ export const insightsQuerySchema = z.object({
 });
 
 export type InsightsQueryParams = z.infer<typeof insightsQuerySchema>;
+
+export const analyticsQuerySchema = z.object({
+  startDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  endDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  location: z.string().optional(),
+  days: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : undefined)),
+});
+
+export type AnalyticsQueryParams = z.infer<typeof analyticsQuerySchema>;
+
+export const dashboardQuerySchema = z.object({
+  startDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  endDate: z
+    .string()
+    .optional()
+    .transform((val) => (val ? new Date(val) : undefined)),
+  location: z.string().optional(),
+  recentLogsLimit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 10)),
+});
+
+export type DashboardQueryParams = z.infer<typeof dashboardQuerySchema>;

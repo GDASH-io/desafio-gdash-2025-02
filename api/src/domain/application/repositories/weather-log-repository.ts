@@ -19,6 +19,7 @@ export interface PaginationResult<T> {
 export abstract class WeatherLogRepository {
   abstract create(weatherLog: WeatherLog): Promise<void>;
   abstract findById(id: string): Promise<WeatherLog | null>;
+  abstract findLatest(): Promise<WeatherLog | null>;
   abstract findMany(
     params?: FindManyParams
   ): Promise<PaginationResult<WeatherLog>>;

@@ -104,4 +104,17 @@ export class MongoDBWeatherLogRepository implements WeatherLogRepository {
   async delete(id: string): Promise<void> {
     await this.weatherLogModel.findByIdAndDelete(id).exec();
   }
+
+  async findLatest(): Promise<WeatherLog | null> {
+    const weatherLog = await this.weatherLogModel
+      .findOne()
+      .sort({ collectedAt: -1 })
+      .exec();
+
+    if (!weatherLog) {
+      return null;
+    }
+
+    return WeatherLogMapper.toDomain(weatherLog);
+  }
 }
