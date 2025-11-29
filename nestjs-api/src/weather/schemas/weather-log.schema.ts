@@ -31,6 +31,9 @@ export class WeatherLog {
 
   @Prop({ type: Number })
   precipitation_probability?: number;
+
+  @Prop({ type: String })
+  city?: string;
 }
 
 export const WeatherLogSchema = SchemaFactory.createForClass(WeatherLog);

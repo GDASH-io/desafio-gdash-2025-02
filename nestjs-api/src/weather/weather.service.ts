@@ -9,17 +9,104 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InternalServerErrorException } from '@nestjs/common';
 
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+}
+
 @Injectable()
 export class WeatherService {
   private readonly OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
+  private readonly OPEN_METEO_ARCHIVE_URL = 'https://archive-api.open-meteo.com/v1/archive';
+  
+  private readonly forecastCache = new Map<string, CacheEntry>();
+  private readonly historyCache = new Map<string, CacheEntry>();
+  private readonly FORECAST_CACHE_TTL = 10 * 60 * 1000;
+  private readonly HISTORY_CACHE_TTL = 30 * 60 * 1000;
 
   constructor(
     @InjectModel(WeatherLog.name) private weatherLogModel: Model<WeatherLog>,
     private readonly httpService: HttpService,
-  ) {}
+  ) {
+    setInterval(() => this.cleanExpiredCache(), 5 * 60 * 1000);
+  }
+
+  private getForecastCacheKey(latitude: number, longitude: number): string {
+    const latRounded = Math.round(latitude * 10) / 10;
+    const lonRounded = Math.round(longitude * 10) / 10;
+    return `forecast_${latRounded}_${lonRounded}`;
+  }
+
+  private getHistoryCacheKey(latitude: number, longitude: number, days: number): string {
+    const latRounded = Math.round(latitude * 10) / 10;
+    const lonRounded = Math.round(longitude * 10) / 10;
+    return `history_${latRounded}_${lonRounded}_${days}`;
+  }
+
+  private getFromForecastCache(key: string): any | null {
+    const entry = this.forecastCache.get(key);
+    if (!entry) return null;
+    
+    if (Date.now() - entry.timestamp > this.FORECAST_CACHE_TTL) {
+      this.forecastCache.delete(key);
+      return null;
+    }
+    
+    return entry.data;
+  }
+
+  private setForecastCache(key: string, data: any): void {
+    this.forecastCache.set(key, {
+      data,
+      timestamp: Date.now(),
+    });
+  }
+
+  private getFromHistoryCache(key: string): any | null {
+    const entry = this.historyCache.get(key);
+    if (!entry) return null;
+    
+    if (Date.now() - entry.timestamp > this.HISTORY_CACHE_TTL) {
+      this.historyCache.delete(key);
+      return null;
+    }
+    
+    return entry.data;
+  }
+
+  private setHistoryCache(key: string, data: any): void {
+    this.historyCache.set(key, {
+      data,
+      timestamp: Date.now(),
+    });
+  }
+
+  private cleanExpiredCache(): void {
+    const now = Date.now();
+    
+    for (const [key, entry] of this.forecastCache.entries()) {
+      if (now - entry.timestamp > this.FORECAST_CACHE_TTL) {
+        this.forecastCache.delete(key);
+      }
+    }
+    
+    for (const [key, entry] of this.historyCache.entries()) {
+      if (now - entry.timestamp > this.HISTORY_CACHE_TTL) {
+        this.historyCache.delete(key);
+      }
+    }
+  }
 
   async getWeatherForecast(latitude: number, longitude: number): Promise<any> {
+    const cacheKey = this.getForecastCacheKey(latitude, longitude);
+    const cached = this.getFromForecastCache(cacheKey);
+    if (cached) {
+      console.log('✅ [Weather] Previsão do tempo retornada do cache para:', latitude, longitude);
+      return cached;
+    }
+
     try {
+      console.log('🌤️ [Weather] Buscando previsão do tempo da API para:', latitude, longitude);
       const params = {
         latitude,
         longitude,
@@ -32,6 +119,9 @@ export class WeatherService {
       const response = await firstValueFrom(
         this.httpService.get(this.OPEN_METEO_BASE_URL, { params }),
       );
+      
+      this.setForecastCache(cacheKey, response.data);
+      
       return response.data;
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch weather forecast from Open-Meteo', error.message);
@@ -39,13 +129,19 @@ export class WeatherService {
   }
 
   async getWeatherHistory(latitude: number, longitude: number, days: number = 7): Promise<any> {
+    const cacheKey = this.getHistoryCacheKey(latitude, longitude, days);
+    const cached = this.getFromHistoryCache(cacheKey);
+    if (cached) {
+      console.log('✅ [Weather] Histórico do tempo retornado do cache para:', latitude, longitude, days, 'dias');
+      return cached;
+    }
+
     try {
-      // Calcular datas: hoje e X dias atrás
+      console.log('📊 [Weather] Buscando histórico do tempo da API para:', latitude, longitude, days, 'dias');
       const endDate = new Date();
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
       
-      // Formato YYYY-MM-DD
       const startDateStr = startDate.toISOString().split('T')[0];
       const endDateStr = endDate.toISOString().split('T')[0];
 
@@ -58,9 +154,18 @@ export class WeatherService {
         timezone: 'auto',
       };
 
+      const todayMidnight = new Date();
+      todayMidnight.setHours(0, 0, 0, 0);
+      const useArchive = endDate <= todayMidnight;
+
+      const baseUrl = useArchive ? this.OPEN_METEO_ARCHIVE_URL : this.OPEN_METEO_BASE_URL;
+
       const response = await firstValueFrom(
-        this.httpService.get(this.OPEN_METEO_BASE_URL, { params }),
+        this.httpService.get(baseUrl, { params }),
       );
+      
+      this.setHistoryCache(cacheKey, response.data);
+      
       return response.data;
     } catch (error) {
       throw new InternalServerErrorException('Failed to fetch weather history from Open-Meteo', error.message);
@@ -72,8 +177,54 @@ export class WeatherService {
     return createdWeatherLog.save();
   }
 
-  async findAll(): Promise<WeatherLog[]> {
+  async findAll(city?: string): Promise<WeatherLog[]> {
+    if (city) {
+      return this.weatherLogModel.find({ city }).exec();
+    }
     return this.weatherLogModel.find().exec();
+  }
+
+  async createLogFromApi(city: string, cityCoordinatesService: any): Promise<WeatherLog> {
+    const cityData = cityCoordinatesService.getCoordinates(city);
+    
+    if (!cityData) {
+      throw new Error(`Cidade "${city}" não encontrada`);
+    }
+
+    const params = {
+      latitude: cityData.latitude,
+      longitude: cityData.longitude,
+      hourly: 'temperature_2m,apparent_temperature,weathercode,precipitation_probability,relativehumidity_2m,uv_index',
+      daily: 'weathercode,temperature_2m_max,temperature_2m_min,uv_index_max',
+      current_weather: true,
+      timezone: 'auto',
+    };
+
+    const response = await firstValueFrom(
+      this.httpService.get(this.OPEN_METEO_BASE_URL, { params }),
+    );
+    
+    const forecast = response.data;
+    
+    const logData = {
+      timestamp: new Date().toISOString(),
+      latitude: cityData.latitude,
+      longitude: cityData.longitude,
+      temperature: forecast.current_weather.temperature,
+      windspeed: forecast.current_weather.windspeed,
+      weathercode: forecast.current_weather.weathercode,
+      is_day: forecast.current_weather.is_day,
+      humidity: forecast.hourly?.relativehumidity_2m?.[0],
+      precipitation_probability: forecast.hourly?.precipitation_probability?.[0],
+      city: city,
+    } as CreateWeatherLogDto;
+
+    return this.create(logData);
+  }
+
+  async deleteByCity(city: string): Promise<{ deletedCount: number }> {
+    const result = await this.weatherLogModel.deleteMany({ city }).exec();
+    return { deletedCount: result.deletedCount || 0 };
   }
 
   async getAverageTemperature(): Promise<number> {
@@ -116,40 +267,73 @@ export class WeatherService {
     }
   }
 
-  async exportCsv(): Promise<string> {
-    const logs = await this.findAll();
+  private sortLogs(logs: WeatherLog[]): WeatherLog[] {
+    return [...logs].sort((a, b) => {
+      const dateA = new Date(a.timestamp).getTime();
+      const dateB = new Date(b.timestamp).getTime();
+      return dateB - dateA;
+    });
+  }
+
+  async exportCsv(city?: string): Promise<string> {
+    const logs = this.sortLogs(await this.findAll(city));
+    const rows = logs.map(log => ({
+      timestamp: log.timestamp instanceof Date ? log.timestamp.toISOString() : log.timestamp,
+      city: log.city || 'N/A',
+      temperature: log.temperature,
+      humidity: log.humidity ?? '',
+      windspeed: log.windspeed,
+      weathercode: log.weathercode,
+      is_day: log.is_day ? 'Dia' : 'Noite',
+      precipitation_probability: log.precipitation_probability ?? '',
+    }));
+
     const columns = [
-      'carimbo_de_tempo', 'latitude', 'longitude', 'temperatura', 'velocidade_do_vento', 'codigo_do_clima', 'eh_dia', 'umidade', 'probabilidade_de_precipitacao',
+      { key: 'timestamp', header: 'Carimbo de Tempo' },
+      { key: 'city', header: 'Local' },
+      { key: 'temperature', header: 'Temperatura (°C)' },
+      { key: 'humidity', header: 'Umidade (%)' },
+      { key: 'windspeed', header: 'Vento (km/h)' },
+      { key: 'weathercode', header: 'Código do Clima' },
+      { key: 'is_day', header: 'Período' },
+      { key: 'precipitation_probability', header: 'Probabilidade de Precipitação (%)' },
     ];
-    const data = logs.map(log => columns.map(col => log[col]));
 
     return new Promise((resolve, reject) => {
-      stringify(data, { header: true, columns: columns }, (err, output) => {
+      stringify(rows, { header: true, columns }, (err, output) => {
         if (err) return reject(err);
         resolve(output);
       });
     });
   }
 
-  async exportXlsx(): Promise<Buffer> {
-    const logs = await this.findAll();
+  async exportXlsx(city?: string): Promise<Buffer> {
+    const logs = this.sortLogs(await this.findAll(city));
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Weather Logs');
 
     worksheet.columns = [
       { header: 'Carimbo de Tempo', key: 'timestamp', width: 20 },
-      { header: 'Latitude', key: 'latitude', width: 15 },
-      { header: 'Longitude', key: 'longitude', width: 15 },
-      { header: 'Temperatura', key: 'temperature', width: 15 },
-      { header: 'Velocidade do Vento', key: 'windspeed', width: 15 },
+      { header: 'Local', key: 'city', width: 20 },
+      { header: 'Temperatura (°C)', key: 'temperature', width: 18 },
+      { header: 'Umidade (%)', key: 'humidity', width: 15 },
+      { header: 'Vento (km/h)', key: 'windspeed', width: 15 },
       { header: 'Código do Clima', key: 'weathercode', width: 15 },
-      { header: 'É Dia', key: 'is_day', width: 10 },
-      { header: 'Umidade', key: 'humidity', width: 10 },
-      { header: 'Probabilidade de Precipitação', key: 'precipitation_probability', width: 25 },
+      { header: 'Período', key: 'is_day', width: 12 },
+      { header: 'Probabilidade de Precipitação (%)', key: 'precipitation_probability', width: 30 },
     ];
 
     logs.forEach(log => {
-      worksheet.addRow(log);
+      worksheet.addRow({
+        timestamp: log.timestamp instanceof Date ? log.timestamp.toISOString() : log.timestamp,
+        city: log.city || 'N/A',
+        temperature: log.temperature,
+        windspeed: log.windspeed,
+        weathercode: log.weathercode,
+        is_day: log.is_day ? 'Dia' : 'Noite',
+        humidity: log.humidity ?? '',
+        precipitation_probability: log.precipitation_probability ?? '',
+      });
     });
 
     const arrayBuffer = await workbook.xlsx.writeBuffer();

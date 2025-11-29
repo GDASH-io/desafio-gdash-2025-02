@@ -36,4 +36,8 @@ export class CreateWeatherLogDto {
   @IsNumber()
   @IsOptional()
   precipitation_probability?: number;
+
+  @IsString()
+  @IsOptional()
+  city?: string;
 }

@@ -1,39 +1,90 @@
-import { Controller, Get, Post, Body, Res, HttpStatus, Query, ParseFloatPipe } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Body, Res, HttpStatus, Query, ParseFloatPipe, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CreateWeatherLogDto } from './dto/create-weather-log.dto';
 import { WeatherLog } from './schemas/weather-log.schema';
 import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
-import { AiService, FullWeatherData } from '../ai/ai.service'; 
+import { AiService, FullWeatherData } from '../ai/ai.service';
+import { CityCoordinatesService } from './city-coordinates.service';
+import { TmdbService } from '../tmdb/tmdb.service';
 
 @ApiTags('Clima')
 @Controller('weather')
 export class WeatherController {
   constructor(
     private readonly weatherService: WeatherService,
-    private readonly aiService: AiService, 
+    private readonly aiService: AiService,
+    private readonly cityCoordinatesService: CityCoordinatesService,
+    private readonly tmdbService: TmdbService,
   ) {}
 
   @Get('forecast')
-  @ApiOperation({ summary: 'Obter previsão do tempo por latitude e longitude' })
-  @ApiQuery({ name: 'latitude', type: Number, description: 'Latitude para a previsão do tempo' })
-  @ApiQuery({ name: 'longitude', type: Number, description: 'Longitude para a previsão do tempo' })
+  @ApiOperation({ summary: 'Obter previsão do tempo por cidade ou coordenadas' })
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Nome da cidade' })
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (se não fornecer cidade)' })
   async getWeatherForecast(
-    @Query('latitude', ParseFloatPipe) latitude: number,
-    @Query('longitude', ParseFloatPipe) longitude: number,
+    @Query('city') city?: string,
+    @Query('latitude') latitude?: number,
+    @Query('longitude') longitude?: number,
   ) {
-    return this.weatherService.getWeatherForecast(latitude, longitude);
+    let lat: number;
+    let lon: number;
+
+    if (city) {
+      const coordinates = this.cityCoordinatesService.getCoordinates(city);
+      if (!coordinates) {
+        throw new BadRequestException(`Cidade "${city}" não encontrada. Use /weather/cities para ver cidades disponíveis.`);
+      }
+      lat = coordinates.latitude;
+      lon = coordinates.longitude;
+    } else if (latitude !== undefined && longitude !== undefined) {
+      lat = latitude;
+      lon = longitude;
+    } else {
+      throw new BadRequestException('Forneça "city" ou "latitude" e "longitude"');
+    }
+
+    return this.weatherService.getWeatherForecast(lat, lon);
   }
 
   @Get('ai-insights')
-  @ApiOperation({ summary: 'Obter insights de IA sobre o clima por latitude e longitude' })
-  @ApiQuery({ name: 'latitude', type: Number, description: 'Latitude para a previsão do tempo' })
-  @ApiQuery({ name: 'longitude', type: Number, description: 'Longitude para a previsão do tempo' })
+  @ApiOperation({ summary: 'Obter insights de IA sobre o clima por cidade ou coordenadas' })
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Nome da cidade' })
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (se não fornecer cidade)' })
   async getAiInsights(
-    @Query('latitude', ParseFloatPipe) latitude: number,
-    @Query('longitude', ParseFloatPipe) longitude: number,
+    @Query('city') city?: string,
+    @Query('latitude') latitude?: number,
+    @Query('longitude') longitude?: number,
   ) {
-    const weatherForecast = await this.weatherService.getWeatherForecast(latitude, longitude);
+    let lat: number;
+    let lon: number;
+    let cityName: string = 'a localização';
+
+    if (city) {
+      const coordinates = this.cityCoordinatesService.getCoordinates(city);
+      if (!coordinates) {
+        throw new BadRequestException(`Cidade "${city}" não encontrada. Use /weather/cities para ver cidades disponíveis.`);
+      }
+      lat = coordinates.latitude;
+      lon = coordinates.longitude;
+      cityName = coordinates.name;
+    } else if (latitude !== undefined && longitude !== undefined) {
+      lat = latitude;
+      lon = longitude;
+      const allCities = this.cityCoordinatesService.getAllCities();
+      const foundCity = allCities.find(c => 
+        Math.abs(c.latitude - lat) < 0.1 && Math.abs(c.longitude - lon) < 0.1
+      );
+      if (foundCity) {
+        cityName = foundCity.name;
+      }
+    } else {
+      throw new BadRequestException('Forneça "city" ou "latitude" e "longitude"');
+    }
+
+    const weatherForecast = await this.weatherService.getWeatherForecast(lat, lon);
 
     const fullWeatherData: FullWeatherData = {
       temperature: weatherForecast.current_weather.temperature,
@@ -53,36 +104,128 @@ export class WeatherController {
       rain: fullWeatherData.rain,
       wind: fullWeatherData.wind_speed,
       humidity: fullWeatherData.humidity,
-    });
+    }, cityName);
     const healthAlerts = this.aiService.generateHealthAlerts(fullWeatherData);
-    const smartAlerts = this.aiService.generateSmartAlerts(fullWeatherData);
-    const activityRecommendations = this.aiService.getActivityRecommendations(fullWeatherData);
+    const smartAlerts = await this.aiService.generateSmartAlerts(fullWeatherData, cityName);
+    const activityRecommendations = await this.aiService.getActivityRecommendations(fullWeatherData, cityName);
     const clothingSuggestions = this.aiService.getClothingSuggestions(fullWeatherData);
     const detailedClothingSuggestions = this.aiService.getDetailedClothingSuggestions(fullWeatherData);
-    const daySummary = this.aiService.getDaySummary(fullWeatherData);
-    const moodInsights = this.aiService.getMoodInsights(fullWeatherData);
-    const movieRecommendations = this.aiService.getMovieRecommendationsByWeather(fullWeatherData);
+    const daySummary = await this.aiService.getDaySummary(fullWeatherData, cityName);
+    const moodInsights = await this.aiService.getMoodInsights(fullWeatherData, cityName);
+    const movieCriteria = await this.aiService.getMovieRecommendationsByWeather(fullWeatherData, cityName);
     const apparentTemperatureExplanation = this.aiService.getApparentTemperatureExplanation(fullWeatherData);
     const uvIndexAlert = fullWeatherData.uv_index ? this.aiService.getUvIndexAlert(fullWeatherData.uv_index) : null;
-    const healthAndWellnessConditions = this.aiService.getHealthAndWellnessConditions(fullWeatherData);
+    const healthAndWellnessConditions = await this.aiService.getHealthAndWellnessConditions(fullWeatherData, cityName);
 
-    return {
+    const response = {
       weatherForecast,
-      explainedWeather,
-      healthAlerts,
-      smartAlerts,
-      activityRecommendations,
-      clothingSuggestions,
-      detailedClothingSuggestions,
-      daySummary,
-      moodInsights,
-      movieRecommendations,
-      apparentTemperatureExplanation,
-      uvIndexAlert,
-      healthAndWellnessConditions,
+      explainedWeather: typeof explainedWeather === 'string' ? explainedWeather : String(explainedWeather),
+      healthAlerts: Array.isArray(healthAlerts) ? healthAlerts : [],
+      smartAlerts: Array.isArray(smartAlerts) ? smartAlerts : [],
+      activityRecommendations: Array.isArray(activityRecommendations) ? activityRecommendations : [],
+      clothingSuggestions: typeof clothingSuggestions === 'string' ? clothingSuggestions : String(clothingSuggestions),
+      detailedClothingSuggestions: Array.isArray(detailedClothingSuggestions) ? detailedClothingSuggestions : [],
+      daySummary: typeof daySummary === 'string' ? daySummary.trim() : String(daySummary).trim(),
+      moodInsights: typeof moodInsights === 'string' ? moodInsights.trim() : String(moodInsights).trim(),
+      movieCriteria: movieCriteria || {},
+      apparentTemperatureExplanation: typeof apparentTemperatureExplanation === 'string' ? apparentTemperatureExplanation : String(apparentTemperatureExplanation),
+      uvIndexAlert: uvIndexAlert || null,
+      healthAndWellnessConditions: Array.isArray(healthAndWellnessConditions) ? healthAndWellnessConditions : [],
       apparent_temperature: fullWeatherData.apparent_temperature,
       uv_index: fullWeatherData.uv_index,
     };
+
+    return response;
+  }
+
+  @Get('movies-by-criteria')
+  @ApiOperation({ summary: 'Buscar filmes no TMDB usando critérios gerados pela IA' })
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Nome da cidade' })
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'page', type: Number, required: false, description: 'Página de resultados (padrão: 1)' })
+  async getMoviesByCriteria(
+    @Query('city') city?: string,
+    @Query('latitude') latitude?: number,
+    @Query('longitude') longitude?: number,
+    @Query('page') page: number = 1,
+  ) {
+    let lat: number;
+    let lon: number;
+    let cityName: string | undefined = city;
+
+    if (city) {
+      const coordinates = this.cityCoordinatesService.getCoordinates(city);
+      if (!coordinates) {
+        throw new BadRequestException(`Cidade "${city}" não encontrada. Use /weather/cities para ver cidades disponíveis.`);
+      }
+      lat = coordinates.latitude;
+      lon = coordinates.longitude;
+      cityName = coordinates.name;
+    } else if (latitude !== undefined && longitude !== undefined) {
+      lat = latitude;
+      lon = longitude;
+      const foundCity = this.cityCoordinatesService.getCityByCoordinates(latitude, longitude);
+      cityName = foundCity ? foundCity.name : undefined;
+    } else {
+      lat = -12.9714;
+      lon = -38.5014;
+      cityName = 'Salvador';
+    }
+
+    const weatherForecast = await this.weatherService.getWeatherForecast(lat, lon);
+
+    const fullWeatherData: FullWeatherData = {
+      temperature: weatherForecast.current_weather.temperature,
+      apparent_temperature: weatherForecast.hourly.apparent_temperature?.[0] || weatherForecast.current_weather.temperature,
+      rain: weatherForecast.hourly.precipitation_probability?.[0] || 0,
+      wind_speed: weatherForecast.current_weather.windspeed,
+      humidity: weatherForecast.hourly.relative_humidity_2m?.[0] || 0,
+      weathercode: weatherForecast.current_weather.weathercode,
+      precipitation_probability: weatherForecast.hourly.precipitation_probability[0],
+      uv_index: weatherForecast.hourly.uv_index?.[0] || weatherForecast.daily?.uv_index_max?.[0] || undefined,
+      hourly_units: weatherForecast.hourly_units,
+      hourly: weatherForecast.hourly,
+    };
+
+    try {
+      const movieCriteria = await this.aiService.getMovieRecommendationsByWeather(fullWeatherData, cityName);
+
+      if (!movieCriteria || typeof movieCriteria !== 'object') {
+        console.warn('⚠️ [Weather] Critérios de filmes inválidos, usando padrão');
+        throw new Error('Critérios de filmes inválidos');
+      }
+
+      if (!Array.isArray(movieCriteria.generos_sugeridos)) {
+        console.warn('⚠️ [Weather] generos_sugeridos não é um array, convertendo...');
+        movieCriteria.generos_sugeridos = [];
+      }
+
+      console.log('✅ [Weather] Critérios de filmes gerados:', JSON.stringify(movieCriteria, null, 2));
+
+      const movies = await this.tmdbService.getMoviesByCriteria(movieCriteria, page);
+
+      return {
+        criteria: movieCriteria,
+        movies: movies?.results || [],
+        total_pages: movies?.total_pages || 1,
+        total_results: movies?.total_results || 0,
+      };
+    } catch (error: any) {
+      console.error('❌ [Weather] Erro ao buscar filmes por critérios:', error?.message || error);
+      
+      return {
+        criteria: {
+          generos_sugeridos: [],
+          tema: 'variado',
+          description: 'Não foi possível gerar critérios personalizados',
+        },
+        movies: [],
+        total_pages: 1,
+        total_results: 0,
+        error: error?.message || 'Erro ao buscar filmes',
+      };
+    }
   }
 
   @Post('logs')
@@ -93,8 +236,47 @@ export class WeatherController {
 
   @Get('logs')
   @ApiOperation({ summary: 'Retorna todos os registros de log de clima' })
-  async findAll(): Promise<WeatherLog[]> {
-    return this.weatherService.findAll();
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Filtrar por cidade' })
+  async findAll(@Query('city') city?: string): Promise<WeatherLog[]> {
+    return this.weatherService.findAll(city);
+  }
+
+  @Post('logs/update')
+  @ApiOperation({ summary: 'Busca dados atuais da API e cria um novo log para a cidade especificada' })
+  @ApiQuery({ name: 'city', type: String, required: true, description: 'Nome da cidade' })
+  async updateLogs(@Query('city') city: string) {
+    if (!city) {
+      throw new BadRequestException('Cidade é obrigatória');
+    }
+
+    try {
+      const log = await this.weatherService.createLogFromApi(city, this.cityCoordinatesService);
+      return {
+        message: `Log criado com sucesso para ${city}`,
+        log,
+        count: 1,
+      };
+    } catch (error: any) {
+      console.error('❌ [Weather] Erro no controller updateLogs:', error);
+      throw new InternalServerErrorException(
+        error?.message || 'Erro ao atualizar logs',
+        error
+      );
+    }
+  }
+
+  @Delete('logs')
+  @ApiOperation({ summary: 'Remove todos os logs de uma cidade específica' })
+  @ApiQuery({ name: 'city', type: String, required: true, description: 'Nome da cidade' })
+  async clearLogs(@Query('city') city: string) {
+    if (!city) {
+      throw new BadRequestException('Cidade é obrigatória');
+    }
+    const result = await this.weatherService.deleteByCity(city);
+    return {
+      message: `${result.deletedCount} log(s) removido(s) para ${city}`,
+      deletedCount: result.deletedCount,
+    };
   }
 
   @Get('insights')
@@ -111,19 +293,38 @@ export class WeatherController {
 
   @Get('history-insights')
   @ApiOperation({ summary: 'Retorna histórico de clima com insights da IA' })
-  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (padrão: -12.9714)' })
-  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (padrão: -38.5014)' })
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Nome da cidade' })
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'days', type: Number, required: false, description: 'Número de dias (padrão: 7)' })
   async getHistoryInsights(
+    @Query('city') city?: string,
     @Query('latitude') latitude?: number,
     @Query('longitude') longitude?: number,
+    @Query('days') days?: number,
   ) {
-    // Usar latitude/longitude padrão de Salvador se não fornecidos
-    const lat = latitude ?? -12.9714;
-    const lon = longitude ?? -38.5014;
+    let lat: number;
+    let lon: number;
+
+    if (city) {
+      const coordinates = this.cityCoordinatesService.getCoordinates(city);
+      if (!coordinates) {
+        throw new BadRequestException(`Cidade "${city}" não encontrada. Use /weather/cities para ver cidades disponíveis.`);
+      }
+      lat = coordinates.latitude;
+      lon = coordinates.longitude;
+    } else if (latitude !== undefined && longitude !== undefined) {
+      lat = latitude;
+      lon = longitude;
+    } else {
+      lat = -12.9714;
+      lon = -38.5014;
+    }
+
+    const daysCount = days ?? 7;
 
     try {
-      // Buscar dados históricos dos últimos 7 dias da API
-      const historyData = await this.weatherService.getWeatherHistory(lat, lon, 7);
+      const historyData = await this.weatherService.getWeatherHistory(lat, lon, daysCount);
 
       if (!historyData || !historyData.daily || !historyData.daily.time || historyData.daily.time.length === 0) {
         return {
@@ -135,10 +336,8 @@ export class WeatherController {
         };
       }
 
-      // Processar dados diários da API
       const { time, temperature_2m_max, temperature_2m_min } = historyData.daily;
       
-      // Criar array com dados de cada dia (temperatura média = (max + min) / 2)
       const dailyData = time.map((date: string, index: number) => {
         const max = temperature_2m_max[index];
         const min = temperature_2m_min[index];
@@ -150,7 +349,7 @@ export class WeatherController {
           maxTemperature: max,
           minTemperature: min,
         };
-      }).reverse(); // Reverter para ter o mais recente primeiro
+      }).reverse();
 
       if (dailyData.length < 2) {
         const day = dailyData[0];
@@ -177,11 +376,10 @@ export class WeatherController {
         };
       }
 
-      // Calcular tendência de temperatura entre os dias
       const temperatures = dailyData.map(day => day.averageTemperature);
       const avgTemp = temperatures.reduce((a, b) => a + b, 0) / temperatures.length;
-      const firstTemp = temperatures[temperatures.length - 1]; // Dia mais antigo
-      const lastTemp = temperatures[0]; // Dia mais recente
+      const firstTemp = temperatures[temperatures.length - 1];
+      const lastTemp = temperatures[0];
       const tempChange = lastTemp - firstTemp;
 
       let trendMessage = "";
@@ -195,7 +393,6 @@ export class WeatherController {
 
       const insights = `Temperatura média: ${avgTemp.toFixed(1)}°C. ${trendMessage}`;
 
-      // Criar logs representativos para cada dia
       const representativeLogs = dailyData.map(day => ({
         _id: `day-${day.date}`,
         timestamp: `${day.date}T12:00:00.000Z`,
@@ -224,12 +421,22 @@ export class WeatherController {
     }
   }
 
+  @Get('cities')
+  @ApiOperation({ summary: 'Lista todas as cidades disponíveis ou busca cidades' })
+  @ApiQuery({ name: 'search', type: String, required: false, description: 'Buscar cidades por nome' })
+  async getCities(@Query('search') search?: string) {
+    if (search) {
+      return this.cityCoordinatesService.searchCities(search);
+    }
+    return this.cityCoordinatesService.getAllCities();
+  }
+
   @Get('export.csv')
   @ApiOperation({ summary: 'Exporta registros de clima para CSV' })
-  async exportCsv(@Res() res: Response) {
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Filtrar por cidade' })
+  async exportCsv(@Res() res: Response, @Query('city') city?: string) {
     try {
-      const data = await this.weatherService.findAll();
-      const csv = await this.weatherService.exportCsv();
+      const csv = await this.weatherService.exportCsv(city);
       res.header('Content-Type', 'text/csv');
       res.attachment('weather_logs.csv');
       return res.send(csv);
@@ -241,9 +448,10 @@ export class WeatherController {
 
   @Get('export.xlsx')
   @ApiOperation({ summary: 'Exporta registros de clima para XLSX' })
-  async exportXlsx(@Res() res: Response) {
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Filtrar por cidade' })
+  async exportXlsx(@Res() res: Response, @Query('city') city?: string) {
     try {
-      const buffer = await this.weatherService.exportXlsx();
+      const buffer = await this.weatherService.exportXlsx(city);
       res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.attachment('weather_logs.xlsx');
       return res.send(buffer);
