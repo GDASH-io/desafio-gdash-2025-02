@@ -14,6 +14,25 @@ async function bootstrap() {
 
   await app.listen(port);
 
+  // 🔍 DEBUG: Listar todas as rotas
+  const server = app.getHttpServer();
+  const router = server._events.request._router;
+
+  if (router && router.stack) {
+    console.log("\n=== 🔍 ROTAS REGISTRADAS ===");
+    const routes = router.stack
+      .filter((r) => r.route)
+      .map((r) => ({
+        method: Object.keys(r.route.methods)[0].toUpperCase(),
+        path: r.route.path,
+      }));
+
+    routes.forEach((route) => {
+      console.log(`${route.method.padEnd(6)} ${route.path}`);
+    });
+    console.log("========================\n");
+  }
+
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
   logger.log(`📊 Weather API: http://localhost:${port}/api/weather/logs`);
 }
