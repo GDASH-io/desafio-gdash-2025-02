@@ -39,7 +39,7 @@ environment:
 ### 2. Inicie todos os serviços
 
 ```bash
-docker-compose up -d
+docker-compose up --build -d
 ```
 
 Este comando irá:
