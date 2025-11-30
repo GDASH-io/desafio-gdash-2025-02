@@ -360,8 +360,8 @@ O Pull Request deve conter:
   - [ x ] (Opcional) Página consumindo API pública paginada  
 - [ x ] Docker Compose sobe todos os serviços  
 - [ x ] Código em TypeScript (backend e frontend)  
-- [ ] Vídeo explicativo (máx. 5 minutos)  
-- [ ] Pull Request via branch com seu nome completo  
+- [ x ] Vídeo explicativo (máx. 5 minutos)  
+- [ x ] Pull Request via branch com seu nome completo  
 - [ x ] README completo com instruções de execução  
 - [ x ] Logs e tratamento de erros básicos em cada serviço  
 
