@@ -1,0 +1,62 @@
+name: GDASH CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-backend:
+    name: Lint Backend (API)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: api/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./api
+        run: npm run lint
+
+      - name: Run Prettier
+        working-directory: ./api
+        run: npm run format
+
+      - name: Run Tests
+        working-directory: ./api
+        run: npm run test
+
+  lint-frontend:
+    name: Lint Frontend (FE)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: fe/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./fe
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: ./fe
+        run: npm run lint
+    
