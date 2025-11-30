@@ -26,17 +26,41 @@ environment:
   JWT_SECRET: sua_chave_jwt_aqui
 ```
 
-**Localização para coleta de dados climáticos:**
+**Localização e intervalo de coleta de dados climáticos:**
 ```yaml
 # No serviço 'producer'
 environment:
   LONG: -46.53632098751176  # Longitude da sua cidade
   LAT: -22.970198162589284  # Latitude da sua cidade
-  INTERVAL_SECONDS: 60      # Intervalo de coleta em segundos
+  INTERVAL_SECONDS: 60      # Intervalo de coleta em segundos (padrão: 60s = 1 minuto)
   TIMEZONE: America/Sao_Paulo # Configuração do Timezone que será utilizado pela API
 ```
 
-### 2. Inicie todos os serviços
+> 📊 **Pipeline de Dados**: Por padrão, a pipeline está configurada para coletar dados climáticos a cada **1 minuto** (`INTERVAL_SECONDS: 60`). Você pode modificar esse intervalo alterando a variável `INTERVAL_SECONDS` no `docker-compose.yml` de acordo com suas necessidades (ex: 120 para 2 minutos, 300 para 5 minutos, etc.).
+
+### 2. Configure os volumes do MongoDB (opcional, mas recomendado)
+
+Para iniciar o aplicativo com dados pré-configurados (usuário ADMIN e dados climáticos), siga os passos abaixo:
+
+1. **Acesse a pasta ROOT** do projeto
+2. **Baixe os volumes do MongoDB** neste link: [Download MongoDB Volumes](https://drive.google.com/drive/folders/1c1OtP8h-B-q4Gf6i4jDWzW845AgE6Rp2?usp=sharing)
+3. **Após baixar**, cole a pasta do volume na raiz do projeto
+       - Ficará assim a estrutura de pastas:
+              - api
+              - consumer
+              - fe
+              - producer
+              - temp_data
+4. Com o volume do MongoDB configurado, você pode iniciar o aplicativo normalmente
+
+**⚠️ Observação importante:**
+
+O download dos volumes do MongoDB **NÃO É OBRIGATÓRIO**. Você pode iniciar o projeto sem eles, mas:
+- O app iniciará sem nenhum dado no banco de dados
+- Você precisará aguardar a pipeline de dados popular o DB automaticamente
+- Levará algum tempo até que dados climáticos sejam coletados e exibidos
+
+### 3. Inicie todos os serviços
 
 ```bash
 docker-compose up --build -d
@@ -50,7 +74,7 @@ Este comando irá:
 - ✅ Criar e iniciar o **Consumer** (Go)
 - ✅ Criar e iniciar o **Frontend** (React + Vite)
 
-### 3. Acompanhe os logs
+### 4. Acompanhe os logs
 
 ```bash
 # Ver logs de todos os serviços
@@ -63,7 +87,7 @@ docker-compose logs -f consumer
 docker-compose logs -f frontend
 ```
 
-### 4. Parar todos os serviços
+### 5. Parar todos os serviços
 
 ```bash
 # Parar sem remover containers
@@ -161,8 +185,8 @@ Após iniciar todos os serviços com Docker Compose, acesse:
 - **Descrição**: Dashboard principal com visualizações de dados climáticos, insights de IA, gestão de usuários e integração com API pública
 
 **Credenciais padrão:**
-- Email: `admin123@gmail.com`
-- Senha: `qweasdzxc123@@`
+- Email: `admin@gmail.com`
+- Senha: `admin123`
 
 ### 🚀 API Backend (NestJS)
 - **URL Base**: http://localhost:3000
