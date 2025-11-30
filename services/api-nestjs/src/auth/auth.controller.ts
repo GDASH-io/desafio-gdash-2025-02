@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 
 export class LoginDto {
     email: string;
-    password: string;
+    senha: string;
 }
 
 @Controller('auth')
