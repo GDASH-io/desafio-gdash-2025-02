@@ -1,0 +1,145 @@
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    volumes:
+      - ./temp_data/mongo/mongodb-data:/data/db
+      - ./temp_data/mongo/mongo-config:/data/configdb
+    networks:
+      - app-network
+    command: ["mongod", "--quiet", "--logpath", "/dev/null"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbit log_levels [{connection,error},{channel,error}]
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  producer:
+    build:
+      context: ./producer
+      dockerfile: Dockerfile
+    container_name: producer
+    environment:
+      INTERVAL_SECONDS: 60
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin123
+      QUEUE_NAME: weather_data
+      LONG: -46.53632098751176
+      LAT: -22.970198162589284
+      OPENWEATHER_API_URL: https://historical-forecast-api.open-meteo.com/v1/forecast
+      TIMEZONE: America/Sao_Paulo
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: nestjs-api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      MONGO_URI: mongodb://admin:admin123@mongo:27017/gdash?authSource=admin
+      JWT_SECRET: sua_chave_jwt_aqui
+
+      OPENAI_API_KEY: < API_KEY >
+      OPENAI_MODEL: gpt-4.1-mini
+      OPENAI_EMBEDDING_MODEL: text-embedding-3-small
+
+      FALLBACK_GEMINI_API_KEY: < API_KEY >
+      FALLBACK_GEMINI_MODEL: gemini-2.5-flash
+      FALLBACK_GEMINI_EMBEDDING_MODEL: gemini-embedding-001
+
+      PUBLIC_API_URL: https://swapi.dev/api
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+    environment:
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
+      NESTJS_API: http://api:3000/weather
+      QUEUE_NAME: weather_data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    container_name: frontend
+    environment:
+      VITE_API_URL: http://api:3000
+    ports:
+      - "4173:4173"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  mongodb-data:
+    driver: local
+  mongo-config:
+    driver: local
+  rabbitmq_data:
+
+networks:
+  app-network:
+    driver: bridge
