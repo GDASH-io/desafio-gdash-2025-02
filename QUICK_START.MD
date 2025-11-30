@@ -23,6 +23,7 @@ Edite o arquivo `docker-compose.yml` para configurar:
 environment:
   OPENAI_API_KEY: your_openai_api_key_here
   FALLBACK_GEMINI_API_KEY: your_gemini_api_key_here
+  JWT_SECRET: sua_chave_jwt_aqui
 ```
 
 **Localização para coleta de dados climáticos:**

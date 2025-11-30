@@ -1,6 +1,9 @@
 name: GDASH CI
 
 on:
+  push:
+    branches:
+      - rafael-aparecido-goncalves-silva
   pull_request:
     branches:
       - main
