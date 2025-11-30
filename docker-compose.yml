@@ -1,0 +1,118 @@
+version: "3.8"
+
+services:
+  # ----------------------------------------------------------------
+  # PROXY REVERSO (A única porta aberta para a internet)
+  # ----------------------------------------------------------------
+  nginx:
+    image: nginx:alpine
+    container_name: app_proxy
+    restart: always
+    ports:
+      - "80:80" # <--- ÚNICA PORTA EXPOSTA
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app_network
+
+  # ----------------------------------------------------------------
+  # APLICAÇÕES (Backend e Frontend)
+  # ----------------------------------------------------------------
+
+  backend:
+    build: ./backend
+    container_name: app_backend
+    restart: always
+    # Sem 'ports', pois o Nginx acessa internamente
+    environment:
+      - TZ=America/Sao_Paulo # Ajuste de Fuso Horário
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app_network
+
+  frontend:
+    build: ./frontend
+    container_name: app_frontend
+    restart: always
+    # Sem 'ports', pois o Nginx acessa internamente
+    env_file:
+      - ./frontend/.env
+    networks:
+      - app_network
+
+  # ----------------------------------------------------------------
+  # WORKERS (Processamento em Background)
+  # ----------------------------------------------------------------
+
+  collector:
+    build: ./collector
+    container_name: app_collector
+    restart: always
+    environment:
+      - TZ=America/Sao_Paulo # Ajuste de Fuso Horário
+      - PYTHONPATH=/app # Correção de importação do Python
+    env_file:
+      - ./collector/.env
+    depends_on:
+      - rabbitmq
+    networks:
+      - app_network
+
+  worker:
+    build: ./worker
+    container_name: app_worker
+    restart: always
+    environment:
+      - TZ=America/Sao_Paulo # Ajuste de Fuso Horário
+    env_file:
+      - ./worker/.env
+    depends_on:
+      - rabbitmq
+      - backend
+    networks:
+      - app_network
+
+  # ----------------------------------------------------------------
+  # INFRAESTRUTURA (Banco de Dados e Fila)
+  # ----------------------------------------------------------------
+
+  mongo:
+    image: mongo:latest
+    container_name: app_mongo
+    restart: always
+    environment:
+      - TZ=America/Sao_Paulo
+    # Sem 'ports' para segurança máxima (ninguém acessa de fora)
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: app_rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+      - TZ=America/Sao_Paulo
+    # Sem 'ports' para segurança máxima
+    networks:
+      - app_network
+
+# ----------------------------------------------------------------
+# VOLUMES E REDES
+# ----------------------------------------------------------------
+volumes:
+  mongo_data:
+
+networks:
+  app_network:
+    driver: bridge
