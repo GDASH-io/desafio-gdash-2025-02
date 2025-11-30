@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # ---------------------------
+  # 1. Banco de Dados
+  # ---------------------------
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  mongo-init:
+    image: mongo:latest
+    container_name: mongo-init
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    command: >
+      bash -c "until mongosh --host mongodb:27017 --eval 'print(\"waited for connection\")'; do sleep 2; done; 
+      mongosh --host mongodb:27017 --eval 'try { rs.status().ok } catch (e) { rs.initiate({_id:\"rs0\",members:[{_id:0,host:\"mongodb:27017\"}]}) }'"
+
+  # ---------------------------
+  # 2. RabbitMQ
+  # ---------------------------
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # ---------------------------
+  # 3. Backend API
+  # ---------------------------
+  backend:
+    build: ./backend-api
+    container_name: backend-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
+    environment:
+      - DATABASE_URL=mongodb://mongodb:27017/gdash?authSource=admin&directConnection=true
+      - JWT_SECRET=gdash_secret_2025
+      - DEFAULT_ADMIN_EMAIL=admin@gdash.com
+      - DEFAULT_ADMIN_PASSWORD=admin123
+      - DEFAULT_ADMIN_NAME=Admin GDASH
+
+  # ---------------------------
+  # 4. Coletor Python
+  # ---------------------------
+  collector:
+    build: ./weather-collector
+    container_name: weather-collector
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_HOST=rabbitmq 
+    command: ["python", "-u", "app.py"]
+
+  # ---------------------------
+  # 5. Worker Go
+  # ---------------------------
+  worker:
+    build: ./queue-worker
+    container_name: queue-worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - API_URL=http://backend:3000/weather/logs
+
+  # ---------------------------
+  # 6. Frontend React
+  # ---------------------------
+  frontend:
+    build: 
+      context: ./frontend-app
+      args:
+        VITE_API_URL: http://localhost:3000
+    container_name: frontend-app
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
