@@ -172,3 +172,64 @@ class LogoutAPIView(APIView):
                 {"error": "Token inválido ou não encontrado."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class UserListAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["get"]
+
+    @swagger_auto_schema(
+        responses={200: UserSerializer(many=True)},
+        operation_summary="Lista usuários",
+        operation_description="Retorna a lista de usuários cadastrados.",
+    )
+    def get(self, request, *args, **kwargs):
+        users = Usuario.objects.all().order_by("id")
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserDeleteAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    http_method_names = ["delete"]
+
+    @swagger_auto_schema(
+        operation_summary="Deleta usuário",
+        operation_description=(
+            "Deleta o usuário informado pelo parâmetro `id`. "
+            "Somente usuários com flag `is_staff=True` podem executar."
+        ),
+        manual_parameters=[
+            openapi.Parameter(
+                "id",
+                openapi.IN_PATH,
+                description="ID do usuário a ser deletado.",
+                type=openapi.TYPE_INTEGER,
+                required=True,
+            )
+        ],
+        responses={
+            204: "Usuário deletado com sucesso.",
+            403: "Você não tem permissão para deletar usuários.",
+            404: "Usuário não encontrado.",
+        },
+    )
+    def delete(self, request, id=None, *args, **kwargs):
+        if not request.user.is_staff:
+            return Response(
+                {"detail": "Você não tem permissão para deletar usuários."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        try:
+            user = Usuario.objects.get(id=id)
+        except Usuario.DoesNotExist:
+            return Response(
+                {"detail": "Usuário não encontrado."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

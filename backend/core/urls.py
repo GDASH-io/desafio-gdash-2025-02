@@ -8,6 +8,8 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from rest_framework.authtoken.views import obtain_auth_token
 from apps.accounts.api.viewsets import RegisterAPIView
+from apps.accounts.api.viewsets import UserDeleteAPIView
+from apps.accounts.api.viewsets import UserListAPIView
 from apps.accounts.api.viewsets import LoginAPIView
 from apps.accounts.api.viewsets import LogoutAPIView
 
@@ -36,6 +38,8 @@ urlpatterns = [
     path('api/v1/register/', RegisterAPIView.as_view(), name='register'),
     path('api/v1/login/', LoginAPIView.as_view(), name='login'),
     path('api/v1/logout/', LogoutAPIView.as_view(), name='logout'),
+    path('api/v1/users/', UserListAPIView.as_view(), name='user-list'),
+    path('api/v1/users/<int:id>/', UserDeleteAPIView.as_view(), name='user-delete'), # noqa E501
     # Weather logs
     path("api/v1/weather/logs/", WeatherLogViewSet.as_view({"get": "list", "post": "create"}), name="weather-logs-list"), # noqa E501
     path("api/v1/weather/logs/export.csv/", WeatherLogViewSet.as_view({"get": "export_csv"}), name="weather-logs-export-csv"), # noqa E501
