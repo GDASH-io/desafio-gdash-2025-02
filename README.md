@@ -1,6 +1,6 @@
 # 🌦️ Weathernator - Sistema de Monitoramento Climático
 
-Sistema full-stack moderno para coleta, processamento e visualização de dados climáticos com insights de IA
+Sistema full-stack moderno para coleta, processamento e visualização de dados climáticos com insights de IA.
 
 ## 🎥 Vídeo de apresentação
 
