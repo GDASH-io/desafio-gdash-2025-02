@@ -4,7 +4,7 @@ Sistema full-stack moderno para coleta, processamento e visualização de dados 
 
 ## 🎥 Vídeo de apresentação
 
-**YouTube:** https://youtu.be/x9lAdDQvcBk
+**YouTube:** https://youtu.be/9epUNUiPAqo
 
 ## 🏗️ Arquitetura
 
