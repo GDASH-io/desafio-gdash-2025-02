@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import { Toaster } from "./components/ui/sonner";
 import { ProtectedRoute, PublicRoute } from "./routes/ProtectedRoute";
+import StarWarsPage from "./pages/StartWarsPage";
 
 const App: React.FC = () => {
   return (
@@ -33,6 +34,15 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+
+          <Route
+          path="/star-wars"
+          element={
+            <ProtectedRoute>
+              <StarWarsPage />
             </ProtectedRoute>
           }
         />

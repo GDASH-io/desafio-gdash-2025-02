@@ -41,7 +41,6 @@ interface AppHeaderProps {
   isGeneratingWeather?: boolean;
 }
 
-
 const AppHeader: React.FC<AppHeaderProps> = ({
   selectedCity,
   onGenerateWeather,
@@ -49,7 +48,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-
   const [tempCity, setTempCity] = useState<string>(selectedCity || "Brasília");
 
   useEffect(() => {
@@ -92,7 +90,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       <Dialog>
         <div className="flex items-center gap-6">
           <div className="flex flex-col">
-            <span className="text-xl font-semibold text-slate-50">
+           <span
+              onClick={() => navigate("/home")}
+              className="text-xl font-semibold text-slate-50 cursor-pointer hover:text-slate-300 transition"
+            >
               Weather Dashboard
             </span>
             <span className="text-xs text-slate-400">
@@ -104,11 +105,24 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           </div>
 
           <nav className="hidden md:flex items-center gap-4 text-sm text-slate-300">
-            <button className="hover:text-slate-50 transition-colors">
-              Relatórios
-            </button>
+            {/* 🔹 Dropdown de Relatórios com subitem Star Wars */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="hover:text-slate-50 transition-colors cursor-pointer">
+                  Relatórios
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => navigate("/star-wars")}
+                >
+                  Listar Star Wars
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            {/* 🔹 aqui trocamos Configurações por Gerar clima, sem <Button> */}
+            {/* 🔹 Gerar clima abre o modal */}
             <DialogTrigger asChild>
               <button className="hover:text-slate-50 transition-colors cursor-pointer">
                 Gerar clima
@@ -122,15 +136,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           <DialogHeader>
             <DialogTitle>Selecionar cidade</DialogTitle>
             <DialogDescription className="text-slate-400">
-              Escolha a cidade para coletar o clima em tempo real e
-              atualizar o gráfico, a tabela e os insights de IA.
+              Escolha a cidade para coletar o clima em tempo real e atualizar o
+              gráfico, a tabela e os insights de IA.
             </DialogDescription>
           </DialogHeader>
 
           <div className="mt-4 space-y-2">
-            <label className="text-sm text-slate-200">
-              Cidade
-            </label>
+            <label className="text-sm text-slate-200">Cidade</label>
             <Select
               value={tempCity}
               onValueChange={(value: string) => setTempCity(value)}
@@ -163,7 +175,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Direita: usuário + avatar + menu (sem botão Gerar clima aqui) */}
+      {/* Direita: usuário + avatar + menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button

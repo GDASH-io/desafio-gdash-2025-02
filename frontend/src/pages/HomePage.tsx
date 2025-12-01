@@ -3,14 +3,12 @@ import AppHeader from "@/components/layout/AppHeader";
 import { weatherService } from "@/services/weatherService";
 import type { WeatherLog, WeatherInsight } from "@/interfaces/weather";
 import { toast } from "sonner";
-
 import { WeatherFilterBar } from "@/components/layout/weather/WeatherFilterBar";
 import { WeatherSummaryCards } from "@/components/layout/weather/WeatherSummaryCards";
 import { WeatherTemperatureChart } from "@/components/layout/weather/WeatherTemperaturaChart";
 import { WeatherTable } from "@/components/layout/weather/WeatherTable";
 import { WeatherInsightsCard } from "@/components/layout/weather/WeatherInsightsCard";
 
-// helper para normalizar strings (remove acentos, minúsculas)
 function normalize(str: string): string {
   return str
     .normalize("NFD")
@@ -19,7 +17,6 @@ function normalize(str: string): string {
     .trim();
 }
 
-// extrai a cidade do texto: "Em Maceió, a temperatura..."
 function extractCityFromInsight(text: string): string | null {
   const match = text.match(/^Em\s+([^,]+),/);
   return match ? match[1].trim() : null;
@@ -78,7 +75,6 @@ function HomePage() {
     [logs]
   );
 
-  // ---- Carregar logs ----
   const loadLogs = async () => {
     try {
       setIsLoading(true);
@@ -99,7 +95,6 @@ function HomePage() {
     }
   };
 
-  // ---- Carregar último insight (/insights/latest/) ----
   const loadLatestInsight = async () => {
     try {
       setIsInsightsLoading(true);
@@ -120,25 +115,21 @@ function HomePage() {
     }
   };
 
-  // carga inicial: logs + último insight geral
   useEffect(() => {
     loadLogs();
     loadLatestInsight();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [days, page]);
 
-  // se o log selecionado sair da lista, limpa seleção
   useEffect(() => {
     if (selectedLog && !logs.some((l) => l.id === selectedLog.id)) {
       setSelectedLog(null);
     }
   }, [logs, selectedLog]);
 
-  // 🔹 quando selecionar um registro na tabela, buscar insight da cidade
   useEffect(() => {
     const loadCityInsight = async () => {
       if (!selectedLog) {
-        // sem seleção → volta para o último insight global
         await loadLatestInsight();
         return;
       }
@@ -151,7 +142,6 @@ function HomePage() {
           offset: 0,
         });
 
-        // torna robusto: aceita {results: [...] } ou apenas [...]
         const raw: any = response;
         const list: WeatherInsight[] = Array.isArray(raw)
           ? raw
@@ -174,7 +164,6 @@ function HomePage() {
           setInsights(matched.text);
           setLatestInsightId(matched.id);
         } else {
-          // se não houver insight para essa cidade, limpa para mostrar mensagem padrão
           setInsights("");
         }
       } catch (error) {
@@ -218,7 +207,6 @@ function HomePage() {
     }
   };
 
-  // helper pra esperar o novo insight aparecer no /latest/
   const waitForNewInsight = async (
     previousId: number | null,
     attempts = 5,
@@ -235,7 +223,6 @@ function HomePage() {
     }
   };
 
-  // chamado ao clicar em "Gerar clima" no header
   const handleGenerateWeatherForCity = async (city: string) => {
     try {
       setIsGeneratingWeather(true);
@@ -246,15 +233,12 @@ function HomePage() {
 
       const previousInsightId = latestInsightId;
 
-      // 1) coleta clima em tempo real
       await weatherService.fetchCityWeather(city);
-      await loadLogs(); // atualiza tabela/gráfico
+      await loadLogs();
 
-      // 2) dispara geração de insight para esta cidade (tarefa assíncrona)
       const hours = days * 24;
       await weatherService.generateWeatherInsightForCity({ hours, city });
 
-      // 3) espera o /latest/ mudar para o novo insight
       await waitForNewInsight(previousInsightId);
 
       toast.success(`Clima e insight de IA atualizados para ${city}.`);
