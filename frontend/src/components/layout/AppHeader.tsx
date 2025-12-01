@@ -16,14 +16,50 @@ import { authService } from "@/services/authService";
 import { API_BASE_URL } from "@/config/api";
 import type { User } from "@/interfaces/auth";
 
-const AppHeader: React.FC = () => {
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BRAZIL_CAPITALS } from "@/interfaces/brazil_capitals";
+
+interface AppHeaderProps {
+  selectedCity: string;
+  onGenerateWeather: (city: string) => void;
+  isGeneratingWeather?: boolean;
+}
+
+
+const AppHeader: React.FC<AppHeaderProps> = ({
+  selectedCity,
+  onGenerateWeather,
+  isGeneratingWeather = false,
+}) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+
+  const [tempCity, setTempCity] = useState<string>(selectedCity || "Brasília");
 
   useEffect(() => {
     const currentUser = authService.getAuthUser() as User | null;
     setUser(currentUser);
   }, []);
+
+  useEffect(() => {
+    setTempCity(selectedCity || "Brasília");
+  }, [selectedCity]);
 
   const handleLogout = async () => {
     try {
@@ -38,6 +74,11 @@ const AppHeader: React.FC = () => {
     }
   };
 
+  const handleApplyCity = () => {
+    if (!tempCity) return;
+    onGenerateWeather(tempCity);
+  };
+
   const avatarUrl =
     user?.avatar && user.avatar.startsWith("http")
       ? user.avatar
@@ -47,31 +88,87 @@ const AppHeader: React.FC = () => {
 
   return (
     <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between bg-slate-950">
-      {/* Esquerda: logo + navegação */}
-      <div className="flex items-center gap-6">
-        <span className="text-xl font-semibold text-slate-50">
-          Weather Dashboard
-        </span>
+      {/* Esquerda: logo + navegação + cidade */}
+      <Dialog>
+        <div className="flex items-center gap-6">
+          <div className="flex flex-col">
+            <span className="text-xl font-semibold text-slate-50">
+              Weather Dashboard
+            </span>
+            <span className="text-xs text-slate-400">
+              Cidade atual:{" "}
+              <span className="font-medium text-slate-100">
+                {selectedCity || "Brasília"}
+              </span>
+            </span>
+          </div>
 
-        <nav className="hidden md:flex items-center gap-4 text-sm text-slate-300">
-          <button className="hover:text-slate-50 transition-colors">
-            Início
-          </button>
-          <button className="hover:text-slate-50 transition-colors">
-            Relatórios
-          </button>
-          <button className="hover:text-slate-50 transition-colors">
-            Configurações
-          </button>
-        </nav>
-      </div>
+          <nav className="hidden md:flex items-center gap-4 text-sm text-slate-300">
+            <button className="hover:text-slate-50 transition-colors">
+              Relatórios
+            </button>
 
-      {/* Direita: usuário + avatar + menu */}
+            {/* 🔹 aqui trocamos Configurações por Gerar clima, sem <Button> */}
+            <DialogTrigger asChild>
+              <button className="hover:text-slate-50 transition-colors cursor-pointer">
+                Gerar clima
+              </button>
+            </DialogTrigger>
+          </nav>
+        </div>
+
+        {/* Modal de seleção de cidade */}
+        <DialogContent className="bg-slate-950 border-slate-800 text-slate-50">
+          <DialogHeader>
+            <DialogTitle>Selecionar cidade</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Escolha a cidade para coletar o clima em tempo real e
+              atualizar o gráfico, a tabela e os insights de IA.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-4 space-y-2">
+            <label className="text-sm text-slate-200">
+              Cidade
+            </label>
+            <Select
+              value={tempCity}
+              onValueChange={(value: string) => setTempCity(value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione uma cidade" />
+              </SelectTrigger>
+              <SelectContent className="max-h-64">
+                {BRAZIL_CAPITALS.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter className="mt-4">
+            <button
+              type="button"
+              onClick={handleApplyCity}
+              disabled={isGeneratingWeather || !tempCity}
+              className="inline-flex items-center justify-center rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-200 disabled:opacity-60"
+            >
+              {isGeneratingWeather
+                ? "Gerando clima..."
+                : "Aplicar e atualizar clima"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Direita: usuário + avatar + menu (sem botão Gerar clima aqui) */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             className="flex items-center gap-3 rounded-full border border-slate-700
-                       bg-slate-900 px-3 py-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
+                     bg-slate-900 px-3 py-1.5 hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <div className="flex flex-col items-end mr-1">
               <span className="text-sm font-medium text-slate-100">
@@ -99,7 +196,10 @@ const AppHeader: React.FC = () => {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Conta</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/home")} className="cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => navigate("/home")}
+            className="cursor-pointer"
+          >
             Home
           </DropdownMenuItem>
           <DropdownMenuItem disabled>

@@ -58,12 +58,13 @@ function downloadBlob(blob: Blob, filename: string) {
 export async function listWeatherLogs(params?: {
   limit?: number;
   offset?: number;
+  city?: string; 
 }): Promise<WeatherListResponse> {
   try {
     const { data } = await weatherApi.get<WeatherListResponse>("/weather/logs/", {
       params,
     });
-    console.log("Fetched weather logs:", data);
+    //console.log("Fetched weather logs:", data);
     return data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
@@ -74,13 +75,14 @@ export async function getWeatherInsights(params?: {
   days?: number;
   limit?: number;
   offset?: number;
+  city?: string;
 }): Promise<WeatherInsightsResponse> {
   try {
     const { data } = await weatherApi.get<WeatherInsightsResponse>(
       "/weather/logs/insights/",
       { params }
     );
-    console.log("Fetched weather insights:", data);
+    //console.log("Fetched weather insights:", data);
     return data;
   } catch (error) {
     throw new Error(extractErrorMessage(error));
@@ -150,6 +152,35 @@ export async function generateWeatherInsight(hours = 24): Promise<WeatherInsight
   return data;
 }
 
+export async function generateWeatherInsightForCity(params: {
+  hours: number;
+  city: string;
+}) {
+  try {
+    const { data } = await weatherApi.post("/weather/logs/insights/", {
+      hours: params.hours,
+      city: params.city,
+    });
+    // resposta é { detail, task_id, city, hours }
+    return data;
+  } catch (error) {
+    throw new Error(extractErrorMessage(error));
+  }
+}
+
+
+export async function fetchCityWeather(city: string) {
+  try {
+    const { data } = await weatherApi.post("/weather/logs/fetch-city/", {
+      city: city,
+    });
+    return data;
+  } catch (error) {
+    // usa seu helper pra extrair a mensagem
+    throw new Error(extractErrorMessage(error));
+  }
+}
+
 export const weatherService = {
   listWeatherLogs,
   getWeatherInsights,
@@ -157,4 +188,6 @@ export const weatherService = {
   exportWeatherXlsx,
   getLatestWeatherInsight,
   generateWeatherInsight,
+  generateWeatherInsightForCity,
+  fetchCityWeather
 };
