@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL } from "@/config/api";
+import { VITE_API_BASE_URL } from "@/config/api";
 import type {
   WeatherListResponse,
   WeatherInsightsResponse,
@@ -9,7 +9,7 @@ import type {
 const AUTH_TOKEN_KEY = "authToken";
 
 const weatherApi = axios.create({
-  baseURL: `${API_BASE_URL}/api/v1`,
+  baseURL: `${VITE_API_BASE_URL}/api/v1`,
 });
 
 weatherApi.interceptors.request.use((config) => {

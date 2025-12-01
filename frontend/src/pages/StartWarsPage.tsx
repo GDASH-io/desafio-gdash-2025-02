@@ -14,7 +14,7 @@ function StarWarsPage() {
   const [hasNext, setHasNext] = useState<boolean>(false);
   const [hasPrev, setHasPrev] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const nada = "";
+  
   const loadPeople = async (pageToLoad: number) => {
     try {
       setIsLoading(true);
@@ -48,9 +48,9 @@ function StarWarsPage() {
     <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
       {/* Aqui você pode passar as mesmas props do HomePage */}
       <AppHeader
-        selectedCity={nada}
-        onGenerateWeather={nada as unknown as (city: string) => void}
-        isGeneratingWeather={nada as unknown as boolean}
+        selectedCity="Brasília"
+        onGenerateWeather={() => {}}
+        isGeneratingWeather={false}
       />
 
       <main className="flex-1 px-4 py-6 md:px-8 md:py-8 max-w-6xl mx-auto w-full space-y-6">

@@ -1,18 +1,19 @@
 import axios from "axios";
-import { API_BASE_URL } from "@/config/api";
+import { VITE_API_BASE_URL } from "@/config/api";
 import type {
   ApiErrorResponse,
   RegisterPayload,
   RegisterResponse,
   LoginPayload,
   LoginResponse,
+  User,
 } from "@/interfaces/auth";
 
 const AUTH_TOKEN_KEY = "authToken";
 const AUTH_USER_KEY = "authUser";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: VITE_API_BASE_URL,
 });
 
 
@@ -146,6 +147,31 @@ async function logout(): Promise<void> {
   }
 }
 
+async function listUsers(): Promise<User[]> {
+  try {
+    const token = getAuthToken();
+
+    const { data } = await api.get<User[]>("/api/v1/users/", {
+      headers: token ? { Authorization: `Token ${token}` } : undefined,
+    });
+
+    return data;
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}
+
+async function deleteUser(userId: number): Promise<void> {
+  try {
+    const token = getAuthToken();
+
+    await api.delete(`/api/v1/users/${userId}/`, {
+      headers: token ? { Authorization: `Token ${token}` } : undefined,
+    });
+  } catch (error) {
+    handleAxiosError(error);
+  }
+}
 
 export const authService = {
   register,
@@ -153,4 +179,6 @@ export const authService = {
   logout,
   getAuthToken,
   getAuthUser,
+  listUsers, 
+  deleteUser, 
 };

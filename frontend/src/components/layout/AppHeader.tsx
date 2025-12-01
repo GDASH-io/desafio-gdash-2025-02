@@ -112,14 +112,22 @@ const AppHeader: React.FC<AppHeaderProps> = ({
                   Relatórios
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => navigate("/star-wars")}
-                >
-                  Listar Star Wars
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => navigate("/users")}
+                    >
+                      Listar usuários
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => navigate("/star-wars")}
+                    >
+                      Listar Star Wars
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+
             </DropdownMenu>
 
             {/* 🔹 Gerar clima abre o modal */}
