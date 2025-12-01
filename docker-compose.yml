@@ -1,0 +1,108 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: weathernator-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: weathernator
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - weathernator-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: weathernator-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - weathernator-network
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: weathernator-api
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/weathernator?authSource=admin
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - weathernator-network
+    command: npm run start:dev
+
+  worker:
+    build:
+      context: ./weather-worker
+      dockerfile: Dockerfile
+    container_name: weathernator-worker
+    environment:
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
+      API_URL: http://api:3000
+    depends_on:
+      - rabbitmq
+      - api
+    networks:
+      - weathernator-network
+
+  collector:
+    build:
+      context: ./collector
+      dockerfile: Dockerfile
+    container_name: weathernator-collector
+    environment:
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672/
+      LOCATION_LAT: -10.9091
+      LOCATION_LON: -37.0678
+      LOCATION_NAME: Aracaju
+      COLLECT_INTERVAL: 3600
+    depends_on:
+      - rabbitmq
+    networks:
+      - weathernator-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: weathernator-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3000
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - weathernator-network
+    command: npm run dev -- --host
+
+networks:
+  weathernator-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
+
