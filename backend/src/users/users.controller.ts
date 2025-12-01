@@ -9,6 +9,7 @@ export class UsersController {
 	constructor(private readonly usersService: UsersService) {}
 
 	@Post()
+    @UseGuards(JwtAuthGuard)
     async create(@Body() body: CreateUserDto): Promise<UserPublic | { error: string }> {
 		if (!body.email || !body.password) {
 			return { error: 'email e password são obrigatórios' };

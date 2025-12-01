@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const userData = await login(credentials);
       setUser(userData);
-      navigate('/dashboard'); // Redireciona para o Dashboard
+      navigate('/'); // Redireciona para o Dashboard
     } catch (error) {
       // Relança o erro para ser tratado no componente de Login
       throw error; 

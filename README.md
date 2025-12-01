@@ -346,7 +346,7 @@ O Pull Request deve conter:
 - [X] Python coleta dados de clima (Open-Meteo ou OpenWeather)  
 - [X] Python envia dados para RabbitMQ  
 - [X] Worker Go consome a fila e envia para a API NestJS  
-- [ ] API NestJS:
+- [X] API NestJS:
   - [X] Armazena logs de clima em MongoDB  
   - [X] Exponde endpoints para listar dados  
   - [X] Gera/retorna insights de IA (endpoint próprio)  
@@ -354,8 +354,8 @@ O Pull Request deve conter:
   - [X] Implementa CRUD de usuários + autenticação  
   - [ ] (Opcional) Integração com API pública paginada  
 - [X] Frontend React + Vite + Tailwind + shadcn/ui:
-  - [ ] Dashboard de clima com dados reais  
-  - [ ] Exibição de insights de IA  
+  - [X] Dashboard de clima com dados reais  
+  - [X] Exibição de insights de IA  
   - [ ] CRUD de usuários + login  
   - [ ] (Opcional) Página consumindo API pública paginada  
 - [ ] Docker Compose sobe todos os serviços  

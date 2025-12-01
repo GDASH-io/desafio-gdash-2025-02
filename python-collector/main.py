@@ -5,6 +5,7 @@ from datetime import datetime, timezone, timedelta
 import requests
 import pika
 from dateutil import parser as dt_parser
+from zoneinfo import ZoneInfo
 
 RABBIT_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
 # Sanitiza coordenadas substituindo vírgula por ponto caso venham com formato local
@@ -12,14 +13,18 @@ LAT = os.getenv("WEATHER_API_LAT", "-7.2306").replace(',', '.')
 LON = os.getenv("WEATHER_API_LON", "-35.8811").replace(',', '.')
 FETCH_INTERVAL = int(os.getenv("FETCH_INTERVAL_SECONDS", "3600"))  # padrão 1h
 QUEUE_NAME = os.getenv("WEATHER_QUEUE", "weather.raw")
+WEATHER_TZ = os.getenv("WEATHER_API_TIMEZONE", "America/Recife")
 
 HOURLY_VARS = "temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,precipitation,precipitation_probability,cloudcover,weather_code"
 
 def build_url():
     base = "https://api.open-meteo.com/v1/forecast"
+    # Open-Meteo aceita timezone por nome da IANA. Como montamos manualmente a URL,
+    # fazemos o escape simples da barra.
+    tz_param = WEATHER_TZ.replace('/', '%2F')
     params = (
         f"latitude={LAT}&longitude={LON}&hourly={HOURLY_VARS}"
-        "&timezone=UTC&windspeed_unit=kmh&precipitation_unit=mm&timeformat=iso8601"
+        f"&timezone={tz_param}&windspeed_unit=kmh&precipitation_unit=mm&timeformat=iso8601"
     )
     return f"{base}?{params}"
 
@@ -54,9 +59,10 @@ def map_messages(api_json):
     def arr(name):
         return hourly.get(name, [])
 
-    # Hora atual em UTC exatamente no formato da API (YYYY-MM-DDTHH:00)
-    current_hour_str = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:00")
-    print('-------------',current_hour_str, flush=True)
+    # Hora atual no fuso configurado, no mesmo formato da API (YYYY-MM-DDTHH:00)
+    tzinfo = ZoneInfo(WEATHER_TZ)
+    current_hour_str = datetime.now(tzinfo).strftime("%Y-%m-%dT%H:00")
+    print('[collector] current_hour(local):', current_hour_str, 'tz=', WEATHER_TZ, flush=True)
     try:
         i = times.index(current_hour_str)
     except ValueError:

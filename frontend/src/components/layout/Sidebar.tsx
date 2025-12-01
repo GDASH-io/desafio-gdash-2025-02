@@ -13,17 +13,11 @@ export function Sidebar() {
       </div>
       <Separator />
       <nav className="p-2 space-y-2">
-        <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/dashboard')}>
+        <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/')}>
           Visão Geral
         </Button>
-        <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/weather/logs')}>
-          Registros de Clima
-        </Button>
-        <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/insights')}>
-          Insights IA
-        </Button>
-        <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/exports')}>
-          Exportações
+        <Button variant="ghost" className="w-full justify-start" onClick={() => navigate('/users')}>
+          Usuários
         </Button>
       </nav>
       <div className="mt-auto p-4 text-xs text-gray-500">
