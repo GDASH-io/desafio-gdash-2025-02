@@ -110,3 +110,12 @@ Para acessar o Dashboard, utilize as seguintes credenciais criadas automaticamen
 *   `python_producer/`: Script de coleta de dados.
 *   `go-worker/`: Worker de processamento de fila.
 *   `docker-compose.yml`: Orquestração dos containers.
+*   
+
+## Url da solução em uma VM da Oracle Cloud
+
+*  https://climatec.mlluizdevtech.com.br/
+
+## Url do video explicando
+
+*  https://youtu.be/aWARBQkpBVg
