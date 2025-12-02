@@ -7,7 +7,6 @@ export const api = axios.create({
   },
 })
 
-// Interceptor para adicionar o token em todas as requisições
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
   if (token) {
@@ -16,7 +15,6 @@ api.interceptors.request.use(config => {
   return config
 })
 
-// Interceptor para tratar erros de autenticação
 api.interceptors.response.use(
   response => response,
   error => {
@@ -110,6 +108,56 @@ export interface NormalizedInsightsResponse {
 
 
 // API Methods
+export interface User {
+  _id: string
+  name: string
+  email: string
+}
+
+export interface CreateUserDto {
+  name: string
+  email: string
+  password: string
+}
+
+export interface UpdateUserDto {
+  name?: string
+  email?: string
+  password?: string
+}
+
+export interface Character {
+  id: number
+  name: string
+  status: string
+  species: string
+  type: string
+  gender: string
+  origin: {
+    name: string
+    url: string
+  }
+  location: {
+    name: string
+    url: string
+  }
+  image: string
+  episode: string[]
+  url: string
+  created: string
+}
+
+export interface RickAndMortyResponse {
+  info: {
+    count: number
+    pages: number
+    next: string | null
+    prev: string | null
+  }
+  results: Character[]
+}
+
+// API Methods
 export const authApi = {
   login: (credentials: LoginCredentials) =>
     api.post<AuthResponse>('/auth/login', credentials).then(res => res.data),
@@ -124,7 +172,19 @@ export const weatherApi = {
   getAnalytics: () =>
     api.get<{ data: AnalyticsData }>('/analytics').then(res => res.data),
   getInsights: () =>
-    api.get<BackendInsightsResponse>('/weather/insights').then(res => res.data),
+    api.get<BackendInsightsResponse>('/weather/insights').then((res: { data: any }) => res.data),
+}
+
+export const userApi = {
+  getAll: () => api.get<User[]>('/users').then(res => res.data),
+  create: (data: CreateUserDto) => api.post<User>('/users', data).then(res => res.data),
+  patch: (id: string, data: UpdateUserDto) => api.patch<User>(`/users/${id}`, data).then(res => res.data),
+  delete: (id: string) => api.delete(`/users/${id}`).then(res => res.data),
+}
+
+export const rickAndMortyApi = {
+  getCharacters: (page: number = 1) => 
+    api.get<RickAndMortyResponse>(`/rick-and-morty/characters?page=${page}`).then(res => res.data),
 }
 
 export const REALTIME_WEATHER_URL = `${api.defaults.baseURL}/weather/realtime`

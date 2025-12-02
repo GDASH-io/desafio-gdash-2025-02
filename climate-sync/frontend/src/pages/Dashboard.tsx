@@ -75,19 +75,17 @@ export default function Dashboard() {
   } = useQuery<BackendInsightsResponse>({
     queryKey: ['aiInsights'],
     queryFn: async () => await weatherApi.getInsights(),
-    staleTime: 5 * 60 * 1000, // 5 minutos
+    staleTime: 5 * 60 * 1000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    enabled: false, // Não buscar automaticamente, apenas quando o usuário clicar
+    enabled: false, 
   })
 
-  // Normalizar dados do backend para formato usado no frontend
   const normalizedInsights = useMemo((): NormalizedInsightsResponse | null => {
     if (!aiInsights) return null
     
-    // Mapear estrutura do backend para estrutura do frontend
     return {
-      insights: aiInsights.data.details, // Backend usa 'details' ao invés de 'insights'
+      insights: aiInsights.data.details, 
       generatedAt: aiInsights.data.generated_at,
       summary: aiInsights.data.summary,
       context: aiInsights.data.context

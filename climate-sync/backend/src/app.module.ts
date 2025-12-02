@@ -9,6 +9,7 @@ import { EventsModule } from './events/events.module'
 import { RabbitModule } from './rabbit/rabbit.module'
 import { AuthModule } from './auth/auth.module'
 import { UsersModule } from './users/users.module'
+import { RickAndMortyModule } from './publicApi/rick-and-morty.module'
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UsersModule } from './users/users.module'
     DashboardModule,
     AnalyticsModule,
     EventsModule,
+    RickAndMortyModule,
   ],
 })
 export class AppModule {}
