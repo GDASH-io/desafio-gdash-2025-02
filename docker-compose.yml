@@ -17,6 +17,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672" # painel de administração
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     # Para adicionar usuário/senha depois: environment: RABBITMQ_DEFAULT_USER / RABBITMQ_DEFAULT_PASS
 
   api:
@@ -56,7 +61,8 @@ services:
     build: ./python-collector
     container_name: python_collector
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     env_file: .env
     environment:
       FETCH_INTERVAL_SECONDS: 3600
@@ -68,8 +74,10 @@ services:
     build: ./go-worker
     container_name: go_worker
     depends_on:
-      - rabbitmq
-      - api
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_started
     env_file: .env
     # command: ["/app/worker"]  # ajustaremos depois
     restart: unless-stopped
