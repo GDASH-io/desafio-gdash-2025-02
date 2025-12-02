@@ -98,15 +98,15 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
   const latest = logs[0];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white p-6 md:p-12 font-sans overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white p-6 md:p-12 font-sans overflow-hidden">
       {/* Efeito de luz de fundo radial sutil */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-cyan-500/8 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-emerald-500/8 rounded-full blur-3xl"></div>
       </div>
       
       {/* Glow atrás do card principal (flutuação) */}
-      <div className="fixed -z-10 top-1/3 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-gradient-to-br from-cyan-500/10 to-emerald-500/10 rounded-full blur-3xl opacity-40"></div>
+      <div className="fixed -z-10 top-1/3 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-gradient-to-br from-cyan-500/8 to-emerald-500/8 rounded-full blur-3xl opacity-30"></div>
       
       {/* Alert de Refresh Rate Limiting */}
       <AnimatePresence>
@@ -118,7 +118,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50"
           >
-            <div className="bg-slate-800/40 border border-amber-500/40 rounded-2xl px-6 py-4 backdrop-blur-xl shadow-2xl max-w-sm w-full">
+            <div className="bg-slate-700/60 border border-amber-500/40 rounded-2xl px-6 py-4 backdrop-blur-xl shadow-xl max-w-sm w-full">
               <div className="flex items-center gap-3">
                 <div className="text-xl">⏱️</div>
                 <div className="flex-1">
@@ -138,11 +138,11 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
       >
         <div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-cyan-500">GDASH</span> 
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400">GDASH</span> 
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400 font-bold ml-2">Weather AI</span>
           </h1>
           <p className="text-slate-400 mt-2 flex items-center gap-2">
-            <Cpu size={16} className="text-emerald-500 animate-pulse" />
+            <Cpu size={16} className="text-emerald-400 animate-pulse" />
             Sistema de Monitoramento Inteligente
           </p>
         </div>
@@ -150,7 +150,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
         <Button 
           onClick={onRefresh} 
           disabled={loading}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-emerald-500/50 disabled:opacity-50"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white border border-emerald-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-emerald-600/50 disabled:opacity-50"
         >
           <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Sincronizando...' : 'Atualizar Dados'}
@@ -160,7 +160,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
           <Button 
             onClick={() => handleExport('csv')}
             disabled={exportLoading !== null}
-            className="bg-blue-600 hover:bg-blue-500 text-white border border-blue-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-blue-500/50 disabled:opacity-50"
+            className="bg-blue-600 hover:bg-blue-700 text-white border border-blue-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-blue-600/50 disabled:opacity-50"
           >
             <Download className="mr-2 h-4 w-4" />
             CSV
@@ -168,7 +168,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
           <Button 
             onClick={() => handleExport('xlsx')}
             disabled={exportLoading !== null}
-            className="bg-purple-600 hover:bg-purple-500 text-white border border-purple-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-purple-500/50 disabled:opacity-50"
+            className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-purple-600/50 disabled:opacity-50"
           >
             <Download className="mr-2 h-4 w-4" />
             XLSX
@@ -188,16 +188,16 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
         >
           {latest ? (
             <div className="relative group">
-              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-600 to-cyan-600 rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-              <Card className="relative bg-gradient-to-br from-slate-800/50 via-slate-900/40 to-black/50 border border-white/15 backdrop-blur-xl overflow-hidden rounded-3xl shadow-2xl">
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur-xl opacity-15 group-hover:opacity-25 transition duration-1000 group-hover:duration-200"></div>
+              <Card className="relative bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 backdrop-blur-sm overflow-hidden rounded-3xl shadow-lg">
                 <CardContent className="flex flex-col items-center space-y-6 py-10 px-8">
                   {/* Temperatura Grande */}
-                  <span className="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-cyan-300 to-emerald-300 tracking-tighter drop-shadow-lg">
+                  <span className="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-br from-cyan-300 to-emerald-300 tracking-tighter drop-shadow-sm">
                     {latest.temperature.toFixed(0)}°
                   </span>
                   
                   {/* Umidade, Vento e Chuva em linha */}
-                  <div className="w-full flex justify-around text-center px-4 py-5 bg-gradient-to-r from-slate-700/20 to-slate-600/20 rounded-2xl border border-white/5 backdrop-blur-sm">
+                  <div className="w-full flex justify-around text-center px-4 py-5 bg-gradient-to-r from-slate-700/50 to-slate-600/50 rounded-2xl border border-slate-600/50 backdrop-blur-sm">
                     <div className="flex-1">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <Droplets size={22} className="text-cyan-400" />
@@ -205,15 +205,15 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
                       </div>
                       <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold">Umidade</p>
                     </div>
-                    <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-2"></div>
+                    <div className="w-px bg-gradient-to-b from-transparent via-slate-500/50 to-transparent mx-2"></div>
                     <div className="flex-1">
                       <div className="flex items-center justify-center gap-2 mb-2">
-                        <Wind size={22} className="text-emerald-300" />
+                        <Wind size={22} className="text-emerald-400" />
                         <span className="text-3xl font-black text-white">{latest.windSpeed}</span>
                       </div>
                       <p className="text-xs text-slate-300 uppercase tracking-wider font-semibold">km/h</p>
                     </div>
-                    <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-2"></div>
+                    <div className="w-px bg-gradient-to-b from-transparent via-slate-500/50 to-transparent mx-2"></div>
                     <div className="flex-1">
                       <div className="flex items-center justify-center gap-2 mb-2">
                         <Cloud size={22} className="text-blue-400" />
@@ -224,8 +224,8 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
                   </div>
                   
                   {/* Insight da IA em destaque - Integrado */}
-                  <div className="p-4 bg-gradient-to-br from-emerald-950/30 to-transparent border-b border-emerald-500/40 rounded-xl w-full backdrop-blur-sm">
-                    <div className="flex items-center gap-3 mb-3 text-emerald-200 text-xs font-bold uppercase tracking-widest">
+                  <div className="p-4 bg-gradient-to-br from-emerald-900/30 to-transparent border-b border-emerald-500/40 rounded-xl w-full backdrop-blur-sm">
+                    <div className="flex items-center gap-3 mb-3 text-emerald-300 text-xs font-bold uppercase tracking-widest">
                       <motion.div
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -235,7 +235,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
                       </motion.div>
                       <span>Análise IA Gemini</span>
                     </div>
-                    <p className="text-emerald-100 italic text-sm leading-relaxed font-light text-emerald-100/90">
+                    <p className="text-emerald-100 italic text-sm leading-relaxed font-light">
                       "{latest.insight}"
                     </p>
                   </div>
@@ -243,7 +243,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
               </Card>
             </div>
           ) : (
-            <div className="h-96 flex items-center justify-center text-slate-500 border border-dashed border-slate-700 rounded-3xl bg-slate-800/30 backdrop-blur-sm">
+            <div className="h-96 flex items-center justify-center text-slate-400 border border-dashed border-slate-600 rounded-3xl bg-slate-800/50 backdrop-blur-sm">
               <div className="text-center">
                 <p className="text-lg mb-2">📭 Aguardando dados...</p>
                 <p className="text-sm">A temperatura aparecerá aqui</p>
@@ -255,14 +255,14 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
         {/* Lista de Histórico (Direita) - Uma coluna */}
         <div className="lg:col-span-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-emerald-300">Histórico Recente</h3>
-            <Badge variant="outline" className="border-emerald-500/50 text-emerald-200 bg-emerald-950/50 font-semibold px-3 py-1 rounded-full">
+            <h3 className="text-xl font-semibold text-emerald-400">Histórico Recente</h3>
+            <Badge variant="outline" className="border-emerald-500/50 text-emerald-300 bg-emerald-900/40 font-semibold px-3 py-1 rounded-full">
               {logs.length} Registros
             </Badge>
           </div>
 
           {logs.length === 0 ? (
-            <div className="h-96 flex items-center justify-center text-slate-500 border border-dashed border-slate-700 rounded-3xl bg-slate-800/30 backdrop-blur-sm">
+            <div className="h-96 flex items-center justify-center text-slate-400 border border-dashed border-slate-600 rounded-3xl bg-slate-800/50 backdrop-blur-sm">
               <div className="text-center">
                 <p className="text-lg mb-2">📭 Aguardando dados...</p>
                 <p className="text-sm">Novos registros aparecem aqui a cada 60 segundos</p>
@@ -280,14 +280,14 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
                     exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
                     transition={{ duration: 0.3 }}
                   >
-                    <Card className={`rounded-2xl shadow-lg backdrop-blur-sm transition-all duration-300 group ${
+                    <Card className={`rounded-2xl shadow-md backdrop-blur-sm transition-all duration-300 group ${
                       index === 0 
-                        ? 'bg-gradient-to-br from-emerald-950/50 to-slate-900/50 border border-emerald-500/60 hover:border-emerald-500/80' 
-                        : 'bg-gradient-to-br from-slate-800/40 to-slate-900/40 border-0 hover:from-slate-700/50 hover:to-slate-800/50 hover:border-emerald-500/40'
+                        ? 'bg-gradient-to-br from-emerald-900/40 to-slate-800/40 border border-emerald-500/60 hover:border-emerald-500/80' 
+                        : 'bg-gradient-to-br from-slate-700/40 to-slate-800/40 border-0 hover:from-slate-700/50 hover:to-slate-800/50 hover:border hover:border-emerald-500/40'
                     }`}>
                       <CardHeader className="pb-2 pt-3 px-4">
                         <div className="flex justify-between items-center">
-                          <Badge variant="secondary" className="bg-slate-950/70 text-slate-300 group-hover:text-emerald-300 transition-colors text-xs rounded-lg border border-slate-600/50">
+                          <Badge variant="secondary" className="bg-slate-700/70 text-slate-300 group-hover:text-emerald-300 transition-colors text-xs rounded-lg border border-slate-600/50">
                             {new Date(log.createdAt).toLocaleTimeString()}
                           </Badge>
                           <span className="text-xl font-black text-white">{log.temperature}°</span>
@@ -300,7 +300,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
                             <span className="text-white">{log.humidity}%</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Wind size={16} className="text-emerald-300" />
+                            <Wind size={16} className="text-emerald-400" />
                             <span className="text-white">{log.windSpeed} km/h</span>
                           </div>
                           <div className="flex items-center gap-1.5">
@@ -308,7 +308,7 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
                             <span className="text-white">{log.rainProbability}%</span>
                           </div>
                         </div>
-                        <p className="text-xs text-emerald-100/75 line-clamp-2 group-hover:line-clamp-3 transition-all">
+                        <p className="text-xs text-emerald-200/75 line-clamp-2 group-hover:line-clamp-3 transition-all">
                           💡 {log.insight}
                         </p>
                       </CardContent>
