@@ -35,7 +35,7 @@ def connect_rmq(max_retries=10, retry_delay=5):
                 logger.warning(f"Tentativa {attempt}/{max_retries} falhou. Aguardando RabbitMQ inicializar... (próxima tentativa em {retry_delay}s)")
                 time.sleep(retry_delay)
             else:
-                logger.error(f"Falha ao conectar ao RabbitMQ após {max_retries} tentativas: {e}")
+                logger.error(f"❌ Falha ao conectar ao RabbitMQ após {max_retries} tentativas: {e}")
                 raise
 
 

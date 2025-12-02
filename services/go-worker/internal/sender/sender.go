@@ -4,7 +4,6 @@ import (
     "bytes"
     "encoding/json"
     "fmt"
-    "io"
     "log"
     "net/http"
     "time"
@@ -52,8 +51,7 @@ func SendToAPI(data interface{}, url string) error {
     defer resp.Body.Close()
 
     if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-        body, _ := io.ReadAll(resp.Body)
-        log.Printf("[ERROR] API retornou status %d: %s - Body: %s", resp.StatusCode, resp.Status, string(body))
+        log.Printf("[ERROR] API retornou status %d: %s", resp.StatusCode, resp.Status)
         return fmt.Errorf("erro HTTP: status %d", resp.StatusCode)
     }
 
