@@ -91,33 +91,37 @@ export class UsersService implements OnModuleInit {
     return user;
   }
 
+  // --- UPDATE (CORRIGIDO) ---
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    // 1. Validação de Email único (se estiver a mudar o email)
     if (updateUserDto.email) {
       const userExists = await this.usersRepository.findByEmail(
         updateUserDto.email,
       );
 
-      // Garante que não é o próprio usuário (caso ele mande o mesmo email)
-      if (userExists && userExists['_id'].toString() !== id) {
+      if (userExists && String(userExists['_id']) !== id) {
         throw new BadRequestException(
           'Este e-mail já está em uso por outro usuário.',
         );
       }
     }
 
-    // SE o usuário mandou uma nova senha, precisamos criptografar antes
+    // 2. Hash da Senha (se houver nova senha)
     if (updateUserDto.password) {
       const salt = await bcrypt.genSalt();
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, salt);
     }
 
-    const updatedUser = await this.usersRepository.findById(id);
+    // 3. EXECUTA A ATUALIZAÇÃO (A correção está aqui)
+    // Antes estava chamando findById, agora chama update do repositório
+    const updatedUser = await this.usersRepository.update(id, updateUserDto);
 
     if (!updatedUser) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    await this.cacheManager.clear(); // Invalida o cache para refletir mudanças
+    // 4. Limpa Cache
+    await this.cacheManager.clear();
 
     return updatedUser;
   }
