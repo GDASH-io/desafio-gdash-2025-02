@@ -1,0 +1,131 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - ./.env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_DEFAULT_VHOST=/
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - climate-sync
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./.env
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - climate-sync
+    restart: unless-stopped
+
+  nestjs-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nestjs-api
+    ports:
+      - "${PORT}:3000"
+    env_file:
+      - ./.env
+    volumes:
+      - ./.env:/app/.env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URI=${MONGO_URI}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - climate-sync
+
+  python-producer:
+    build:
+      context: ./python_producer
+    container_name: climate-sync-python-producer
+    env_file:
+      - ./.env
+    environment:
+      - LATITUDE=${LATITUDE}
+      - LONGITUDE=${LONGITUDE}
+      - COLLECTION_INTERVAL_MINUTES=${COLLECTION_INTERVAL_MINUTES}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASS=${RABBITMQ_PASS}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - climate-sync
+
+  go-worker:
+    build:
+      context: ./go-worker
+    container_name: climate-sync-go-worker
+    env_file:
+      - ./.env
+    environment:
+      LATITUDE: ${LATITUDE}
+      LONGITUDE: ${LONGITUDE}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      NEST_API_URL: ${NEST_API_URL}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - climate-sync
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:${PORT:-3000}/api
+    container_name: climate-sync-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - nestjs-api
+    restart: unless-stopped
+    networks:
+      - climate-sync
+
+volumes:
+  mongo_data:
+
+networks:
+  climate-sync:
+    driver: bridge

@@ -2,6 +2,31 @@
 
 Repositório destinado aos interessados em participar do processo seletivo GDASH 2025/02.
 
+---
+
+## 📦 Minha Solução
+
+A solução completa está implementada no diretório **`climate-sync/`**.
+
+**Para instruções detalhadas de como rodar a aplicação, consulte:** [climate-sync/README.md](./climate-sync/README.md)
+
+### 🔗 Links Importantes
+
+- **🌐 Aplicação em Produção (Oracle Cloud):** https://climatec.mlluizdevtech.com.br/
+- **🎥 Vídeo Explicativo (YouTube):** https://youtu.be/aWARBQkpBVg
+
+### 🚀 Quick Start
+
+```bash
+cd climate-sync
+cp .env.example .env
+docker compose up --build
+```
+
+Acesse: http://localhost:80 (Login: `admin@example.com` / Senha: `123456`)
+
+---
+
 ## Sobre o GDASH
 
 No ramo da produção de energia fotovoltaica, há a modalidade de produção compartilhada. Nessa modalidade, diferentes pessoas investem na construção de uma mesma usina fotovoltaica e dividem o retorno finaceiro referente à energia gerada pela usina.

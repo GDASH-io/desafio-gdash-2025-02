@@ -1,0 +1,4 @@
+requests
+python-dotenv
+pika
+schedule
