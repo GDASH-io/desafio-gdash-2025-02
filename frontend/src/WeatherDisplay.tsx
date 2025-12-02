@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Wind, Droplets, RefreshCw, Cpu, Cloud } from "lucide-react";
+import { Wind, Droplets, RefreshCw, Cpu, Cloud, Download } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useAuth } from "./context/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export interface WeatherLog {
   _id: string;
@@ -15,13 +18,83 @@ export interface WeatherLog {
 }
 
 interface WeatherDisplayProps {
-  logs: WeatherLog[];
-  loading: boolean;
-  onRefresh: () => void;
-  refreshError: string;
+  logs?: WeatherLog[];
+  loading?: boolean;
+  onRefresh?: () => void;
+  refreshError?: string;
 }
 
-export function WeatherDisplay({ logs, loading, onRefresh, refreshError }: WeatherDisplayProps) {
+export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh: propOnRefresh, refreshError: propRefreshError }: WeatherDisplayProps) {
+  const { token, logout } = useAuth();
+  const navigate = useNavigate();
+  const [logs, setLogs] = useState<WeatherLog[]>(propLogs || []);
+  const [loading, setLoading] = useState(propLoading || false);
+  const [refreshError, setRefreshError] = useState(propRefreshError || '');
+  const [lastRefreshTime, setLastRefreshTime] = useState<number>(0);
+  const [exportLoading, setExportLoading] = useState<'csv' | 'xlsx' | null>(null);
+
+  const fetchWeather = async (isManual: boolean = false) => {
+    const now = Date.now();
+    const timeSinceLastRefresh = now - lastRefreshTime;
+    const REFRESH_COOLDOWN = 60000;
+
+    if (isManual && lastRefreshTime > 0 && timeSinceLastRefresh < REFRESH_COOLDOWN) {
+      const secondsRemaining = Math.ceil((REFRESH_COOLDOWN - timeSinceLastRefresh) / 1000);
+      setRefreshError(`Aguarde ${secondsRemaining} segundo${secondsRemaining !== 1 ? 's' : ''}`);
+      setTimeout(() => setRefreshError(''), 3000);
+      return;
+    }
+
+    setRefreshError('');
+    setLoading(true);
+    try {
+      const response = await fetch('/api/weather', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      setLogs(data);
+      setLastRefreshTime(now);
+    } catch (error) {
+      console.error("❌ Erro ao buscar clima:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleExport = async (format: 'csv' | 'xlsx') => {
+    try {
+      setExportLoading(format);
+      const response = await fetch(`/api/weather/export/${format}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!response.ok) throw new Error('Erro ao exportar');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `weather_data.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(`Erro ao exportar ${format}:`, error);
+      setRefreshError(`Erro ao exportar ${format}`);
+    } finally {
+      setExportLoading(null);
+    }
+  };
+
+  const onRefresh = propOnRefresh || (() => fetchWeather(true));
   const latest = logs[0];
 
   return (
@@ -82,6 +155,25 @@ export function WeatherDisplay({ logs, loading, onRefresh, refreshError }: Weath
           <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           {loading ? 'Sincronizando...' : 'Atualizar Dados'}
         </Button>
+
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => handleExport('csv')}
+            disabled={exportLoading !== null}
+            className="bg-blue-600 hover:bg-blue-500 text-white border border-blue-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-blue-500/50 disabled:opacity-50"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            CSV
+          </Button>
+          <Button 
+            onClick={() => handleExport('xlsx')}
+            disabled={exportLoading !== null}
+            className="bg-purple-600 hover:bg-purple-500 text-white border border-purple-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-purple-500/50 disabled:opacity-50"
+          >
+            <Download className="mr-2 h-4 w-4" />
+            XLSX
+          </Button>
+        </div>
       </motion.div>
 
       {/* Grid Principal */}

@@ -28,6 +28,18 @@ let WeatherController = class WeatherController {
     findAll() {
         return this.weatherService.findAll();
     }
+    async exportCsv(res) {
+        const csvBuffer = await this.weatherService.exportToCsv();
+        res.header('Content-Type', 'text/csv');
+        res.header('Content-Disposition', 'attachment; filename=weather_data.csv');
+        res.send(csvBuffer);
+    }
+    async exportXlsx(res) {
+        const xlsxBuffer = await this.weatherService.exportToXlsx();
+        res.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.header('Content-Disposition', 'attachment; filename=weather_data.xlsx');
+        res.send(xlsxBuffer);
+    }
     findOne(id) {
         return this.weatherService.findOne(+id);
     }
@@ -52,6 +64,20 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], WeatherController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('export/csv'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], WeatherController.prototype, "exportCsv", null);
+__decorate([
+    (0, common_1.Get)('export/xlsx'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], WeatherController.prototype, "exportXlsx", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

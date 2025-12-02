@@ -16,4 +16,6 @@ export declare class WeatherService {
     findOne(id: number): string;
     update(id: number, updateWeatherDto: any): string;
     remove(id: number): string;
+    exportToCsv(): Promise<Buffer>;
+    exportToXlsx(): Promise<Buffer>;
 }

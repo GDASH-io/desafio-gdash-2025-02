@@ -1,6 +1,44 @@
-# Desafio para o processo seletivo GDASH 2025/02
-
 Repositório destinado aos interessados em participar do processo seletivo GDASH 2025/02.
+
+---
+
+## 🚀 Quick Start
+
+### ⚡ Linux / macOS
+```bash
+# 1. Instale as dependências
+npm install --prefix backend
+npm install --prefix frontend
+
+# 2. Configure ambiente
+cp backend/.env.example backend/.env
+
+# 3. Inicie o sistema
+./start-all.sh start
+
+# Acesse em http://localhost:5173
+# Credenciais: admin@gdash.com / ChangeMe123!@#_strong_password
+```
+
+### 🪟 Windows (PowerShell)
+```powershell
+# 1. Instale as dependências
+npm install --prefix backend
+npm install --prefix frontend
+
+# 2. Configure ambiente
+Copy-Item backend\.env.example backend\.env
+
+# 3. Inicie o sistema
+powershell -ExecutionPolicy Bypass -File .\start-all.ps1 start
+
+# Acesse em http://localhost:5173
+# Credenciais: admin@gdash.com / ChangeMe123!@#_strong_password
+```
+
+📋 **Detalhes completos:** Veja [WINDOWS_SETUP.md](./WINDOWS_SETUP.md)
+
+---
 
 ## Sobre o GDASH
 

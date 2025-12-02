@@ -1,3 +1,4 @@
+import type { Response } from 'express';
 import { WeatherService } from './weather.service';
 import { CreateWeatherDto } from './dto/create-weather.dto';
 import { UpdateWeatherDto } from './dto/update-weather.dto';
@@ -10,6 +11,8 @@ export declare class WeatherController {
     } & {
         __v: number;
     })[]>;
+    exportCsv(res: Response): Promise<void>;
+    exportXlsx(res: Response): Promise<void>;
     findOne(id: string): string;
     update(id: string, updateWeatherDto: UpdateWeatherDto): string;
     remove(id: string): string;

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Script cross-platform que detecta o SO e executa o script apropriado
+# Funciona em: Linux, macOS e Windows (Git Bash, WSL, ou PowerShell via alias)
+
+OS_TYPE=$(uname -s)
+
+case "$OS_TYPE" in
+    Linux|Darwin)
+        # Linux ou macOS - usar bash script
+        exec bash "$(dirname "$0")/start-all.sh" "$@"
+        ;;
+    MINGW*|MSYS*|CYGWIN*)
+        # Windows com Git Bash/MinGW
+        exec bash "$(dirname "$0")/start-all.sh" "$@"
+        ;;
+    *)
+        echo "❌ Sistema operacional não suportado: $OS_TYPE"
+        echo ""
+        echo "Para Windows (PowerShell):"
+        echo "  powershell -ExecutionPolicy Bypass -File start-all.ps1 start"
+        echo ""
+        exit 1
+        ;;
+esac
