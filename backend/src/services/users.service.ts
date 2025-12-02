@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from "@nestjs/common";
 import { UsersRepository } from "../repositories/users.repository";
 import * as bcrypt from "bcrypt";
 import { CreateUserDto, UpdateUserDto } from "../../dto/user.dto";
@@ -7,14 +7,23 @@ import { CreateUserDto, UpdateUserDto } from "../../dto/user.dto";
 export class UsersService {
   constructor(private repo: UsersRepository) {}
 
-  findAll() {
-    return this.repo.findAll();
+  async findAll() {
+    const users = await this.repo.findAll();
+    return users.map(user => ({
+    id: user._id,   // renomeando _id para id
+    email: user.email,
+    role: user.role,
+  }));
   }
 
   async findById(id: string) {
     const user = await this.repo.findById(id);
     if (!user) throw new NotFoundException("Usuário não encontrado");
-    return user;
+    return {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    };
   }
 
   findByEmail(email: string) {
@@ -42,9 +51,17 @@ export class UsersService {
     return updated;
   }
 
-  async delete(id: string) {
+  async delete(id: string, loggedUser: { id: string; role: string }) {
     const current = await this.repo.findById(id);
     if (!current) throw new NotFoundException("Usuário não encontrado");
+
+    // Regra de autorização:
+    // - Admin pode deletar qualquer usuário
+    // - Usuário comum só pode deletar a si mesmo
+    if (loggedUser.role !== "admin" && loggedUser.id !== id) {
+      throw new ForbiddenException("Você não tem permissão para deletar este usuário");
+    }
+
     return this.repo.delete(id);
   }
 }

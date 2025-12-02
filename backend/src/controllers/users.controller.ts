@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Post, Put, Delete, Param, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Put, Delete, Param, UseGuards, Request } from "@nestjs/common";
 import { UsersService } from "../services/users.service";
 import { CreateUserDto, UpdateUserDto } from "../../dto/user.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt.auth.guard";
 
-@Controller("users")
+@Controller("api/users")
 export class UsersController {
   constructor(private service: UsersService) {}
 
@@ -57,11 +57,12 @@ export class UsersController {
   // DELETE /users/:id - Remove usuário
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async delete(@Param("id") id: string) {
+  async delete(@Param("id") id: string, @Request() req) {
     try {
-      return await this.service.delete(id);
+      return await this.service.delete(id, req.user);
     } catch (err) {
       throw err; // NotFoundException
     }
   }
+
 }
