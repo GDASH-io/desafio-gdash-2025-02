@@ -55,7 +55,7 @@ docker compose logs -f go-worker
 
 ---
 
-## � Como rodar a API (NestJS)
+## 🚀 Como rodar a API (NestJS)
 
 Se você deseja rodar ou reiniciar apenas o backend:
 
@@ -85,7 +85,7 @@ docker compose logs -f frontend
 
 ---
 
-## �🔗 URLs Principais
+## 🔗 URLs Principais
 
 *   **Frontend (Dashboard):** [http://localhost:80](http://localhost:80)
 *   **API (Backend):** [http://localhost:3000](http://localhost:3000)
@@ -110,12 +110,14 @@ Para acessar o Dashboard, utilize as seguintes credenciais criadas automaticamen
 *   `python_producer/`: Script de coleta de dados.
 *   `go-worker/`: Worker de processamento de fila.
 *   `docker-compose.yml`: Orquestração dos containers.
-*   
+*  
 
-## Url da solução em uma VM da Oracle Cloud
+---
+
+## 🔗 Url da solução em uma VM da Oracle Cloud
 
 *  https://climatec.mlluizdevtech.com.br/
 
-## Url do video explicando
+## 🔗 Url do video explicando
 
 *  https://youtu.be/aWARBQkpBVg
