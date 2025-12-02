@@ -14,6 +14,7 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const weather_module_1 = require("./weather/weather.module");
 const users_module_1 = require("./users/users.module");
+const auth_module_1 = require("./auth/auth.module");
 const database_module_1 = require("./dabatase/database.module");
 let AppModule = class AppModule {
 };
@@ -27,6 +28,7 @@ exports.AppModule = AppModule = __decorate([
             mongoose_1.MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/gdash_weather'),
             weather_module_1.WeatherModule,
             users_module_1.UsersModule,
+            auth_module_1.AuthModule,
             database_module_1.DatabaseModule,
         ],
         controllers: [app_controller_1.AppController],

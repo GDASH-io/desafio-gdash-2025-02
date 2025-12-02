@@ -9,29 +9,48 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateUserDto = void 0;
+exports.AuthResponseDto = exports.RegisterDto = exports.LoginDto = void 0;
 const class_validator_1 = require("class-validator");
-class CreateUserDto {
+class LoginDto {
     email;
     password;
-    name;
 }
-exports.CreateUserDto = CreateUserDto;
+exports.LoginDto = LoginDto;
 __decorate([
     (0, class_validator_1.IsEmail)({}, { message: 'Email deve ser válido' }),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "email", void 0);
+], LoginDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.MinLength)(8, { message: 'Senha deve ter no mínimo 8 caracteres' }),
+    (0, class_validator_1.MinLength)(6, { message: 'Senha deve ter no mínimo 6 caracteres' }),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "password", void 0);
+], LoginDto.prototype, "password", void 0);
+class RegisterDto extends LoginDto {
+    name;
+}
+exports.RegisterDto = RegisterDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MinLength)(3, { message: 'Nome deve ter no mínimo 3 caracteres' }),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "name", void 0);
-//# sourceMappingURL=create-user.dto.js.map
+], RegisterDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MinLength)(8, {
+        message: 'Senha deve ter no mínimo 8 caracteres',
+    }),
+    (0, class_validator_1.Matches)(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+        message: 'Senha deve conter: maiúscula, minúscula, número e caractere especial',
+    }),
+    __metadata("design:type", String)
+], RegisterDto.prototype, "password", void 0);
+class AuthResponseDto {
+    access_token;
+    user;
+}
+exports.AuthResponseDto = AuthResponseDto;
+//# sourceMappingURL=login.dto.js.map
