@@ -17,7 +17,9 @@ import { Response } from 'express'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { Public } from '../auth/public.decorator'
 import { SseAuthGuard } from '../auth/sse-auth.guard'
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
+@ApiTags('Weather')
 @Controller('weather')
 
 export class WeatherController {
@@ -27,6 +29,9 @@ export class WeatherController {
 
   // Endpoint chamado pelo Go Worker para salvar dados
 
+  @ApiOperation({ summary: 'Salvar dados climáticos', description: 'Endpoint usado pelo Go Worker para salvar dados' })
+  @ApiResponse({ status: 200, description: 'Dados salvos com sucesso' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos' })
   @Post('logs')
   async saveWeatherLog(@Body() weatherData: any) {
     this.logger.log('Recebendo dados via POST /weather/logs (do Go Worker)')
@@ -43,6 +48,10 @@ export class WeatherController {
     }
   }
 
+  @ApiOperation({ summary: 'Listar logs climáticos', description: 'Retorna logs de dados climáticos com paginação' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 100 })
+  @ApiQuery({ name: 'skip', required: false, type: Number, example: 0 })
+  @ApiResponse({ status: 200, description: 'Logs retornados com sucesso' })
   @Get('logs')
   async getLogs(@Query('limit') limit = 100, @Query('skip') skip = 0) {
     return this.weatherService.findAll(Number(limit), Number(skip))

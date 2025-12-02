@@ -7,7 +7,7 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 # Instalar dependências
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copiar código fonte
 COPY . .

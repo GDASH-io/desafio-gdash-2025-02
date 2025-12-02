@@ -20,20 +20,26 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
-  "@google/generative-ai": "^0.21.0",
+    "@google/generative-ai": "^0.21.0",
+    "@nestjs/common": "^11.1.9",
     "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.9",
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/microservices": "^11.1.9",
     "@nestjs/mongoose": "^11.0.3",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.9",
+    "@nestjs/swagger": "^8.0.7",
     "amqplib": "^0.10.9",
     "bcrypt": "^6.0.0",
     "exceljs": "^4.4.0",
     "mongoose": "^8.20.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.8",
