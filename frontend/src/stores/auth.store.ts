@@ -17,7 +17,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             user: null,
             token: null,
             isAuthenticated: false,
@@ -28,14 +28,40 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true, error: null })
                 try {
                     const response = await authAPI.login(credentials)
-                    setToStorage('token', response.token)
-                    setToStorage('user', response.user)
-                    set({
-                        user: response.user,
-                        token: response.token,
-                        isAuthenticated: true,
+                    console.log('Login response:', response)
+
+                    const token = response.tokens?.accessToken || null
+                    const user = response.user || null
+
+                    console.log('Extracted:', { token: !!token, user: !!user })
+
+                    if (token) {
+                        setToStorage('token', token)
+                    }
+                    if (user) {
+                        setToStorage('user', user)
+                    }
+
+                    const newState = {
+                        user,
+                        token,
+                        isAuthenticated: !!token && !!user,
                         isLoading: false,
-                    })
+                    }
+
+                    console.log('Setting state:', newState)
+                    set(newState)
+
+                    // Verifica o estado após set
+                    setTimeout(() => {
+                        const currentState = get()
+                        console.log('Current state after set:', {
+                            isAuthenticated: currentState.isAuthenticated,
+                            hasUser: !!currentState.user,
+                            hasToken: !!currentState.token
+                        })
+                    }, 50)
+
                 } catch (error: any) {
                     const errorMessage = error.response?.data?.message || 'Login failed'
                     set({ error: errorMessage, isLoading: false })
@@ -55,7 +81,7 @@ export const useAuthStore = create<AuthState>()(
             },
 
             setUser: (user: User) => {
-                set({ user })
+                set({ user, isAuthenticated: !!user && !!get().token })
             },
 
             clearError: () => {

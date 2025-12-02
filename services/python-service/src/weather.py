@@ -1,7 +1,15 @@
 import requests
+import logging
 from geopy.geocoders import Nominatim
 from datetime import datetime
 from pytz import timezone
+
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 WEATHER_CODE = {
@@ -26,21 +34,23 @@ WEATHER_CODE = {
 def get_coordinates():
     geolocator = Nominatim(user_agent="coordenadas_teresina")
     cidade = "Teresina, Piauí, Brasil"
-    location = geolocator.geocode(cidade, timeout=20)
     try:
+        location = geolocator.geocode(cidade, timeout=20)
         if location is None:
             raise ValueError("Não foi possível obter as coordenadas para a cidade especificada.")
-        if location:
-            latitude = location.latitude
-            longitude = location.longitude
-            cordinates = {
-                "latitude": latitude,
-                "longitude": longitude
-            }
-            return cordinates
+        
+        cordinates = {
+            "latitude": location.latitude,
+            "longitude": location.longitude
+        }
+        logger.info(f"Coordenadas obtidas com sucesso para {cidade}")
+        return cordinates
     except ValueError as e:
-        print(e)
-        return None, None
+        logger.error(f"Erro ao obter coordenadas: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Erro inesperado ao obter coordenadas: {e}")
+        return None
 
 
 def search_forecast(lat: float, lon: float, tz: str):
@@ -56,21 +66,32 @@ def search_forecast(lat: float, lon: float, tz: str):
             "precipitation_probability"
         )
     }
-    response = requests.get(url, params=params)
-    
-    return response.json()
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        logger.info("Previsão do tempo obtida com sucesso da API Open-Meteo")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Erro ao buscar previsão do tempo: {e}")
+        raise
 
 
 def get_time_info():
     try:
         cordinates = get_coordinates()
+        if not cordinates:
+            logger.error("Não foi possível obter coordenadas")
+            return None
+        
         forecast = search_forecast(cordinates["latitude"], cordinates["longitude"], "America/Fortaleza")
         data = extract_data(forecast)
         formatted_data = format_data(**data)
+        logger.info("Dados meteorológicos processados com sucesso")
         return formatted_data
     
     except Exception as e:
-        print(f"Erro ao obter as coordenadas: {e}")
+        logger.error(f"Erro ao obter informações meteorológicas: {e}", exc_info=True)
+        return None
 
 
 def extract_data(func):
@@ -88,9 +109,6 @@ def extract_data(func):
             idx = i
         else:
             break
-    print(f"Debug: current_time = {current_time}")
-    print(f"Debug: hourly times = {times}")
-    print(f"Debug: precipitation idx = {idx}")
 
     return {
         "current": current,

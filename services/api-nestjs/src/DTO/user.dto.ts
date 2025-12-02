@@ -36,6 +36,20 @@ export class ResponseUserDto {
     funcao: string;
 }
 
+export class TokenLoginDto {
+    @IsNotEmpty()
+    @IsString()
+    id: string;
+
+    @IsNotEmpty()
+    @IsString()
+    nome: string;
+
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+}
+
 export class LoginUserDto {
     @IsNotEmpty()
     @IsEmail()

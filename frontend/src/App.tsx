@@ -9,6 +9,7 @@ import { UsersPage } from '@/pages/UsersPage'
 import { ExplorePage } from '@/pages/ExplorePage'
 import { useThemeStore } from '@/stores/theme.store'
 import { useEffect } from 'react'
+import { RegisterPage } from '@/pages/RegisterPage'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -31,6 +32,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
                     <Route element={<ProtectedRoute />}>
                         <Route element={<Layout />}>
                             <Route path="/dashboard" element={<DashboardPage />} />

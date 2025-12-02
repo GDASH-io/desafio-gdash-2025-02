@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import ReactMarkdown from 'react-markdown'
-
+import { useEffect, useState } from 'react'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 
 
@@ -27,35 +27,20 @@ export const DashboardPage = () => {
     const exportXLSX = useExportXLSX()
     const { toast } = useToast()
 
-    const insightsMock = {
-        "estatisticas": {
-            "temperatura": {
-                "media": 29.3,
-                "max": 31.7,
-                "min": 28.2
-            },
-            "umidade": {
-                "media": 64.4,
-                "max": 65,
-                "min": 64
-            },
-            "vento": {
-                "media": 10.02,
-                "max": 14.6,
-                "min": 2.3
-            },
-            "probabilidade_chuva": {
-                "media": 0,
-                "max": 0,
-                "min": 0
-            }
-        },
-        "conforto_climatico": 69,
-        "resumo": "Clima quente e úmido com ventos variados de moderados a fracos e ausência de probabilidade de chuva.",
-        "analise_tecnica": "A análise dos registros climáticos de Teresina revela uma tendência geral de clima quente e úmido, característica da região no período observado. A temperatura média de 29.3°C, com picos de 31.7°C, indica um ambiente termicamente desafiador. A umidade relativa do ar manteve-se consistentemente elevada, com média de 64.4% e pouca variação, contribuindo para uma sensação térmica de abafamento.\n\nEm relação às anomalias e padrões, observa-se uma clara tendência de elevação da temperatura ao longo do período de coleta, que abrange da madrugada ao meio da manhã (00:39 a 09:51), consistente com o ciclo diurno de aquecimento solar. A umidade, por outro lado, demonstrou notável estabilidade. Uma anomalia significativa reside na variação do regime de ventos: enquanto os primeiros registros indicavam ventos moderados (acima de 14 km/h), os dados posteriores exibem uma diminuição drástica, com valores mínimos de 2.3 km/h. Esta redução do fluxo de ar é crucial para a percepção de conforto térmico. A probabilidade de chuva manteve-se nula em todos os registros, indicando condições de tempo estável e sem precipitação durante o período analisado.\n\nA interpretação prática desses dados sugere que, apesar da ausência de chuva ser favorável a atividades externas, o elevado gradiente térmico e a umidade constante, combinados com a redução dos ventos, criam um ambiente propenso ao desconforto térmico. As primeiras horas da manhã com ventos mais fortes podem oferecer algum alívio, mas o avanço do dia traz temperaturas mais altas e ventos mais fracos, intensificando a sensação de calor.\n\nOs riscos e implicações incluem um risco aumentado de estresse térmico e desidratação para indivíduos expostos por períodos prolongados, especialmente durante atividades físicas. A diminuição acentuada do vento nos registros mais recentes é um fator de risco, pois reduz a capacidade de resfriamento por convecção e evaporação. Recomenda-se hidratação contínua, uso de roupas leves e busca por ambientes com sombra ou climatizados, além de evitar esforço físico intenso nas horas de maior calor e menor ventilação."
+    const [cachedInsights, setCachedInsights] = useState(() => {
+        const cached = sessionStorage.getItem('weatherInsights')
+        return cached ? JSON.parse(cached) : null
+    })
 
-    }
-    const normalizedInsights = Array.isArray(insights) ? insights[0] : insights;
+    useEffect(() => {
+        const normalized = Array.isArray(insights) ? insights[0] : insights
+        if (normalized) {
+            setCachedInsights(normalized)
+            sessionStorage.setItem('weatherInsights', JSON.stringify(normalized))
+        }
+    }, [insights])
+
+    const normalizedInsights = Array.isArray(insights) ? insights[0] : insights
 
     const handleExportCSV = async () => {
         try {
@@ -89,7 +74,7 @@ export const DashboardPage = () => {
         }
     }
 
-    if (isLoadingWeather || isLoadingChart || isLoadingInsights) {
+    if ((isLoadingWeather || isLoadingChart || isLoadingInsights) && !cachedInsights) {
         return <LoadingSpinner size="lg" />
     }
 
@@ -238,28 +223,28 @@ export const DashboardPage = () => {
                                 <div>
                                     <h3 className="text-lg font-medium font-hand">Resumo</h3>
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        {normalizedInsights?.resumo || insightsMock.resumo}
+                                        {cachedInsights?.resumo || normalizedInsights?.resumo}
                                     </p>
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-medium font-hand">Estatísticas</h3>
                                     <ul className="list-disc list-inside text-sm text-muted-foreground mt-1">
-                                        <li>Temperatura Média: {normalizedInsights?.estatisticas?.temperatura?.media}°C</li>
-                                        <li>Umidade Média: {normalizedInsights?.estatisticas?.umidade?.media}%</li>
-                                        <li>Velocidade Média do Vento: {normalizedInsights?.estatisticas?.vento?.media} km/h</li>
-                                        <li>Probabilidade Média de Chuva: {normalizedInsights?.estatisticas?.probabilidade_chuva?.media}%</li>
+                                        <li>Temperatura Média: {cachedInsights?.estatisticas?.temperatura?.media ?? normalizedInsights?.estatisticas?.temperatura?.media}°C</li>
+                                        <li>Umidade Média: {cachedInsights?.estatisticas?.umidade?.media ?? normalizedInsights?.estatisticas?.umidade?.media}%</li>
+                                        <li>Velocidade Média do Vento: {cachedInsights?.estatisticas?.vento?.media ?? normalizedInsights?.estatisticas?.vento?.media} km/h</li>
+                                        <li>Probabilidade Média de Chuva: {cachedInsights?.estatisticas?.probabilidade_chuva?.media ?? normalizedInsights?.estatisticas?.probabilidade_chuva?.media}%</li>
                                         <li>
                                             <div className="flex flex-col gap-1">
                                                 <div className="flex items-center justify-between">
                                                     <span className="font-medium text-sm text-primary">Índice de Conforto Climático</span>
                                                     <span className="relative group cursor-pointer" tabIndex={0} aria-label="Ajuda sobre conforto climático">
-                                                        <span className={`inline-block w-9 text-center font-bold text-base rounded transition-colors duration-300 ${(normalizedInsights?.conforto_climatico) < 40
+                                                        <span className={`inline-block w-9 text-center font-bold text-base rounded transition-colors duration-300 ${(cachedInsights?.conforto_climatico ?? normalizedInsights?.conforto_climatico) < 40
                                                             ? 'bg-red-100 text-red-700 border border-red-300'
-                                                            : (normalizedInsights?.conforto_climatico) < 70
+                                                            : (cachedInsights?.conforto_climatico ?? normalizedInsights?.conforto_climatico) < 70
                                                                 ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
                                                                 : 'bg-green-100 text-green-700 border border-green-300'
                                                             }`}>
-                                                            <AnimatedNumber value={normalizedInsights?.conforto_climatico} />
+                                                            <AnimatedNumber value={cachedInsights?.conforto_climatico ?? normalizedInsights?.conforto_climatico} />
                                                         </span>
                                                         <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block group-focus:block bg-background text-xs text-muted-foreground px-2 py-1 rounded shadow z-10 border border-border whitespace-nowrap">
                                                             Quanto maior, mais confortável o clima
@@ -268,13 +253,13 @@ export const DashboardPage = () => {
                                                 </div>
                                                 <div className="relative w-full h-2 bg-muted rounded overflow-hidden border border-border mt-1">
                                                     <div
-                                                        className={`absolute left-0 top-0 h-2 transition-all duration-300 rounded ${(normalizedInsights?.conforto_climatico) < 40
+                                                        className={`absolute left-0 top-0 h-2 transition-all duration-300 rounded ${(cachedInsights?.conforto_climatico ?? normalizedInsights?.conforto_climatico) < 40
                                                             ? 'bg-red-500'
-                                                            : (normalizedInsights?.conforto_climatico) < 70
+                                                            : (cachedInsights?.conforto_climatico ?? normalizedInsights?.conforto_climatico) < 70
                                                                 ? 'bg-yellow-400'
                                                                 : 'bg-green-500'
                                                             }`}
-                                                        style={{ width: `${normalizedInsights?.conforto_climatico}%` }}
+                                                        style={{ width: `${cachedInsights?.conforto_climatico ?? normalizedInsights?.conforto_climatico}%` }}
                                                     />
                                                 </div>
                                                 <div className="flex justify-between text-xs mt-1 text-muted-foreground">
@@ -289,7 +274,7 @@ export const DashboardPage = () => {
                                     <h3 className="text-lg font-medium font-hand">Análise Técnica</h3>
                                     <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
                                         <ReactMarkdown>
-                                            {normalizedInsights?.analise_tecnica}
+                                            {cachedInsights?.analise_tecnica || normalizedInsights?.analise_tecnica}
                                         </ReactMarkdown>
                                     </p>
                                 </div>

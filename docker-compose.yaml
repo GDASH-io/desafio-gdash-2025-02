@@ -6,6 +6,12 @@ services:
     ports: ["27017:27017"]
     networks:
       - backend-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -15,6 +21,12 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     networks:
       - backend-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   api:
     build:
@@ -25,29 +37,41 @@ services:
     env_file:
       - ./services/api-nestjs/.env
     ports: ["3000:3000"]
-    depends_on: ["mongo","rabbitmq"]
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     networks:
       - backend-network
       - frontend-network
+    restart: unless-stopped
 
   python-collector:
     build:
       context: ./services/python-service
       dockerfile: Dockerfile
-    environment:
-      - RABBITMQ_USER=admin
-      - RABBITMQ_PASSWORD=admin
-    depends_on: ["rabbitmq"]
+    env_file:
+      - ./services/python-service/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - backend-network
+    restart: unless-stopped
 
   go-worker:
     build:
       context: ./services/go-worker
       dockerfile: Dockerfile
-    depends_on: ["rabbitmq","api"]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_started
     networks:
       - backend-network
+    restart: unless-stopped
 
   frontend:
     build:

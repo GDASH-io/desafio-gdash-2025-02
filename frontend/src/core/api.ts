@@ -42,12 +42,15 @@ export interface User {
 
 export interface LoginRequest {
     email: string
-    password: string
+    senha: string
 }
 
 export interface LoginResponse {
-    token: string
     user: User
+    tokens: {
+        accessToken: string
+        refreshToken: string
+    }
 }
 
 export interface WeatherData {
@@ -91,11 +94,6 @@ export const authAPI = {
 
     logout: async (): Promise<void> => {
         await api.post('/auth/logout')
-    },
-
-    me: async (): Promise<User> => {
-        const response = await api.get('/auth/me')
-        return response.data
     },
 }
 

@@ -44,7 +44,7 @@ export const Header = () => {
                     {user && (
                         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
                             <UserIcon className="h-4 w-4" />
-                            <span className="text-sm font-medium">{user.name}</span>
+                            <span className="text-sm font-medium">{user.nome || ''}</span>
                         </div>
                     )}
 

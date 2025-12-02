@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, Put, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto, ResponseUserDto } from 'src/DTO/user.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 
+//@UseGuards(JwtAuthGuard)
 @ApiTags('users')
 @Controller('users')
 export class UsersController {

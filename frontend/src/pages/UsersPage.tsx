@@ -138,10 +138,6 @@ export const UsersPage = () => {
                     <h1 className="text-4xl font-bold font-hand text-primary">Gerenciamento de Usuários</h1>
                     <p className="text-muted-foreground mt-1">Gerencie os usuários da aplicação</p>
                 </div>
-                <Button variant="spotify" onClick={() => setIsCreateOpen(true)}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Adicionar Usuário
-                </Button>
             </div>
 
             <Card className="sketch-card">
@@ -190,54 +186,6 @@ export const UsersPage = () => {
                 </CardContent>
             </Card>
 
-            <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle className="font-hand">Criar Novo Usuário</DialogTitle>
-                        <DialogDescription>
-                            Adicione um novo usuário ao sistema. Preencha todos os detalhes abaixo.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="name">Nome</Label>
-                            <Input
-                                id="nome"
-                                value={formData.nome}
-                                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                                placeholder="João Silva"
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                placeholder="joao@exemplo.com"
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="role">Função</Label>
-                            <Input
-                                id="funcao"
-                                value={formData.funcao}
-                                onChange={(e) => setFormData({ ...formData, funcao: e.target.value })}
-                                placeholder="Admin, Usuário, etc."
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
-                            Cancelar
-                        </Button>
-                        <Button variant="spotify" onClick={handleCreate} disabled={createUser.isPending}>
-                            Criar Usuário
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
 
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogContent>

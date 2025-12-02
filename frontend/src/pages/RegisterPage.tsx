@@ -1,118 +1,131 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '@/stores/auth.store'
+import { useToast } from '@/components/ui/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useToast } from '@/components/ui/use-toast'
-import { Cloud, Loader2 } from 'lucide-react'
+import { useCreateUser } from '@/hooks/useUsers'
+import { Loader2, UserPlus } from 'lucide-react'
 
-export const LoginPage = () => {
+export const RegisterPage = () => {
+    const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
-    const [senha, setPassword] = useState('')
+    const [funcao, setFuncao] = useState('')
+    const [senha, setSenha] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+
     const navigate = useNavigate()
-    const login = useAuthStore((state) => state.login)
     const { toast } = useToast()
+    const createUser = useCreateUser()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-
-        if (!email || !senha) {
+        if (!nome || !email || !senha) {
             toast({
                 variant: 'destructive',
                 title: 'Erro',
-                description: 'Por favor, preencha todos os campos',
+                description: 'Preencha todos os campos obrigatórios',
             })
             return
         }
         setIsLoading(true)
         try {
-            await login({ email, senha })
+            await createUser.mutateAsync({ nome, email, funcao, senha })
             toast({
                 variant: 'success',
-                title: 'Sucesso!',
-                description: 'Bem-vindo de volta!',
+                title: 'Conta criada!',
+                description: 'Você já pode fazer login.',
             })
-            // Pequeno delay para garantir que o estado foi atualizado
             setTimeout(() => {
-                navigate('/dashboard')
-            }, 100)
+                navigate('/login')
+            }, 1000)
         } catch (error: any) {
-            console.error('Login error:', error)
             toast({
                 variant: 'destructive',
-                title: 'Falha no login',
-                description: 'Credenciais inválidas',
+                title: 'Erro ao registrar',
+                description: error.response?.data?.message || 'Não foi possível criar a conta',
             })
         } finally {
             setIsLoading(false)
         }
     }
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
             <Card className="w-full max-w-md sketch-card">
                 <CardHeader className="space-y-1 text-center">
                     <div className="flex justify-center mb-4">
                         <div className="p-3 rounded-full bg-primary/10">
-                            <Cloud className="h-12 w-12 text-primary" />
+                            <UserPlus className="h-12 w-12 text-primary" />
                         </div>
                     </div>
-                    <CardTitle className="text-3xl font-hand">Bem-vindo de Volta!</CardTitle>
+                    <CardTitle className="text-3xl font-hand">Criar Conta</CardTitle>
                     <CardDescription>
-                        Entre com suas credenciais para acessar o painel meteorológico
+                        Preencha os dados para criar sua conta
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
+                            <Label htmlFor="nome">Nome</Label>
+                            <Input
+                                id="nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
+                                disabled={isLoading}
+                                className="sketch-border"
+                                placeholder="Seu nome completo"
+                            />
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="seu@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 disabled={isLoading}
                                 className="sketch-border"
+                                placeholder="seu@email.com"
                             />
                         </div>
-
+                        <div className="space-y-2">
+                            <Label htmlFor="funcao">Função (opcional)</Label>
+                            <Input
+                                id="funcao"
+                                value={funcao}
+                                onChange={(e) => setFuncao(e.target.value)}
+                                disabled={isLoading}
+                                className="sketch-border"
+                                placeholder="Admin, Usuário, etc."
+                            />
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="senha">Senha</Label>
                             <Input
                                 id="senha"
-                                type="password"
-                                placeholder="••••••••"
+                                type="senha"
                                 value={senha}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => setSenha(e.target.value)}
                                 disabled={isLoading}
                                 className="sketch-border"
+                                placeholder="••••••••"
                             />
                         </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={isLoading}
-                        >
+                        <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Entrando...
+                                    Registrando...
                                 </>
                             ) : (
-                                'Entrar'
+                                'Registrar'
                             )}
                         </Button>
                     </form>
-
                     <div className="mt-4 text-center text-sm text-muted-foreground">
-                        <p className="font-hand">Demo: admin@weather.com / senha123</p>
-                    </div>
-                    <div className="mt-4 text-center text-sm text-muted-foreground">
-                        <a className='cursor-pointer' type='button' onClick={() => navigate("/register")}>Cadastre-se</a>
+                        <button type='button' onClick={() => navigate('/login')}>Já tem conta? Entrar</button>
                     </div>
                 </CardContent>
             </Card>

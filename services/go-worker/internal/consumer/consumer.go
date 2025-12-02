@@ -26,15 +26,19 @@ type WeatherData struct {
 func ConsumeRMQ(config *internal.Config) error {
     conn, err := ConnectRabbitMQ(config)
     if err != nil {
+        log.Printf("[ERROR] Falha ao conectar ao RabbitMQ: %v", err)
         return err
     }
     defer conn.Close()
+    log.Println("[INFO] Conexão estabelecida com RabbitMQ")
 
     channel, err := conn.Channel()
     if err != nil {
+        log.Printf("[ERROR] Falha ao abrir canal: %v", err)
         return err
     }
     defer channel.Close()
+    log.Println("[INFO] Canal RabbitMQ aberto com sucesso")
 
     exchangeName := config.RabbitMQ.EXCHANGE
     err = channel.ExchangeDeclare(
@@ -47,13 +51,17 @@ func ConsumeRMQ(config *internal.Config) error {
         nil,
     )
     if err != nil {
+        log.Printf("[ERROR] Falha ao declarar exchange '%s': %v", exchangeName, err)
         return err
     }
+    log.Printf("[INFO] Exchange '%s' declarado com sucesso", exchangeName)
 
     queue, err := channel.QueueDeclare("weather", true, false, false, false, nil)
     if err != nil {
+        log.Printf("[ERROR] Falha ao declarar fila: %v", err)
         return err
     }
+    log.Printf("[INFO] Fila '%s' declarada com sucesso", queue.Name)
 
     routingKeys := []string{"weather_routing_key"}
     for _, routingKey := range routingKeys {
@@ -65,8 +73,10 @@ func ConsumeRMQ(config *internal.Config) error {
             nil,
         )
         if err != nil {
+            log.Printf("[ERROR] Falha ao fazer bind da fila com routing key '%s': %v", routingKey, err)
             return err
         }
+        log.Printf("[INFO] Fila vinculada com routing key '%s'", routingKey)
     }
 
     messages, err := channel.Consume(
@@ -79,27 +89,38 @@ func ConsumeRMQ(config *internal.Config) error {
         nil,
     )
     if err != nil {
+        log.Printf("[ERROR] Falha ao iniciar consumo: %v", err)
         return err
     }
 
-    log.Println("Iniciando consumo de mensagens...")
+    log.Println("[INFO] Worker iniciado - Aguardando mensagens...")
 
     for msg := range messages {
-        log.Printf("Mensagem recebida: %s", msg.Body)
+        log.Printf("[INFO] Mensagem recebida da fila (tamanho: %d bytes)", len(msg.Body))
+        
         var weatherData WeatherData
         if err := json.Unmarshal(msg.Body, &weatherData); err != nil {
-            log.Printf("Erro ao decodificar a mensagem: %s", err)
+            log.Printf("[ERROR] Falha ao decodificar JSON: %v. Mensagem rejeitada.", err)
             msg.Nack(false, false)
             continue
         }
 
+        if weatherData.Temperatura == 0 && weatherData.Umidade == 0 {
+            log.Printf("[WARN] Dados meteorológicos inválidos recebidos. Mensagem rejeitada.")
+            msg.Nack(false, false)
+            continue
+        }
+
+        log.Printf("[INFO] Dados decodificados: Temp=%.1f°C, Umidade=%.1f%%, Local=%s", 
+            weatherData.Temperatura, weatherData.Umidade, weatherData.Cidade)
+
         if err := sender.SendToAPI(weatherData, config.Api.LOGS_URL); err != nil {
-            log.Printf("Erro ao enviar dados para a API: %s", err)
+            log.Printf("[ERROR] Falha ao enviar dados para API: %v. Mensagem será reprocessada.", err)
             msg.Nack(false, true)
             continue
         }
 
-        log.Printf("Mensagem recebida: %s", msg.Body)
+        log.Println("[SUCCESS] Dados enviados para API com sucesso")
         msg.Ack(false)
     }
     return nil

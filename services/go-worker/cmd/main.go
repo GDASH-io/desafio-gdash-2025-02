@@ -9,12 +9,14 @@ import (
 )
 
 func main() {
-    log.Println("INFO: inicializando o worker")
+    log.Println("[INFO] Inicializando Go Worker...")
     config, err := internal.LoadConfig("configs/config.yaml")
     if err != nil {
-        log.Printf("ERRO: falha ao carregar a configuração: %s", err.Error())
+        log.Fatalf("[ERROR] Erro ao carregar configuração: %v", err)
         return
     }
+    
+    log.Println("[INFO] Aguardando RabbitMQ estar disponível...")
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
 
@@ -22,10 +24,21 @@ func main() {
         <-ctx.Done()
     }()
 
+    retryCount := 0
+    maxInitialRetries := 12 // 1 minuto de tentativas (12 x 5s)
+
     for {
         if err := consumer.ConsumeRMQ(config); err != nil {
-            log.Printf("ERROR: erro no consumer: %s", err.Error())
+            retryCount++
+            if retryCount <= maxInitialRetries {
+                log.Printf("[WARN] Tentativa %d/%d - Aguardando RabbitMQ... (próxima em 5s)", retryCount, maxInitialRetries)
+            } else {
+                log.Printf("[ERROR] Erro no consumer: %v (reconectando em 5s)", err)
+            }
             time.Sleep(5 * time.Second)
+        } else {
+            // Reset retry count após conexão bem-sucedida
+            retryCount = 0
         }
     }
 }
