@@ -1,4 +1,0 @@
-pika==1.3.2          # Cliente RabbitMQ
-requests==2.31.0     # HTTP básico
-httpx==0.27.0        # HTTP async
-pandas==2.2.1        # Processamento de dados
