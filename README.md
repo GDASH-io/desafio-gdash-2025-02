@@ -1,3 +1,4 @@
+
 # Desafio para o processo seletivo GDASH 2025/02
 
 Repositório destinado aos interessados em participar do processo seletivo GDASH 2025/02.
@@ -369,3 +370,193 @@ O Pull Request deve conter:
 
 Boa sorte! 🚀  
 Mostre sua capacidade de integrar múltiplas linguagens e serviços em uma aplicação moderna, escalável e inteligente — unindo **engenharia de dados**, **backend**, **frontend** e **IA aplicada**.
+=======
+# Desafio GDASH 2025/02 - Sistema de Monitoramento Climático
+
+Sistema full-stack para coleta, processamento e visualização de dados climáticos com insights de IA.
+
+## 🏗️ Arquitetura
+
+```
+Python (Producer) → RabbitMQ → Go (Worker) → NestJS (API) → MongoDB
+                                                      ↓
+                                              React (Frontend)
+```
+
+## 🚀 Tecnologias
+
+- **Frontend**: React 19 + Vite + TypeScript + Tailwind + shadcn/ui
+- **Backend**: NestJS + TypeScript
+- **Worker**: Go
+- **Producer**: Python
+- **Message Broker**: RabbitMQ
+- **Database**: MongoDB 8
+- **IA**: OpenAI + Gemini (fallback)
+- **Containerização**: Docker + Docker Compose
+
+## 📋 Pré-requisitos
+
+- Docker e Docker Compose instalados
+- Conta OpenAI (opcional, para insights)
+- Conta Google Gemini (opcional, para fallback)
+
+## 🛠️ Como Executar
+
+### 1. Clone o repositório
+
+```bash
+git clone <repository-url>
+cd desafio-GDASH
+```
+
+### 2. Configure as variáveis de ambiente
+
+```bash
+cp .env.example .env
+```
+
+Edite o arquivo `.env` e configure:
+- `OPENAI_API_KEY` (opcional, para insights de IA)
+- `GEMINI_API_KEY` (opcional, para fallback de IA)
+- `LATITUDE` e `LONGITUDE` (coordenadas da sua localização)
+- Outras configurações conforme necessário
+
+### 3. Execute com Docker Compose
+
+```bash
+docker-compose up -d
+```
+
+### 4. Acesse a aplicação
+
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:3000
+- **Swagger**: http://localhost:3000/api
+- **RabbitMQ Management**: http://localhost:15672 (guest/guest)
+
+### 5. Credenciais padrão
+
+- **Email**: admin@example.com
+- **Senha**: 123456
+
+## 📁 Estrutura do Projeto
+
+```
+.
+├── backend/          # API NestJS
+├── frontend/         # Aplicação React
+├── worker/           # Worker Go
+├── producer/         # Producer Python
+├── docker-compose.yml
+├── .env.example
+└── README.md
+```
+
+## 🔧 Executando Serviços Individualmente
+
+### Backend (NestJS)
+
+```bash
+cd backend
+npm install
+npm run start:dev
+```
+
+### Frontend (React)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Producer (Python)
+
+```bash
+cd producer
+pip install -r requirements.txt
+python main.py
+```
+
+### Worker (Go)
+
+```bash
+cd worker
+go mod download
+go run .
+```
+
+## 📡 Endpoints da API
+
+### Autenticação
+- `POST /api/auth/login` - Login
+
+### Clima
+- `GET /api/weather/logs` - Listar registros climáticos
+- `POST /api/weather/logs` - Receber dados do worker (interno)
+- `GET /api/weather/insights` - Obter insights de IA
+- `GET /api/weather/export.csv` - Exportar CSV
+- `GET /api/weather/export.xlsx` - Exportar XLSX
+
+### Usuários (protegido)
+- `GET /api/users` - Listar usuários
+- `POST /api/users` - Criar usuário
+- `PUT /api/users/:id` - Atualizar usuário
+- `DELETE /api/users/:id` - Deletar usuário
+
+### Pokémon (opcional)
+- `GET /api/pokemon` - Listar Pokémons (paginado)
+- `GET /api/pokemon/:id` - Detalhes de Pokémon
+
+## 🧪 Testes
+
+Para testar o pipeline completo:
+
+1. Verifique se todos os serviços estão rodando:
+```bash
+docker-compose ps
+```
+
+2. Verifique os logs:
+```bash
+docker-compose logs -f producer
+docker-compose logs -f worker
+docker-compose logs -f backend
+```
+
+3. Acesse o frontend e faça login
+4. Verifique o dashboard de clima
+
+## 📝 Notas
+
+- O producer coleta dados a cada hora por padrão (configurável via `COLLECTION_INTERVAL`)
+- Os insights de IA são gerados sob demanda ou automaticamente
+- O usuário padrão é criado automaticamente na primeira inicialização
+
+## 🐛 Troubleshooting
+
+### Serviços não iniciam
+- Verifique se as portas estão disponíveis
+- Verifique os logs: `docker-compose logs <service-name>`
+
+### Erro de conexão com MongoDB
+- Aguarde o MongoDB estar completamente inicializado
+- Verifique as credenciais no `.env`
+
+### Erro de conexão com RabbitMQ
+- Aguarde o RabbitMQ estar completamente inicializado
+- Verifique as credenciais no `.env`
+
+## 📹 Vídeo Explicativo
+
+[Link do vídeo será adicionado aqui]
+
+## 👤 Autor
+
+[Seu nome completo]
+
+## 📄 Licença
+
+Este projeto foi desenvolvido para o processo seletivo GDASH 2025/02.
+
+>>>>>>> 3f4751b (feat: initial implementation of the NestJS backend, Python producer, and Go worker)
