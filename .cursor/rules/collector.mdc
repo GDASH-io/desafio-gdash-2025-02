@@ -1,0 +1,80 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules — Collector (Python)
+
+## 1. Objetivo
+
+Regras para geração, edição e execução do serviço **collector** em Python que obtém dados climáticos e envia ao sistema (modo `direct` ou `rabbit`).
+
+## 2. Escopo
+
+Aplica-se a: `/collector-python/**` — `collector.py`, `requirements.txt`, `Dockerfile`, `utils.py`.
+
+## 3. Indexação / inclusão
+
+- Incluir: `collector.py`, `requirements.txt`, `Dockerfile`, `utils.py`.
+- Excluir: `venv/**`, `__pycache__/**`, `data/**`, `*.log`.
+
+## 4. Convenções de nomenclatura
+
+- Arquivos: `snake_case` (ex.: `collector.py`, `utils.py`).
+- Funções: `snake_case` (ex.: `fetch_from_open_meteo`, `publish_to_rabbit`).
+- Logs: prefixo `[collector]` em mensagens.
+
+## 5. Padrões de implementação
+
+- Encapsular lógica em funções claras:
+
+  - `fetch_from_open_meteo()`
+  - `normalize_payload(raw) -> dict`
+  - `publish_to_rabbit(payload)` (usa `pika`)
+  - `post_direct(payload)` (usa `requests`)
+
+- Lógica de modo:
+
+  - `COLLECTOR_MODE=direct` → chama `post_direct`
+  - `COLLECTOR_MODE=rabbit` → chama `publish_to_rabbit`
+
+- Retry: reconnect simples para RabbitMQ e retry no POST com exponencial backoff (3 tentativas).
+- Configuração: ler `RABBITMQ_URL`, `BACKEND_URL`, `COLLECT_INTERVAL` do env.
+- Segurança: não inserir chaves no código — usar `OPENWEATHER_KEY` via env.
+
+## 6. Dependências / requirements
+
+- Mínimo: `requests`, `pika`.
+- Gerar `requirements.txt` com versões fixas se possível (`requests==2.xx`, `pika==1.xx`).
+
+## 7. Docker / Execução
+
+- Dockerfile deve criar ambiente leve (`python:3.11-slim`) e rodar `python collector.py`.
+- Variáveis de ambiente passadas via `.env` / `env_file`.
+- `COLLECTOR_MODE` default: `direct`.
+
+## 8. Regras de geração automática (prompts)
+
+Quando pedir ao Cursor para gerar o collector:
+
+- Criar `collector.py` com funções listadas e comentários explicando cada bloco.
+- Incluir `--dry-run` flag opcional para desenvolvimento (não enviar mensagens, apenas logar payload).
+- Gerar `requirements.txt` e `Dockerfile`.
+- Incluir console logs com `[collector]` e timestamp.
+
+### Prompt template (exemplo)
+
+> "No `/collector-python`, gere `collector.py` com `fetch_from_open_meteo()`, `publish_to_rabbit()` e `post_direct()`. Ler variáveis de env e suportar `COLLECTOR_MODE` (direct|rabbit). Incluir `--dry-run`."
+
+## 9. Verificação (QA)
+
+- Modo direct: `python collector.py` → backend logs recebem posts.
+- Modo rabbit: com RabbitMQ ativo, `python collector.py` → fila `weather` aumenta (ver via UI).
+- Testar reconnect: simular RabbitMQ parado e ver reconexão tentativa.
+
+## 10. Boas práticas
+
+- Pequenas funções, testáveis.
+- Documentar como alternar modo e configurar `COLLECT_INTERVAL`.
+- Não cometer `venv/` ou arquivos temporários.
+
+---

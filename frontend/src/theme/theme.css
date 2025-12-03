@@ -1,0 +1,41 @@
+/**
+ * Theme CSS - Transições e utilitários para tema claro/escuro
+ * 
+ * NOTA: As variáveis CSS do tema claro e escuro estão definidas em index.css
+ * Este arquivo contém apenas transições e utilitários
+ */
+
+/* Transições suaves para mudanças de tema */
+:root {
+  --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Aplicar tema escuro também quando apenas a classe dark está presente */
+html.dark,
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Aplicar transições suaves em elementos que mudam com o tema */
+* {
+  transition: var(--transition-theme);
+}
+
+/* Elementos específicos que precisam de transição mais suave */
+body,
+.card,
+button,
+input,
+select,
+textarea {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Remover transições em elementos que não devem animar */
+svg,
+img,
+canvas,
+video {
+  transition: none;
+}
+

@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Build output
+dist/
+build/
+*.exe
+*.out
+bin/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output/
+htmlcov/
+.pytest_cache/
+.coverage
+*-coverage*.txt
+coverage-report.txt
+test-coverage*.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Go specific
+*.test
+*.prof
+
+# Python specific
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+

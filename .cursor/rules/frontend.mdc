@@ -1,0 +1,97 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules — Frontend (React + Vite + Tailwind)
+
+## 1. Objetivo
+
+Padrões e orientações para geração e edição de código frontend do projeto GDASH. Permitir que o Cursor crie componentes, páginas e integrações previsíveis, testáveis e alinhadas com o design system mínimo.
+
+## 2. Escopo
+
+Aplica-se a: `/frontend/**` — `src/`, `index.html`, `package.json`, `Dockerfile`, `vite.config.*`.
+
+## 3. Indexação / inclusão
+
+- Incluir: `src/**`, `index.html`, `package.json`.
+- Excluir: `node_modules/**`, `dist/**`, `*.log`.
+
+## 4. Convenções de nomenclatura
+
+- Pastas: `kebab-case` (ex.: `src/pages`, `src/components`).
+- Componentes React: `PascalCase` (ex.: `Dashboard.jsx`, `WeatherList.jsx`).
+- Arquivos: `kebab-case` para utilitários e services (ex.: `api-service.js`).
+- Hooks: prefixo `use` (ex.: `useFetchWeather.js`).
+- CSS: usar Tailwind classes em vez de arquivos CSS sempre que possível; se usar CSS, `*.module.css` e camelCase para classes JS.
+
+## 5. Estrutura recomendada
+
+```
+frontend/src/
+  - pages/
+    - Dashboard.jsx
+    - Login.jsx
+  - components/
+    - Header.jsx
+    - WeatherTable.jsx
+    - WeatherChart.jsx (opcional)
+  - services/
+    - api.js
+  - hooks/
+    - useFetchWeather.js
+  - main.jsx
+  - index.css (Tailwind base)
+```
+
+## 6. Padrões de implementação
+
+- Fetch de dados centralizado em `src/services/api.js` — exportar funções `getWeatherLogs()`, `exportCsv()`.
+- Componentes: manter simples e testáveis; props tipadas via JSDoc ou TypeScript se projeto for TS.
+- Mostrar estado de loading e tratamento de erro.
+- Botões de ação: "Atualizar", "Exportar CSV".
+- Logs em console com prefixo `[frontend]` para facilitar debugging.
+
+## 7. Integração com Backend
+
+- URLs durante dev: `http://localhost:3000` (usar `process.env` para configuração se necessário).
+- Habilitar CORS no backend (`app.enableCors()`).
+- Se o frontend for containerizado, dentro do container use `http://backend:3000`.
+
+## 8. Docker / Execução
+
+- Dockerfile deve instalar dependências e rodar `npm run dev` (dev) ou `npm run build` (prod).
+- Hot reload via bind-mount em dev.
+
+## 9. Regras de geração automática (prompts)
+
+Quando pedir ao Cursor para gerar frontend, instruir que:
+
+- Crie página `Dashboard` com fetch para `GET /weather/logs` e mostra JSON/tabular.
+- Adicione botão Atualizar que chama a API novamente.
+- Inserir `console.log('[frontend] fetched', data)` depois do fetch.
+- Se for pedir gráfico, instruir qual biblioteca usar (Recharts/Chart.js) — preferir Recharts para simplicidade.
+
+### Prompt template (exemplo curto)
+
+> "No `frontend/src/pages`, gere `Dashboard.jsx` que faz `GET http://localhost:3000/weather/logs`, mostra lista e botão 'Atualizar'. Crie `src/services/api.js` com `getWeatherLogs()`."
+
+## 10. Verificação (QA)
+
+- `npm install && npm run dev` → abrir `http://localhost:5173` e ver página Dashboard.
+- Após POST em backend, clicar "Atualizar" e ver novo dado.
+- Console do browser mostra `[frontend] fetched`.
+
+## 11. Acessibilidade e UX
+
+- Botões com `aria-label`.
+- Tabelas com `thead`/`tbody`.
+- Mensagem clara para estados vazios.
+
+## 12. Boas práticas
+
+- Pequenos commits por feature.
+- Evitar CSS inline massivo — preferir Tailwind utilities.
+- Não colocar chaves/API keys no código.
+
+---
