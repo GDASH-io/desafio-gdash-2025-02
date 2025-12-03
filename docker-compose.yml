@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  python_collector:
+    build: ./collector
+    container_name: python_collector
+    depends_on:
+      - go_producer
+    environment:
+      PRODUCER_URL: http://go_producer:8080/publish
+
+  go_producer:
+    build: ./go_producer
+    container_name: go_producer
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    ports:
+      - "8080:8080"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    command: >
+      bash -c "mongod --replSet rs0 --bind_ip_all"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  nest_api:
+    build: ./weather-api
+    container_name: weather_api
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: mongodb://mongo:27017/weather?replicaSet=rs0
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      JWT_SECRET: kdmfksmfkslmsfdk
+      DEFAULT_ADMIN_EMAIL: admin@example.com
+      DEFAULT_ADMIN_PASSWORD: 123456789
+      WEATHERAI_API_KEY: ${WEATHERAI_API_KEY}
+  frontend:
+    build: ./frontend
+    container_name: react_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: "http://localhost:3000"
+      CHOKIDAR_USEPOLLING: "true"
+    command: ["npm", "run", "dev", "--", "--host"]
+volumes:
+  mongo_data:
