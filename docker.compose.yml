@@ -133,12 +133,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:3001/api}
     container_name: gdash-frontend
     restart: unless-stopped
     ports:
       - "3000:80"
-    environment:
-      - VITE_API_URL=${VITE_API_URL}
     depends_on:
       - backend
     networks:
