@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: gdash-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    healthCheckPath: /health
+
+  - type: web
+    name: gdash-frontend
+    env: static
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://gdash-backend.onrender.com
+
+databases:
+  - name: gdash-mongodb
+    plan: free
+    databaseName: gdash
+    user: gdash_user
+

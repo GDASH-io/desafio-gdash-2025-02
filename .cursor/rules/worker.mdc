@@ -1,0 +1,78 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules — Worker (Go)
+
+## 1. Objetivo
+
+Definir como o Worker em Go deve ser gerado e mantido: consumir mensagens do RabbitMQ, validar e postar para o backend, com logs claros e retries.
+
+## 2. Escopo
+
+Aplica-se a: `/worker-go/**` — `main.go`, `go.mod`, `Dockerfile`, utilitários.
+
+## 3. Indexação / inclusão
+
+- Incluir: `*.go`, `go.mod`, `go.sum`, `Dockerfile`.
+- Excluir: `bin/**`, `*.exe`, `vendor/**`.
+
+## 4. Convenções de nomenclatura
+
+- Pacote principal: `package main`.
+- Arquivo principal: `main.go`.
+- Funções: `camelCase` (ex.: `connectRabbit`, `consumeLoop`, `postToBackend`).
+- Logs: prefixo `[worker]` (`log.Printf("[worker] mensagem")`).
+
+## 5. Padrões de implementação
+
+- Ler `RABBITMQ_URL` do env.
+- Conectar com `amqp.Dial(RABBITMQ_URL)`.
+- Declarar fila `weather` com durable=true.
+- Consumir mensagens com `channel.Consume`.
+- Para cada mensagem:
+
+  - Validar JSON (uso mínimo de `encoding/json` para desserializar e checar campos).
+  - Tentar `postToBackend()` com `http.Post("http://backend:3000/weather/logs", "application/json", bytes.NewReader(body))`.
+  - Em caso de sucesso (status 2xx): `d.Ack(false)`.
+  - Em caso de erro temporário: retry interno (3 tentativas com backoff), se falhar: `d.Nack(false, true)` (requeue=true) ou mover para dead-letter (se configurado).
+
+- Implementar graceful shutdown (capturar SIGINT/SIGTERM).
+
+## 6. Dependências
+
+- Usar `github.com/streadway/amqp` (ou fork suportado) para RabbitMQ.
+- Imports padrão: `net/http`, `encoding/json`, `log`, `time`, `bytes`, `os`, `os/signal`, `syscall`.
+
+## 7. Docker / Execução
+
+- Dockerfile baseado em `golang:1.20-alpine` ou similar.
+- Build do binário no image e execução do binário.
+- Healthcheck simples: checar se processo em execução ou consultar endpoint `/health` do backend (opcional).
+
+## 8. Regras de geração automática (prompts)
+
+Quando pedir ao Cursor para gerar worker Go:
+
+- Criar `go.mod` com o módulo `dg.worker` e dependência `github.com/streadway/amqp`.
+- Gerar `main.go` com estrutura de conexão, consume loop, postToBackend, retry/backoff e logging.
+- Incluir comentários que expliquem pontos sensíveis (ack/nack/retry).
+- Incluir instrução para compilar localmente (`go build`), e comando para rodar (`go run main.go`).
+
+### Prompt template (exemplo)
+
+> "Gerar `worker-go/main.go` que conecta `RABBITMQ_URL`, consome fila `weather`, faz POST para `http://backend:3000/weather/logs`, ack/nack com retry (3x) e logs `[worker]`. Incluir graceful shutdown."
+
+## 9. Verificação (QA)
+
+- Com RabbitMQ e backend ativos: `go run main.go` → publicar mensagem manualmente e observar worker processando e backend recebendo.
+- Ver que em erro temporário worker faz requeue (ver contagem na UI do RabbitMQ).
+- Testar `go build` e execução binária.
+
+## 10. Boas práticas
+
+- Não logar payloads inteiros com dados sensíveis (se houver).
+- Usar timeouts HTTP curtos (5-10s).
+- Pequenas funções separadas para teste unitário quando possível.
+
+---

@@ -1,0 +1,120 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: dg_mongo
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongo_data:/data/db
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: dg_rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    env_file: .env
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dg_backend
+    environment:
+      - DOCKER_CONTAINER=true
+      - MONGO_URI=${MONGO_URI}
+      - PORT=${BACKEND_PORT:-3000}
+    env_file: .env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    volumes:
+      - ./backend:/usr/src/app
+      - backend_node_modules:/usr/src/app/node_modules
+    command: ["npm", "run", "start:dev"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: dg_worker
+    environment:
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - BACKEND_URL=${BACKEND_URL}
+    env_file: .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  collector:
+    build:
+      context: ./collector-python
+      dockerfile: Dockerfile
+    container_name: dg_collector
+    environment:
+      - BACKEND_URL=${BACKEND_URL}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - COLLECTOR_MODE=${COLLECTOR_MODE:-rabbit}
+      - COLLECT_INTERVAL=${COLLECT_INTERVAL:-60}
+      - OPENWEATHER_KEY=${OPENWEATHER_KEY:-}
+    env_file: .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dg_frontend
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    env_file: .env
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    command: ["sh", "-c", "npm run dev"]
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  backend_node_modules:
+  frontend_node_modules:

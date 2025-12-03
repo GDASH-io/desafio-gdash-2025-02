@@ -1,0 +1,6 @@
+!*.example
+!*.exemple
+!*.sample
+
+.env
+.env.local

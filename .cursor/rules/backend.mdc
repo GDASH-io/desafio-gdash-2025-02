@@ -1,0 +1,95 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules — Backend (NestJS)
+
+## 1. Objetivo
+
+Regras e padrões específicos para o backend NestJS do projeto **Desafio-GDASH**. Fornece instruções que o Cursor deve respeitar ao gerar, editar ou refatorar código nessa pasta.
+
+## 2. Escopo
+
+Aplica-se a: `/backend/**` — controllers, services, dtos, modules, schemas, scripts de build, Dockerfile e arquivos de configuração TS/Node.
+
+## 3. Indexação / O que incluir no índice
+
+- Incluir: `src/**`, `package.json`, `tsconfig.json`, `Dockerfile`, `README.md`, `scripts/**`.
+- Excluir: `node_modules/**`, `dist/**`, `coverage/**`, `*.log`.
+
+## 4. Convenções de nomenclatura
+
+- Módulos: `kebab-case` para pastas (ex.: `weather-module` ou `weather`).
+- Arquivos TypeScript: `kebab-case` (ex.: `weather.controller.ts`, `create-weather-log.dto.ts`).
+- Classes / Interfaces / DTOs: `PascalCase` (ex.: `CreateWeatherLogDto`, `WeatherLogService`).
+- Controllers: nomear por recurso `WeatherController` — rota base `/weather`.
+- Serviços: `WeatherService`.
+- Schemas Mongoose: `WeatherLogSchema` e interface `WeatherLogDocument`.
+
+## 5. Estrutura recomendada do domínio `weather`
+
+```
+backend/src/weather/
+  - controllers/
+    - weather.controller.ts
+  - services/
+    - weather.service.ts
+  - dto/
+    - create-weather-log.dto.ts
+  - schemas/
+    - weather-log.schema.ts
+  - weather.module.ts
+```
+
+## 6. Padrões de implementação
+
+- Sempre usar DTOs para validação (class-validator / class-transformer).
+- Controllers: são finos — delegue regra ao Service.
+- Services: implementam lógica de negócio e interagem com Mongoose.
+- Logging: use `console.log`/`console.warn` com prefixo claro: `[backend][weather] Mensagem`.
+- Tratamento de erros: lançar `HttpException` com códigos HTTP apropriados.
+- Endpoints obrigatórios:
+
+  - `GET /health` — retorno `{ status: 'ok' }`.
+  - `POST /weather/logs` — valida DTO e salva no Mongo.
+  - `GET /weather/logs` — paginação opcional (query `?limit=100`).
+  - `GET /weather/export.csv` & `GET /weather/export.xlsx` — exportação.
+
+## 7. Mongoose / Persistência
+
+- Conectar com `process.env.MONGO_URI`.
+- Schema mínimo: `{ timestamp: String, temperature: Number, humidity: Number, city?: String }`.
+- Métodos: `save`, `find().sort({timestamp: -1}).limit(N)`.
+
+## 8. Docker / Execução
+
+- Dockerfile deve suportar dev com bind-mount e `npm run start:dev`.
+- Healthcheck simples que consulta `GET /health`.
+- Variáveis de ambiente lidas via `process.env` e documentadas em `.env.example`.
+
+## 9. Regras de geração automática (prompts)
+
+Quando solicitado a gerar código backend, o Cursor deve:
+
+- Criar DTO + Controller + Service + Module no mesmo commit.
+- Incluir testes unitários stub (`*.spec.ts`) no mesmo diretório.
+- Inserir `console.log` para QA em `POST /weather/logs` com payload recebido.
+- Não introduzir segredos (chaves) nos arquivos; usar `process.env` ou `.env`.
+
+### Prompt template (exemplo curto)
+
+> "No diretório `backend/src/weather`, gere: `create-weather-log.dto.ts`, `weather.controller.ts`, `weather.service.ts`, `weather.module.ts`. O controller deve expor `POST /weather/logs` validando DTO e chamando service.save(). Adicione logs com prefixo `[backend][weather]`. Use Mongoose schema `WeatherLogSchema`. Crie testes stubs."
+
+## 10. Verificações (QA)
+
+- `npm run start:dev` → `curl http://localhost:3000/health` retorna `{status:'ok'}`.
+- `curl -X POST http://localhost:3000/weather/logs -H "Content-Type: application/json" -d '{"timestamp":"2025-11-24T10:00:00Z","temperature":25,"humidity":70}'` → backend logs mostram payload e HTTP 201 (ou 200).
+- Verificar documento no Mongo (Mongo Compass / `mongo` shell).
+
+## 11. Boas práticas de segurança
+
+- Não gerar credenciais hardcoded.
+- Usar `JWT_SECRET` via `.env`.
+- Validar campos críticos (timestamps, numbers).
+
+---
