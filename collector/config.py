@@ -1,0 +1,6 @@
+import os
+
+PRODUCER_URL = os.getenv("PRODUCER_URL")
+DEFAULT_CITY = "São Paulo"
+DEFAULT_LAT = -23.55
+DEFAULT_LON = -46.63

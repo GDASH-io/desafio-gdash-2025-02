@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+}
+
+model WeatherSample {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  source        String
+  timestamp     DateTime
+  temperatureC  Float?
+  humidity      Float?
+  pressureHpa   Float?
+  windSpeedMs   Float?
+  windDirection Float?
+  precipitation Float?
+  lat           Float
+  lon           Float
+  raw           Json?
+
+  createdAt DateTime @default(now())
+}
