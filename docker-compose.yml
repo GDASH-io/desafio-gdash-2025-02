@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - gdash-network
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: examplepassword
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - gdash-network
+
+  weather-collector:
+    build: ./weather-collector
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      LATITUDE: "-23.5505" # Sao Paulo
+      LONGITUDE: "-46.6333"
+    networks:
+      - gdash-network
+    restart: always
+
+  weather-worker:
+    build: ./weather-worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      API_URL: http://backend:3000/api/weather/logs
+    networks:
+      - gdash-network
+    restart: always
+
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGO_URI: mongodb://root:examplepassword@mongodb:27017/gdash?authSource=admin
+      JWT_SECRET: supersecretkey
+    networks:
+      - gdash-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - gdash-network
+
+networks:
+  gdash-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
