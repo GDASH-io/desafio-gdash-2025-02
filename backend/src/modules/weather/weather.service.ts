@@ -12,7 +12,12 @@ export class WeatherService {
   ) {}
 
   async create(createWeatherLogDto: CreateWeatherLogDto): Promise<WeatherLogDocument> {
-    const createdLog = new this.weatherLogModel(createWeatherLogDto);
+    // Converter timestamp string para Date
+    const logData = {
+      ...createWeatherLogDto,
+      timestamp: new Date(createWeatherLogDto.timestamp),
+    };
+    const createdLog = new this.weatherLogModel(logData);
     return createdLog.save();
   }
 

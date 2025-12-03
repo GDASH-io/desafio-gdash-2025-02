@@ -100,19 +100,35 @@ func (c *Consumer) processMessage(d amqp.Delivery) error {
 
 	// Transformar timestamp se necessário
 	if timestampStr, ok := weatherData["timestamp"].(string); ok {
-		timestamp, err := time.Parse(time.RFC3339, timestampStr)
-		if err != nil {
-			// Tentar outros formatos
-			timestamp, err = time.Parse("2006-01-02T15:04:05", timestampStr)
-			if err != nil {
-				// Usar timestamp atual se não conseguir parsear
-				weatherData["timestamp"] = time.Now()
-			} else {
-				weatherData["timestamp"] = timestamp
-			}
-		} else {
-			weatherData["timestamp"] = timestamp
+		// Tentar diferentes formatos de data
+		formats := []string{
+			time.RFC3339,
+			"2006-01-02T15:04:05",
+			"2006-01-02T15:04:05Z",
+			"2006-01-02 15:04:05",
 		}
+		
+		var timestamp time.Time
+		var err error
+		parsed := false
+		
+		for _, format := range formats {
+			timestamp, err = time.Parse(format, timestampStr)
+			if err == nil {
+				parsed = true
+				break
+			}
+		}
+		
+		if !parsed {
+			// Usar timestamp atual se não conseguir parsear
+			timestamp = time.Now()
+		}
+		
+		weatherData["timestamp"] = timestamp.Format(time.RFC3339)
+	} else {
+		// Se não houver timestamp, usar o atual
+		weatherData["timestamp"] = time.Now().Format(time.RFC3339)
 	}
 
 	// Enviar para API NestJS

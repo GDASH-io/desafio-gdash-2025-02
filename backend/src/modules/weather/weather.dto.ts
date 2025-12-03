@@ -1,11 +1,11 @@
-import { IsString, IsNumber, IsDate, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateWeatherLogDto {
   @ApiProperty({ description: 'Timestamp do registro' })
-  @IsDate()
+  @IsString()
   @IsNotEmpty()
-  timestamp: Date;
+  timestamp: string;
 
   @ApiProperty({ description: 'Localização' })
   @IsString()
