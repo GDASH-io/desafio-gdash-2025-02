@@ -1,0 +1,73 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+coverage/
+*.local
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Testing
+*.test.js.snap
+.nyc_output/
+
+# Database
+*.db
+*.sqlite
+mongodb_data/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# Export files (exemplos podem ser commitados, mas não dados reais)
+weather_export_*.csv
+weather_export_*.xlsx
+*_test.csv
+*_test.xlsx
+
+# Docker volumes
+mongodb_data/
+rabbitmq_data/

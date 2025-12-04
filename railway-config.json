@@ -1,0 +1,147 @@
+{
+  "version": "1.0",
+  "services": {
+    "mongodb": {
+      "type": "database",
+      "provider": "mongodb",
+      "plan": "shared",
+      "notes": "Banco de dados principal para armazenar dados climáticos"
+    },
+    "rabbitmq": {
+      "type": "service",
+      "image": "rabbitmq:3-management",
+      "ports": {
+        "amqp": 5672,
+        "management": 15672
+      },
+      "healthcheck": {
+        "command": "rabbitmq-diagnostics -q ping",
+        "interval": 10,
+        "timeout": 5,
+        "retries": 10
+      },
+      "notes": "Fila de mensagens para comunicação entre serviços"
+    },
+    "python-collector": {
+      "type": "service",
+      "root": "/python-weather-collector",
+      "buildCommand": "pip install -r requirements.txt",
+      "startCommand": "python -m src.main",
+      "dependencies": ["rabbitmq"],
+      "notes": "Coleta dados meteorológicos da API Open-Meteo a cada 5 minutos"
+    },
+    "go-worker": {
+      "type": "service",
+      "root": "/go-weather-worker",
+      "dependencies": ["rabbitmq", "nestjs-api"],
+      "notes": "Processa mensagens da fila e envia para API NestJS"
+    },
+    "nestjs-api": {
+      "type": "service",
+      "root": "/nestjs-api",
+      "buildCommand": "npm install && npm run build",
+      "startCommand": "npm run start:prod",
+      "port": 3000,
+      "dependencies": ["mongodb", "rabbitmq"],
+      "publicAccess": true,
+      "healthcheck": {
+        "path": "/health",
+        "interval": 30
+      },
+      "notes": "API REST principal - deve ter domínio público"
+    },
+    "frontend": {
+      "type": "service",
+      "root": "/desafio_gdash",
+      "buildCommand": "npm install && npm run build",
+      "startCommand": "npx serve -s dist -l 8080",
+      "port": 8080,
+      "publicAccess": true,
+      "notes": "Interface web React/Vite - deve ter domínio público"
+    }
+  },
+  "environmentVariables": {
+    "mongodb": {},
+    "rabbitmq": {
+      "required": [
+        "RABBITMQ_DEFAULT_USER",
+        "RABBITMQ_DEFAULT_PASS"
+      ]
+    },
+    "python-collector": {
+      "required": [
+        "RABBITMQ_HOST",
+        "RABBITMQ_PORT",
+        "RABBITMQ_USER",
+        "RABBITMQ_PASSWORD",
+        "RABBITMQ_QUEUE"
+      ],
+      "optional": [
+        "COLLECTION_INTERVAL",
+        "LATITUDE",
+        "LONGITUDE"
+      ]
+    },
+    "go-worker": {
+      "required": [
+        "RABBITMQ_URL",
+        "RABBITMQ_QUEUE",
+        "API_BASE_URL",
+        "API_ENDPOINT"
+      ],
+      "optional": [
+        "WORKER_CONCURRENCY",
+        "RETRY_ATTEMPTS",
+        "RETRY_DELAY"
+      ]
+    },
+    "nestjs-api": {
+      "required": [
+        "NODE_ENV",
+        "PORT",
+        "MONGODB_URI",
+        "JWT_SECRET",
+        "DEFAULT_USER_EMAIL",
+        "DEFAULT_USER_PASSWORD"
+      ],
+      "optional": [
+        "TOGETHER_API_KEY",
+        "DEFAULT_USER_NAME"
+      ]
+    },
+    "frontend": {
+      "required": [
+        "VITE_API_URL"
+      ]
+    }
+  },
+  "networking": {
+    "internal": {
+      "mongodb": "mongodb.railway.internal:27017",
+      "rabbitmq": "rabbitmq.railway.internal:5672",
+      "nestjs-api": "nestjs-api.railway.internal:3000"
+    },
+    "public": {
+      "nestjs-api": "https://<service-name>.railway.app",
+      "frontend": "https://<service-name>.railway.app"
+    }
+  },
+  "volumes": {
+    "mongodb": {
+      "path": "/data/db",
+      "size": "5GB"
+    },
+    "rabbitmq": {
+      "path": "/var/lib/rabbitmq",
+      "size": "2GB"
+    }
+  },
+  "deploymentOrder": [
+    "mongodb",
+    "rabbitmq",
+    "nestjs-api",
+    "go-worker",
+    "python-collector",
+    "frontend"
+  ]
+}

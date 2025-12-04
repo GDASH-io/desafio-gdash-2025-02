@@ -1,0 +1,139 @@
+services:
+  # MongoDB - Banco de dados NoSQL
+  mongodb:
+    image: mongo:7
+    container_name: gdash-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-changeme}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - gdash-network
+    healthcheck:
+      # use mongosh (mongo client antigo não existe no MongoDB 7)
+      test:
+        [
+          "CMD-SHELL",
+          'echo ''db.runCommand("ping").ok'' | mongosh localhost:27017/test --quiet',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ - Nossa fila de mensagens
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672" # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-changeme}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # Python Weather Collector - Coletor de dados meteorológicos
+  python-weather-collector:
+    build:
+      context: ./python-weather-collector
+      dockerfile: Dockerfile
+    container_name: gdash-python-weather-collector
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - PYTHONUNBUFFERED=1
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASS:-changeme}
+      - RABBITMQ_QUEUE=weather_data
+      - COLLECTION_INTERVAL=300
+      - LATITUDE=-23.5505
+      - LONGITUDE=-46.6333
+    networks:
+      - gdash-network
+
+  # Go Weather Worker - Consumidor de fila e envio para API
+  go-weather-worker:
+    build:
+      context: ./go-weather-worker
+      dockerfile: Dockerfile
+    container_name: gdash-go-weather-worker
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      nestjs-api:
+        condition: service_started
+    environment:
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-changeme}@rabbitmq:5672/
+      - RABBITMQ_QUEUE=weather_data
+      - API_BASE_URL=http://nestjs-api:3000
+      - API_ENDPOINT=/api/weather/logs
+      - WORKER_CONCURRENCY=5
+      - RETRY_ATTEMPTS=3
+      - RETRY_DELAY=2s
+    networks:
+      - gdash-network
+
+  # NestJS API - Recebe dados do Go Worker e armazena no MongoDB
+  nestjs-api:
+    build:
+      context: ./nestjs-api
+      dockerfile: Dockerfile
+    container_name: gdash-nestjs-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-changeme}@mongodb:27017/weather_dashboard?authSource=admin
+      - JWT_SECRET=${JWT_SECRET:-please-change-this-secret-key}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+      - DEFAULT_USER_EMAIL=${DEFAULT_USER_EMAIL:-user@test.com}
+      - DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-123456}
+      - DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-Test User}
+    networks:
+      - gdash-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/api/weather/stats', (r) => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongodb_data:
+  rabbitmq_data:
+
+networks:
+  gdash-network:
+    driver: bridge
