@@ -9,8 +9,8 @@ from datetime import datetime
 REDIS_HOST = os.getenv('REDIS_HOST', 'redis')
 REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 REDIS_CHANNEL = 'weather_data_queue'
-LATITUDE = os.getenv('LATITUDE', '-23.5505') # São Paulo
-LONGITUDE = os.getenv('LONGITUDE', '-46.6333') # São Paulo
+LATITUDE = os.getenv('LATITUDE', '-22.9099') # Campinas (padrão)
+LONGITUDE = os.getenv('LONGITUDE', '-47.0626') # Campinas (padrão)
 COLLECTION_INTERVAL_SECONDS = int(os.getenv('COLLECTION_INTERVAL_SECONDS', 10)) # Coleta a cada 10 segundos por padrão (ambiente pode sobrescrever)
 
 # Conexão com o Redis
@@ -30,7 +30,7 @@ OPEN_METEO_URL = (
 )
 
 # --- Gemini (Generative Language) API (opcional) ---
-GEMINI_API_KEY = os.getenv('AIzaSyD8dIWN5No7PofGqDI0-SNwiB8H5LaAiws', '')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
 GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent'
 
 def collect_and_publish():
@@ -72,17 +72,74 @@ def collect_and_publish():
                     'systemInstruction': {'parts': [{'text': system_prompt}]}
                 }
 
-                resp = requests.post(f"{GEMINI_API_URL}?key={GEMINI_API_KEY}", json=gemini_payload, timeout=10, headers={"Content-Type": "application/json"})
+                # Prefer header auth if key provided, otherwise fall back to query param
+                headers = {"Content-Type": "application/json"}
+                if GEMINI_API_KEY:
+                    headers["Authorization"] = f"Bearer {GEMINI_API_KEY}"
+
+                resp = requests.post(GEMINI_API_URL, json=gemini_payload, timeout=10, headers=headers)
                 resp.raise_for_status()
                 resp_json = resp.json()
-                # Navega até o texto candidato (estrutura compatível com o uso no backend TS)
-                candidate = resp_json.get('candidates', [])
-                if candidate and isinstance(candidate, list):
-                    text = candidate[0].get('content', {}).get('parts', [])
-                    if text and isinstance(text, list):
-                        insight_text = text[0].get('text')
-                        if insight_text:
-                            weather_payload['insight'] = insight_text
+
+                # Função utilitária para extrair texto de várias estruturas possíveis de resposta
+                def _extract_text_from_gemini(json_obj):
+                    # 1) Formato com 'candidates' -> candidate[0].content.parts[0].text
+                    candidates = json_obj.get('candidates') or json_obj.get('candidate')
+                    if candidates and isinstance(candidates, list) and len(candidates) > 0:
+                        first = candidates[0]
+                        # caminho possível 1
+                        content = first.get('content') if isinstance(first, dict) else None
+                        if content:
+                            parts = None
+                            if isinstance(content, dict):
+                                parts = content.get('parts')
+                            elif isinstance(content, list) and len(content) > 0 and isinstance(content[0], dict):
+                                parts = content[0].get('parts')
+                            if parts and isinstance(parts, list) and len(parts) > 0:
+                                part = parts[0]
+                                if isinstance(part, dict) and part.get('text'):
+                                    return part.get('text')
+                                if isinstance(part, str):
+                                    return part
+
+                    # 2) Formato com 'output' / 'outputs' (ou 'choices') -> buscar texto em nested fields
+                    for key in ('output', 'outputs', 'choices'):
+                        out = json_obj.get(key)
+                        if not out:
+                            continue
+                        if isinstance(out, list) and len(out) > 0:
+                            first = out[0]
+                            # procurar por 'content'->'text' ou 'text'
+                            if isinstance(first, dict):
+                                # content.parts
+                                content = first.get('content') or first.get('message') or first
+                                if isinstance(content, dict):
+                                    parts = content.get('parts') or content.get('text')
+                                    if isinstance(parts, list) and len(parts) > 0:
+                                        p = parts[0]
+                                        if isinstance(p, dict) and p.get('text'):
+                                            return p.get('text')
+                                        if isinstance(p, str):
+                                            return p
+                                elif isinstance(content, str):
+                                    return content
+                                # fallback: top-level 'text'
+                                if first.get('text'):
+                                    return first.get('text')
+
+                    # 3) Se houver um 'response' ou 'generated_text' direto
+                    for fld in ('response', 'generated_text', 'text'):
+                        v = json_obj.get(fld)
+                        if isinstance(v, str) and v.strip():
+                            return v
+
+                    return None
+
+                insight_text = _extract_text_from_gemini(resp_json)
+                if insight_text:
+                    weather_payload['insight'] = insight_text
+                else:
+                    print(f"Aviso: não foi possível extrair insight do Gemini. Resposta: {resp_json}")
             except Exception as e:
                 print(f"Aviso: falha ao gerar insight com Gemini: {e}")
 
