@@ -1,0 +1,178 @@
+services:
+  # --- Message Broker ---
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: gdash-rabbitmq
+    ports:
+      - "5672:5672"   # Porta principal AMQP
+      - "15672:15672" # Interface de Gestão (UI)
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin123}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gdash-network
+
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+    container_name: gdash-web
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:3000
+    volumes:
+      - ./services/web/src:/app/public
+      - ./services/web/public:/app/public
+    restart: unless-stopped
+    networks:
+      - gdash-network
+
+  # --- DB ---
+  mongodb:
+    image: mongo:8
+    container_name: gdash-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS:-admin123}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-gdash}
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/${MONGO_DB:-gdash} --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - gdash-network
+
+  # --- NestJS API ---
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    container_name: gdash-api
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      API_PORT: 3000
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_USER: ${MONGO_USER:-admin}
+      MONGO_PASS: ${MONGO_PASS:-admin123}
+      MONGO_DB: ${MONGO_DB:-gdash}
+
+      JWT_SECRET: ${JWT_SECRET:-chave-super-secreta}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-604800}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-chave-super-secreta-refresh}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-2592000}
+
+      DEFAULT_USER_EMAIL: ${DEFAULT_USER_EMAIL:-admin@admin.com}
+      DEFAULT_USER_PASSWORD: ${DEFAULT_USER_PASSWORD:-Admin123456}
+
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
+      GEMINI_TEMPERATURE: ${GEMINI_TEMPERATURE:-0.7}
+      GEMINI_MAX_TOKENS: ${GEMINI_MAX_TOKENS:-2048}
+      AI_ENABLED: ${AI_ENABLED:-true}
+    volumes:
+      - ./services/api/src:/app/src
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - gdash-network
+  
+  # --- Go Worker ---
+  worker:
+    build: 
+      context: ./services/worker
+      dockerfile: Dockerfile
+    container_name: gdash-worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_PASS: ${RABBITMQ_PASS:-admin123}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-weather_data}
+      RABBITMQ_PREFETCH: 10
+
+      API_BASE_URL: http://api:3000
+      API_TIMEOUT_SECONDS: 10
+
+      WORKER_COUNT: 3
+      MAX_RETRIES: 3
+      RETRY_DELAY_MS: 1000
+      LOG_LEVEL: info
+    restart: unless-stopped
+    networks:
+      - gdash-network
+
+  # --- Collector ---
+  collector:
+    build:
+      context: ./services/collector
+      dockerfile: Dockerfile
+    container_name: gdash-collector
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      # Weather API
+      WEATHER_API_URL: ${WEATHER_API_URL}
+      LOCATION_LAT: ${LOCATION_LAT} 
+      LOCATION_LON: ${LOCATION_LON}
+      LOCATION_CITY: ${LOCATION_CITY}
+      # RabbitMQ
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_PASS: ${RABBITMQ_PASS:-admin123}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE:-weather_data}
+      # Collector settings
+      COLLECTION_INTERVAL_MINUTES: ${COLLECTION_INTERVAL_MINUTES:-5}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./services/collector/src:/app/src
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - gdash-network
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  mongodb_data:
+    driver: local
+
+networks:
+  gdash-network:
+    driver: bridge
