@@ -25,7 +25,6 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      # CORREÇÃO AQUI: Adicionado 'MQ' no nome das variáveis
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: password123
     networks:
