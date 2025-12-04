@@ -19,6 +19,24 @@ services:
     networks:
       - gdash-network
 
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+    container_name: gdash-web
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:3000
+    volumes:
+      - ./services/web/src:/app/public
+      - ./services/web/public:/app/public
+    restart: unless-stopped
+    networks:
+      - gdash-network
+
   # --- DB ---
   mongodb:
     image: mongo:8
