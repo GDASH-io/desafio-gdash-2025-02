@@ -35,7 +35,7 @@ services:
       # Coordenadas (Campinas, Brasil)
       LATITUDE: -22.9099
       LONGITUDE: -47.0626
-      COLLECTION_INTERVAL_SECONDS: 10
+      COLLECTION_INTERVAL_SECONDS: 60
     restart: on-failure
 
   # 4. Microsserviço de Processamento (Go Worker)
