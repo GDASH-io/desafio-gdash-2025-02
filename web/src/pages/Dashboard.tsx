@@ -3,17 +3,18 @@ import WeatherCard from "../components/WeatherCard";
 import WeatherTable from "../components/WaetherTable";
 import InsightsCard from "../components/InsightsCard";
 import { Button } from "@/components/ui/button";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Dashboard() {
   const [logs, setLogs] = useState<any[]>([]);
   const [insights, setInsights] = useState<any>(null);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/weather/logs")
+    fetch(`${API_URL}api/weather/logs`)
       .then((res) => res.json())
       .then((data) => setLogs(data));
 
-    fetch("http://localhost:3000/api/weather/insights")
+    fetch(`${API_URL}api/weather/insights`)
       .then((res) => res.json())
       .then((data) => setInsights(data));
   }, []);
@@ -34,10 +35,10 @@ export default function Dashboard() {
       )}
 
       <div className="flex gap-4">
-        <Button onClick={() => window.open("http://localhost:3000/api/weather/export.csv")}>
+        <Button onClick={() => window.open(`${API_URL}api/weather/export.csv`)}>
           Exportar CSV
         </Button>
-        <Button onClick={() => window.open("http://localhost:3000/api/weather/export.xlsx")}>
+        <Button onClick={() => window.open(`${API_URL}api/weather/export.xlsx`)}>
           Exportar XLSX
         </Button>
       </div>

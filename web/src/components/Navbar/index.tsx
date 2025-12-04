@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Navbar() {
   const location = useLocation();
@@ -21,9 +22,8 @@ export default function Navbar() {
     // 👇 Captura email/id do usuário logado do localStorage
     const email = localStorage.getItem("userEmail") || '';
     const token = localStorage.getItem("token") || '';
-    
     // 👇 Buscar todos usuários
-    fetch("http://localhost:3000/api/users", {
+    fetch(`${API_URL}api/users`, {
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`, // 👈 envia token no header
@@ -51,7 +51,7 @@ export default function Navbar() {
   const handleDelete = async (id?: string) => {
     console.log("id =>", id);
     
-    const url = `http://localhost:3000/api/users/${id}`;
+    const url = `${API_URL}api/users/${id}`;
 
     const response = await fetch(url, {
       method: "DELETE",
