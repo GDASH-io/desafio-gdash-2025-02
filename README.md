@@ -55,13 +55,16 @@ Sistema completo de coleta, processamento e visualização de dados meteorológi
 ```
 [Collector Python]
 |
-v
+v          ^
+           |
 RabbitMQ
 |
-v
+v          ^
+           |
 [Queue Worker Go]
 |
-v
+v          ^
+           |
 [NestJS API] ---> [MongoDB]
 ^
 |
