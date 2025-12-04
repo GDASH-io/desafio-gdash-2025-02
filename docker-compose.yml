@@ -1,0 +1,66 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: \${MONGO_INITDB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: \${MONGO_INITDB_ROOT_PASSWORD:-example}
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: \${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: \${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  api:
+    build: ./backend
+    command: sh -c "npm install && npm run start:dev"
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://\${MONGO_INITDB_ROOT_USERNAME}:\${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017
+      - RABBITMQ_URI=amqp://\${RABBITMQ_DEFAULT_USER}:\${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
+    depends_on:
+      - mongo
+      - rabbitmq
+
+  frontend:
+    build: ./frontend
+    command: sh -c "pnpm install && pnpm dev --host"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+  python-producer:
+    build: ./python-producer
+    command: python producer.py
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_URI=amqp://\${RABBITMQ_DEFAULT_USER}:\${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
+
+  go-worker:
+    build: ./go-worker
+    command: /go/bin/worker
+    depends_on:
+      - rabbitmq
+      - api
+    environment:
+      - RABBITMQ_URI=amqp://\${RABBITMQ_DEFAULT_USER}:\${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/
+      - API_URL=http://api:3000
+
+volumes:
+  mongo-data:
+  rabbitmq-data:
