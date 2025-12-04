@@ -1,8 +1,6 @@
 version: '3.8'
 
 services:
-
-  # 1. Banco de Dados MongoDB
   mongodb:
     image: mongo:6.0
     container_name: mongodb
@@ -12,7 +10,6 @@ services:
       - mongo_data:/data/db
     restart: always
 
-  # 2. Broker/Cache Redis
   redis:
     image: redis:6.2-alpine
     container_name: redis
@@ -20,7 +17,6 @@ services:
       - "6379:6379"
     restart: always
 
-  # 3. Microsserviço de Coleta de Dados (Python)
   data-collector:
     build:
       context: ./data-collector
@@ -28,17 +24,14 @@ services:
     container_name: data-collector
     depends_on:
       - redis
-    # Variáveis de ambiente para o script Python
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      # Coordenadas (Campinas, Brasil)
       LATITUDE: -22.9099
       LONGITUDE: -47.0626
       COLLECTION_INTERVAL_SECONDS: 10
     restart: on-failure
 
-  # 4. Microsserviço de Processamento (Go Worker)
   go-worker:
     build:
       context: ./go-worker
@@ -47,48 +40,40 @@ services:
     depends_on:
       - redis
       - nestjs-api
-    # Variáveis de ambiente para o worker Go
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       NESTJS_API_URL: http://nestjs-api:3000/api/weather/process
     restart: on-failure
 
-  # 5. API Backend (NestJS)
   nestjs-api:
     build:
       context: ./nestjs-api
       dockerfile: Dockerfile
     container_name: nestjs-api
     ports:
-      # Exposto apenas para o frontend e worker (não diretamente para o host)
       - "3000:3000"
     depends_on:
       - mongodb
-    # Variáveis de ambiente para o NestJS
     environment:
       NODE_ENV: production
       PORT: 3000
       MONGO_URI: mongodb://mongodb:27017/clima-tempo-db
       JWT_SECRET: supersecretkey
-      # Chave para a Google Generative Language (Gemini) - defina em .env ou substitua diretamente
       GEMINI_API_KEY: ${GEMINI_API_KEY}
     restart: always
-    # HEALTHCHECK BÁSICO
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  # 6. Aplicação Frontend (React/Nginx)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
     ports:
-      # Porta principal que você acessará no navegador
       - "80:80"
     depends_on:
       - nestjs-api
