@@ -1,0 +1,13 @@
+import { loadLinksInteraction } from "./interaction.js";
+import { loadLinksPlugin } from "./plugin.js";
+export async function loadParticlesLinksInteraction(engine, refresh = true) {
+    engine.checkVersion("3.9.1");
+    await loadLinksInteraction(engine, refresh);
+    await loadLinksPlugin(engine, refresh);
+}
+export * from "./Options/Classes/Links.js";
+export * from "./Options/Classes/LinksShadow.js";
+export * from "./Options/Classes/LinksTriangle.js";
+export * from "./Options/Interfaces/ILinks.js";
+export * from "./Options/Interfaces/ILinksShadow.js";
+export * from "./Options/Interfaces/ILinksTriangle.js";

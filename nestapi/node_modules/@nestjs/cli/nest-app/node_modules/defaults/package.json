@@ -1,0 +1,38 @@
+{
+	"name": "defaults",
+	"version": "2.0.2",
+	"description": "Easily handle defaults for your options",
+	"license": "MIT",
+	"repository": "sindresorhus/node-defaults",
+	"funding": "https://github.com/sponsors/sindresorhus",
+	"type": "module",
+	"exports": {
+		"types": "./index.d.ts",
+		"default": "./index.js"
+	},
+	"engines": {
+		"node": ">=16"
+	},
+	"scripts": {
+		"test": "xo && ava && tsd"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
+	"keywords": [
+		"config",
+		"defaults",
+		"options",
+		"object",
+		"merge",
+		"assign",
+		"properties",
+		"deep"
+	],
+	"devDependencies": {
+		"ava": "^5.2.0",
+		"tsd": "^0.28.1",
+		"xo": "^0.54.0"
+	}
+}

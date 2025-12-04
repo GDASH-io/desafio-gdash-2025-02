@@ -1,0 +1,45 @@
+{
+  "name": "@streamparser/json",
+  "description": "Streaming JSON parser in Javascript for Node.js, Deno and the browser",
+  "version": "0.0.6",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/mjs/index.js",
+  "browser": "./dist/umd/index.js",
+  "types": "./dist/index.d.ts",
+  "author": "Juanjo Diaz <juanjo.diazmo@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanjoDiaz/streamparser-json.git"
+  },
+  "bugs": "https://github.com/juanjoDiaz/streamparser-json/issues",
+  "devDependencies": {
+    "@types/node": "^17.0.4",
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@typescript-eslint/parser": "^5.8.0",
+    "eslint": "^8.5.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.1.2",
+    "rollup": "^2.33.1",
+    "rollup-plugin-typescript2": "^0.31.1",
+    "tap": "^14.10.8",
+    "typescript": "^4.0.5"
+  },
+  "scripts": {
+    "lint": "eslint '{src,test,performance,samplejson}/**/*.{js,ts,json}'",
+    "format": "eslint '{src,test,performance,samplejson}/**/*.{js,ts,json}' --fix",
+    "build:deno": "node build.deno.js ./src ./dist/deno",
+    "build:umd": "rollup -c",
+    "build:cjs": "tsc --module commonjs --outDir ./dist/cjs",
+    "build:mjs": "tsc --module esnext --outDir ./dist/mjs && node build.mjs.js ./dist/mjs",
+    "build": "npm run build:umd && npm run build:cjs && npm run build:mjs && npm run build:deno",
+    "prepare": "npm run build",
+    "test": "TS_NODE_SKIP_PROJECT=true tap --ts --timeout=60 test"
+  },
+  "license": "MIT",
+  "tags": [
+    "json",
+    "stream"
+  ],
+  "dependencies": {}
+}

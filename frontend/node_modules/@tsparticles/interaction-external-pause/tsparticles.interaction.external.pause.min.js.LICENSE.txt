@@ -1,0 +1,1 @@
+/*! tsParticles Pause External Interaction v3.9.1 by Matteo Bruni */

@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadGenericPolygonShape = loadGenericPolygonShape;
+exports.loadTriangleShape = loadTriangleShape;
+exports.loadPolygonShape = loadPolygonShape;
+const PolygonDrawer_js_1 = require("./PolygonDrawer.js");
+const TriangleDrawer_js_1 = require("./TriangleDrawer.js");
+async function loadGenericPolygonShape(engine, refresh = true) {
+    engine.checkVersion("3.9.1");
+    await engine.addShape(new PolygonDrawer_js_1.PolygonDrawer(), refresh);
+}
+async function loadTriangleShape(engine, refresh = true) {
+    engine.checkVersion("3.9.1");
+    await engine.addShape(new TriangleDrawer_js_1.TriangleDrawer(), refresh);
+}
+async function loadPolygonShape(engine, refresh = true) {
+    engine.checkVersion("3.9.1");
+    await loadGenericPolygonShape(engine, refresh);
+    await loadTriangleShape(engine, refresh);
+}

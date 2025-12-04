@@ -1,0 +1,38 @@
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+(function (factory) {
+    if (typeof module === "object" && typeof module.exports === "object") {
+        var v = factory(require, exports);
+        if (v !== undefined) module.exports = v;
+    }
+    else if (typeof define === "function" && define.amd) {
+        define(["require", "exports", "./Connector.js", "./Options/Classes/Connect.js", "./Options/Classes/ConnectLinks.js", "./Options/Interfaces/IConnect.js", "./Options/Interfaces/IConnectLinks.js"], factory);
+    }
+})(function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.loadExternalConnectInteraction = loadExternalConnectInteraction;
+    const Connector_js_1 = require("./Connector.js");
+    async function loadExternalConnectInteraction(engine, refresh = true) {
+        engine.checkVersion("3.9.1");
+        await engine.addInteractor("externalConnect", container => {
+            return Promise.resolve(new Connector_js_1.Connector(container));
+        }, refresh);
+    }
+    __exportStar(require("./Options/Classes/Connect.js"), exports);
+    __exportStar(require("./Options/Classes/ConnectLinks.js"), exports);
+    __exportStar(require("./Options/Interfaces/IConnect.js"), exports);
+    __exportStar(require("./Options/Interfaces/IConnectLinks.js"), exports);
+});

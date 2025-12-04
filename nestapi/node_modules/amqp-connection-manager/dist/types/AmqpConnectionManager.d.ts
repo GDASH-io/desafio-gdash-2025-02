@@ -1,0 +1,180 @@
+import * as amqp from 'amqplib';
+import { EventEmitter } from 'events';
+import { TcpSocketConnectOpts } from 'net';
+import { ConnectionOptions } from 'tls';
+import ChannelWrapper, { CreateChannelOpts } from './ChannelWrapper.js';
+export type ConnectionUrl = string | amqp.Options.Connect | {
+    url: string;
+    connectionOptions?: AmqpConnectionOptions;
+};
+export interface ConnectListener {
+    (arg: {
+        connection: amqp.Connection;
+        url: string | amqp.Options.Connect;
+    }): void;
+}
+export interface ConnectFailedListener {
+    (arg: {
+        err: Error;
+        url: string | amqp.Options.Connect | undefined;
+    }): void;
+}
+export type AmqpConnectionOptions = (ConnectionOptions | TcpSocketConnectOpts) & {
+    noDelay?: boolean;
+    timeout?: number;
+    keepAlive?: boolean;
+    keepAliveDelay?: number;
+    clientProperties?: any;
+    credentials?: {
+        mechanism: string;
+        username: string;
+        password: string;
+        response: () => Buffer;
+    } | {
+        mechanism: string;
+        response: () => Buffer;
+    } | undefined;
+};
+export interface AmqpConnectionManagerOptions {
+    /** Interval to send heartbeats to broker. Defaults to 5 seconds. */
+    heartbeatIntervalInSeconds?: number;
+    /**
+     * The time to wait before trying to reconnect. If not specified, defaults
+     * to `heartbeatIntervalInSeconds`.
+     */
+    reconnectTimeInSeconds?: number | undefined;
+    /**
+     * `findServers` is a function that which returns one or more servers to
+     * connect to. This should return either a single URL or an array of URLs.
+     * This is handy when you're using a service discovery mechanism such as
+     * Consul or etcd. Instead of taking a callback, this can also return a
+     * Promise. Note that if this is supplied, then `urls` is ignored.
+     */
+    findServers?: ((callback: (urls: ConnectionUrl | ConnectionUrl[]) => void) => void) | (() => Promise<ConnectionUrl | ConnectionUrl[]>) | undefined;
+    /** Connection options, passed as options to the amqplib.connect() method. */
+    connectionOptions?: AmqpConnectionOptions;
+}
+export interface IAmqpConnectionManager extends EventEmitter {
+    connectionOptions?: AmqpConnectionOptions;
+    heartbeatIntervalInSeconds: number;
+    reconnectTimeInSeconds: number;
+    addListener(event: string, listener: (...args: any[]) => void): this;
+    addListener(event: 'connect', listener: ConnectListener): this;
+    addListener(event: 'connectFailed', listener: ConnectFailedListener): this;
+    addListener(event: 'blocked', listener: (arg: {
+        reason: string;
+    }) => void): this;
+    addListener(event: 'unblocked', listener: () => void): this;
+    addListener(event: 'disconnect', listener: (arg: {
+        err: Error;
+    }) => void): this;
+    listeners(eventName: string | symbol): Function[];
+    on(event: string, listener: (...args: any[]) => void): this;
+    on(event: 'connect', listener: ConnectListener): this;
+    on(event: 'connectFailed', listener: ConnectFailedListener): this;
+    on(event: 'blocked', listener: (arg: {
+        reason: string;
+    }) => void): this;
+    on(event: 'unblocked', listener: () => void): this;
+    on(event: 'disconnect', listener: (arg: {
+        err: Error;
+    }) => void): this;
+    once(event: string, listener: (...args: any[]) => void): this;
+    once(event: 'connect', listener: ConnectListener): this;
+    once(event: 'connectFailed', listener: ConnectFailedListener): this;
+    once(event: 'blocked', listener: (arg: {
+        reason: string;
+    }) => void): this;
+    once(event: 'unblocked', listener: () => void): this;
+    once(event: 'disconnect', listener: (arg: {
+        err: Error;
+    }) => void): this;
+    prependListener(event: string, listener: (...args: any[]) => void): this;
+    prependListener(event: 'connect', listener: ConnectListener): this;
+    prependListener(event: 'connectFailed', listener: ConnectFailedListener): this;
+    prependListener(event: 'blocked', listener: (arg: {
+        reason: string;
+    }) => void): this;
+    prependListener(event: 'unblocked', listener: () => void): this;
+    prependListener(event: 'disconnect', listener: (arg: {
+        err: Error;
+    }) => void): this;
+    prependOnceListener(event: string, listener: (...args: any[]) => void): this;
+    prependOnceListener(event: 'connect', listener: ConnectListener): this;
+    prependOnceListener(event: 'connectFailed', listener: ConnectFailedListener): this;
+    prependOnceListener(event: 'blocked', listener: (arg: {
+        reason: string;
+    }) => void): this;
+    prependOnceListener(event: 'unblocked', listener: () => void): this;
+    prependOnceListener(event: 'disconnect', listener: (arg: {
+        err: Error;
+    }) => void): this;
+    removeListener(event: string, listener: (...args: any[]) => void): this;
+    connect(options?: {
+        timeout?: number;
+    }): Promise<void>;
+    reconnect(): void;
+    createChannel(options?: CreateChannelOpts): ChannelWrapper;
+    close(): Promise<void>;
+    isConnected(): boolean;
+    /** The current connection. */
+    readonly connection: amqp.ChannelModel | undefined;
+    /** Returns the number of registered channels. */
+    readonly channelCount: number;
+}
+export default class AmqpConnectionManager extends EventEmitter implements IAmqpConnectionManager {
+    private _channels;
+    private _currentUrl;
+    private _closed;
+    private _cancelRetriesHandler?;
+    private _connectPromise?;
+    private _currentConnection?;
+    private _findServers;
+    private _urls?;
+    connectionOptions: AmqpConnectionOptions | undefined;
+    heartbeatIntervalInSeconds: number;
+    reconnectTimeInSeconds: number;
+    /**
+     *  Create a new AmqplibConnectionManager.
+     *
+     * @param urls - An array of brokers to connect to.
+     *   Takes url strings or objects {url: string, connectionOptions?: object}
+     *   If present, a broker's [connectionOptions] will be used instead
+     *   of [options.connectionOptions] when passed to the amqplib connect method.
+     *   AmqplibConnectionManager will round-robin between them whenever it
+     *   needs to create a new connection.
+     * @param [options={}] -
+     * @param [options.heartbeatIntervalInSeconds=5] - The interval,
+     *   in seconds, to send heartbeats.
+     * @param [options.reconnectTimeInSeconds] - The time to wait
+     *   before trying to reconnect.  If not specified, defaults to
+     *   `heartbeatIntervalInSeconds`.
+     * @param [options.connectionOptions] - Passed to the amqplib
+     *   connect method.
+     * @param [options.findServers] - A `fn(callback)` or a `fn()`
+     *   which returns a Promise.  This should resolve to one or more servers
+     *   to connect to, either a single URL or an array of URLs.  This is handy
+     *   when you're using a service discovery mechanism such as Consul or etcd.
+     *   Note that if this is supplied, then `urls` is ignored.
+     */
+    constructor(urls: ConnectionUrl | ConnectionUrl[] | undefined | null, options?: AmqpConnectionManagerOptions);
+    /**
+     * Start the connect retries and await the first connect result. Even if the initial connect fails or timeouts, the
+     * reconnect attempts will continue in the background.
+     * @param [options={}] -
+     * @param [options.timeout] - Time to wait for initial connect
+     */
+    connect({ timeout }?: {
+        timeout?: number;
+    }): Promise<void>;
+    createChannel(options?: CreateChannelOpts): ChannelWrapper;
+    close(): Promise<void>;
+    isConnected(): boolean;
+    /** Force reconnect - noop unless connected */
+    reconnect(): void;
+    /** The current connection. */
+    get connection(): amqp.ChannelModel | undefined;
+    /** Returns the number of registered channels. */
+    get channelCount(): number;
+    private _connect;
+}
