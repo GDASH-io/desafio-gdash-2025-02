@@ -8,7 +8,7 @@ Uma plataforma Full-Stack de monitoramento climático em tempo real, baseada em 
 
 ---
 
-## 🧠 Configuração da Inteligência Artificial (IMPORTANTE⚠️)
+## 🧠 Configuração da Inteligência Artificial (IMPORTANTE)
 
 O sistema utiliza o **Google Gemini 1.5 Flash** para gerar *insights* climáticos avançados.
 
@@ -100,36 +100,18 @@ O sistema segue uma arquitetura desacoplada onde cada serviço possui responsabi
 
 1.  **Clone o repositório:**
     ```bash
-    git clone https://github.com/alvaro-amorim/desafio-gdash-2025-02.git
+    git clone <https://github.com/alvaro-amorim/desafio-gdash-2025-02.git>
     cd gdash-challenge
     ```
 
-2.  **Gerar a chave API & modificar o código rapidamente:**  
-    - Gere sua chave no **Google AI Studio** (veja seção "Como gerar sua chave" acima).  
-    - Edite **docker-compose.yml** na raiz do projeto e cole a chave em `GEMINI_API_KEY`:
-      ```yaml
-      collector:
-        environment:
-          GEMINI_API_KEY: "Aiza...SUA_CHAVE..."
-      ```
-    - *Alternativa rápida via terminal* (não precisa alterar arquivo):
-      ```bash
-      export GEMINI_API_KEY="Aiza...SUA_CHAVE..."
-      ```
-    - Se quiser testar sem IA (modo fallback), deixe a variável vazia ou remova temporariamente a chave:
-      ```yaml
-      GEMINI_API_KEY: ""
-      ```
-    (Instruções detalhadas sobre geração da chave estão na seção de Configuração da IA.)
-
-3.  **Suba a infraestrutura:**  
+2.  **Suba a infraestrutura:**
     Execute o comando abaixo na raiz do projeto. O flag `--build` garante que as imagens mais recentes (com as configurações de IA e temas) sejam geradas.
     ```bash
     docker-compose up -d --build
     ```
     *Aguarde alguns instantes para o download das imagens e inicialização dos serviços.*
 
-4.  **Verifique o status:**
+3.  **Verifique o status:**
     ```bash
     docker ps
     ```
@@ -152,6 +134,16 @@ O sistema segue uma arquitetura desacoplada onde cada serviço possui responsabi
 ### 🐰 Painel do RabbitMQ
 * **URL:** [http://localhost:15672](http://localhost:15672)
 * **Login:** `admin` / `password123`
+
+---
+
+## ⚠️ Nota sobre a API de IA (Google Gemini)
+
+Para facilitar a avaliação deste desafio, o arquivo `docker-compose.yml` **inclui uma API Key de demonstração** pré-configurada.
+
+> **Observação de Segurança:** Em um ambiente de produção real, esta chave seria injetada via variáveis de ambiente (CI/CD) e nunca commitada no repositório.
+
+Caso a chave de demonstração atinja o limite de uso ou seja revogada, o sistema entrará automaticamente no modo de **Fallback**, utilizando um algoritmo local robusto para gerar os insights, garantindo que a aplicação **nunca pare de funcionar**.
 
 ---
 
