@@ -19,7 +19,7 @@ export function PrivateRoute({ children, roles }: PrivateRouteProps) {
   }
 
   if (roles && user && !roles.includes(user.roles)) {
-    return <Navigate to="/dashboard" replace />; // Redirect if user doesn't have required role
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;

@@ -26,7 +26,6 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Carregar todas as cidades ao montar
     const fetchCities = async () => {
       try {
         setIsLoading(true);
@@ -43,7 +42,6 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
   }, []);
 
   useEffect(() => {
-    // Buscar cidades quando o usuário digita
     if (searchQuery.trim()) {
       const searchCities = async () => {
         try {
@@ -59,7 +57,7 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
         }
       };
       
-      const timeoutId = setTimeout(searchCities, 300); // Debounce de 300ms para evitar muitas requisições
+      const timeoutId = setTimeout(searchCities, 300);
       return () => clearTimeout(timeoutId);
     } else {
       setFilteredCities(cities);
@@ -67,7 +65,6 @@ export default function CitySelector({ selectedCity, onCityChange }: CitySelecto
   }, [searchQuery, cities]);
 
   useEffect(() => {
-    // Fechar dropdown ao clicar fora do componente
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);

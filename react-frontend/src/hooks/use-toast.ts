@@ -65,7 +65,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST":
       const { toastId } = action
 
-      // ! Side effects ! Clear and disable timeouts
       if (toastId) {
         toastTimeouts.has(toastId) && clearTimeout(toastTimeouts.get(toastId)!)
         toastTimeouts.delete(toastId)

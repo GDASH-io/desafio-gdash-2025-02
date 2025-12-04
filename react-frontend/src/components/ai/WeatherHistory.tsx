@@ -65,7 +65,6 @@ export default function WeatherHistory({ city, latitude, longitude }: WeatherHis
     );
   }
 
-  // Calcular valores para o gráfico
   const maxTemp = Math.max(...historyData.temperatureData.map(d => d.temperature));
   const minTemp = Math.min(...historyData.temperatureData.map(d => d.temperature));
   const range = maxTemp - minTemp || 1;
@@ -77,7 +76,6 @@ export default function WeatherHistory({ city, latitude, longitude }: WeatherHis
         <p className="text-sm font-light text-[#9CA3AF]">{historyData.insights}</p>
       </div>
 
-      {/* Mini-gráfico de temperatura */}
       <div className="space-y-2">
         <h5 className="text-xs font-medium text-[#E5E7EB]">Temperatura nos últimos {historyData.temperatureData.length} dias</h5>
         <div className="flex items-end space-x-2 h-24 border-b border-white/5 pb-2">
@@ -98,13 +96,11 @@ export default function WeatherHistory({ city, latitude, longitude }: WeatherHis
         </div>
       </div>
 
-      {/* Insights da IA */}
       <div className="mt-3 p-2.5 bg-[#161B22] border border-white/5 rounded-lg">
         <p className="text-xs text-[#00D9FF] font-medium mb-1">💡 Insight da IA:</p>
         <p className="text-[#E5E7EB] text-xs font-light">{historyData.temperatureTrend}</p>
       </div>
 
-      {/* Tabela de dados */}
       <div className="mt-3">
         <h5 className="text-xs font-medium text-[#E5E7EB] mb-1.5">Dados detalhados</h5>
         <div className="overflow-x-auto">

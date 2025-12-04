@@ -22,13 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (token) {
-      // Decode token to get user info if needed, or fetch user profile
-      // For now, a simple placeholder
       try {
-        const decoded = JSON.parse(atob(token.split('.')[1])); // Basic JWT decode
+        const decoded = JSON.parse(atob(token.split('.')[1]));
         setUser({ email: decoded.email, roles: decoded.roles });
       } catch (e) {
-        console.error("Failed to decode token", e);
         setToken(null);
         setUser(null);
         localStorage.removeItem('jwt_token');
@@ -46,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newToken = response.data.access_token;
       setToken(newToken);
       localStorage.setItem('jwt_token', newToken);
-      // Re-fetch user or decode token immediately
       const decoded = JSON.parse(atob(newToken.split('.')[1]));
       setUser({ email: decoded.email, roles: decoded.roles });
     } finally {
