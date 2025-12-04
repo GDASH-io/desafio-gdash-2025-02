@@ -140,6 +140,9 @@ Frontend	http://localhost:5173
 API NestJS	http://localhost:3000 (api/weather/logs) (api/users) (api/weather/insights)
 
 
+## 📹 Video do projeto 
+[Veja](https://youtu.be/tWO6pPJqY0Y)
+
 
 
 
