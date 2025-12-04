@@ -10,7 +10,8 @@
     "paths": {
       "@/components/*": ["src/components/*"],
       "@/lib/*": ["src/lib/*"],
-      "@/hooks/*": ["src/hooks/*"]
+      "@/hooks/*": ["src/hooks/*"],
+      "@/auth/*": ["src/auth/*"]
     },
 
     /* Bundler mode */
