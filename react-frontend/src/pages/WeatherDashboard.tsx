@@ -112,7 +112,6 @@ const getWeatherIcon = (weathercode: number, isDay: boolean = true, size: number
 };
 
 export function WeatherDashboard() {
-  console.log('WeatherDashboard: Componente renderizado');
   const [currentWeather, setCurrentWeather] = useState<any>(null);
   const [hourlyForecast, setHourlyForecast] = useState<HourlyForecast[]>([]);
   const [dailyForecast, setDailyForecast] = useState<DailyForecast[]>([]);
@@ -143,15 +142,11 @@ export function WeatherDashboard() {
   }, []); 
 
   useEffect(() => {
-    console.log('WeatherDashboard: useEffect (buscarGêneros) disparado');
     const buscarGêneros = async () => {
-      console.log('buscarGêneros: Iniciado');
       try {
         await axios.get(`${API_BASE_URL}/api/tmdb/genres`);
-        console.log('buscarGêneros: Gêneros buscados com sucesso, definindo genresLoaded como true');
         setGenresLoaded(true);
       } catch (err) {
-        console.error('buscarGêneros: Erro ao buscar gêneros:', err);
         setGenresLoaded(true);
       }
     };
@@ -160,20 +155,17 @@ export function WeatherDashboard() {
 
   useEffect(() => {
     if (genresLoaded && (userLocation || selectedCity)) {
-      console.log('WeatherDashboard: Chamando buscarDadosClima...');
       fetchWeatherData();
     } else if (!userLocation && !selectedCity) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log('Geolocalização: Sucesso. Localização do usuário definida.');
           const location = { latitude: position.coords.latitude, longitude: position.coords.longitude };
           setUserLocation(location);
           if (!selectedCity) {
             localStorage.setItem('current_location', JSON.stringify(location));
           }
         },
-        (err) => {
-          console.warn('Geolocalização: Permissão de localização negada ou falha ao obter localização. Usando localização padrão (Salvador, Brasil).', err);
+        () => {
           setUserLocation({ latitude: -12.9714, longitude: -38.5014 });
           setLoading(false);
         }
@@ -182,7 +174,6 @@ export function WeatherDashboard() {
   }, [userLocation, selectedCity, genresLoaded]);
 
   const fetchWeatherData = async () => {
-    console.log('buscarDadosClima: Iniciado');
     setLoading(true);
     setError(null);
     
@@ -192,21 +183,16 @@ export function WeatherDashboard() {
       : `latitude=${userLocation!.latitude}&longitude=${userLocation!.longitude}`;
     
     if (!userLocation && !selectedCity) {
-      console.log('buscarDadosClima: Localização do usuário e cidade selecionada são nulas, retornando.');
       setLoading(false);
       return;
     }
     
     try {
-      console.log('buscarDadosClima: Buscando previsão do tempo...');
       await axios.get(`${API_BASE_URL}/api/weather/forecast?${parametroLocalizacao}`);
 
-      console.log('buscarDadosClima: Buscando insights da IA...');
       const respostaInsights = await axios.get<AiInsightsData>(`${API_BASE_URL}/api/weather/ai-insights?${parametroLocalizacao}`);
       setAiInsights(respostaInsights.data);
-      console.log('buscarDadosClima: Insights da IA recebidos:', respostaInsights.data);
 
-      console.log('buscarDadosClima: Definindo clima atual...');
       setCurrentWeather({
         temperature: respostaInsights.data.weatherForecast.current_weather.temperature,
         windspeed: respostaInsights.data.weatherForecast.current_weather.windspeed,
@@ -218,7 +204,6 @@ export function WeatherDashboard() {
         uv_index: respostaInsights.data.uv_index ?? null,
       });
 
-      console.log('buscarDadosClima: Definindo previsão horária...');
       setHourlyForecast(respostaInsights.data.weatherForecast.hourly.time.map((time: string, index: number) => ({
         time: time,
         temperature_2m: respostaInsights.data.weatherForecast.hourly.temperature_2m[index],
@@ -226,7 +211,6 @@ export function WeatherDashboard() {
         precipitation_probability: respostaInsights.data.weatherForecast.hourly.precipitation_probability[index],
       })));
 
-      console.log('buscarDadosClima: Definindo previsão diária...');
       setDailyForecast(respostaInsights.data.weatherForecast.daily.time.map((time: string, index: number) => ({
         time: time,
         weathercode: respostaInsights.data.weatherForecast.daily.weathercode[index],
@@ -234,7 +218,6 @@ export function WeatherDashboard() {
         temperature_2m_min: respostaInsights.data.weatherForecast.daily.temperature_2m_min[index],
       })));
 
-      console.log('buscarDadosClima: Verificando critérios de filmes...', respostaInsights.data.movieCriteria);
       if (respostaInsights.data.movieCriteria && respostaInsights.data.movieCriteria.generos_sugeridos.length > 0) {
         const locationParam = selectedCity 
           ? `city=${encodeURIComponent(selectedCity)}`
@@ -242,10 +225,8 @@ export function WeatherDashboard() {
           ? `latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`
           : '';
         
-        console.log('buscarDadosClima: Buscando filmes com critérios da IA...');
         const respostaFilmes = await axios.get(`${API_BASE_URL}/api/weather/movies-by-criteria?${locationParam}`);
         if (Array.isArray(respostaFilmes.data.movies)) {
-          console.log('buscarDadosClima: Filmes recebidos:', respostaFilmes.data.movies.length);
           setMovieRecommendations(respostaFilmes.data.movies.map((movie: any) => ({
             id: movie.id,
             title: movie.title,
@@ -255,24 +236,18 @@ export function WeatherDashboard() {
             genre_ids: movie.genre_ids,
           })));
         } else {
-          console.warn('buscarDadosClima: API retornou "movies" inesperado ou nulo.', respostaFilmes.data);
           setMovieRecommendations([]);
         }
       } else {
-        console.log('buscarDadosClima: Nenhum critério de filme, definindo recomendações de filmes como array vazio.');
         setMovieRecommendations([]);
       }
 
     } catch (err) {
       setError('Falha ao buscar dados de clima ou recomendações.');
-      console.error('buscarDadosClima: Erro:', err);
     } finally {
-      console.log('buscarDadosClima: Finalizado, definindo loading como false');
       setLoading(false);
     }
   };
-
-  console.log('WeatherDashboard: Renderizando. Carregando:', loading, 'Gêneros carregados:', genresLoaded, 'Localização:', userLocation, 'Erro:', error);
   
   if (loading || !genresLoaded) return <p>Carregando dados de clima e gêneros...</p>;
   
