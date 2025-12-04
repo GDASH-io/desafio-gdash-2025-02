@@ -49,13 +49,3 @@ docker-compose logs -f go-worker      # logs do worker
 
 - Usuário: `admin`
 - Senha: `password123`
-
-## Git
-
-```bash
-git add .
-git commit -m "message"
-git push -u origin main
-```
-
-Certifique-se que `.env` está no `.gitignore` (não commite).
