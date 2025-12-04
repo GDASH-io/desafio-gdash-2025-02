@@ -7,6 +7,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [HttpModule],
   providers: [TmdbService],
   controllers: [TmdbController],
-  exports: [TmdbService], // Exportar para que outros módulos possam usar
+  exports: [TmdbService],
 })
 export class TmdbModule {}

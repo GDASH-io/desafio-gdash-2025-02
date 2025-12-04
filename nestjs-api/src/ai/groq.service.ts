@@ -23,12 +23,6 @@ export class GroqService {
     private httpService: HttpService,
   ) {
     this.apiKey = this.configService.get<string>('GROQ_API_KEY');
-    if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada. Funcionalidades de IA podem não funcionar.');
-    } else {
-      console.log('✅ [Groq] GROQ_API_KEY configurada. Funcionalidades de IA ativas.');
-    }
-    
     setInterval(() => this.cleanExpiredCache(), 5 * 60 * 1000);
   }
 
@@ -88,7 +82,9 @@ export class GroqService {
         )
       );
 
-      return response.data?.choices?.[0]?.message?.content || '';
+      const content = response.data?.choices?.[0]?.message?.content || '';
+      console.log('✅ [Groq] IA gerando conteúdo com sucesso');
+      return content;
     } catch (error: any) {
       console.error('❌ [Groq] Erro na API:', error.response?.data || error.message);
       throw error;
@@ -97,18 +93,15 @@ export class GroqService {
 
   async generateDaySummary(weatherData: FullWeatherData, cityName: string): Promise<string> {
     if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada.');
       throw new Error('GROQ_API_KEY não configurada');
     }
 
     const cacheKey = this.getCacheKey('daySummary', { cityName, temperature: weatherData.temperature, weathercode: weatherData.weathercode });
     const cached = this.getFromCache(cacheKey);
     if (cached) {
-      console.log('✅ [Groq] Resumo do dia retornado do cache para:', cityName);
       return cached;
     }
 
-    console.log('✅ [Groq] Gerando resumo do dia com IA para:', cityName);
     try {
       const weatherDescription = this.getWeatherDescription(weatherData.weathercode);
       
@@ -148,9 +141,8 @@ Seja ESPECÍFICO sobre ${cityName} e o clima atual. Use no máximo 300 palavras 
       
       const finalResult = typeof result === 'string' ? result.trim() : String(result);
       
+      console.log('✅ [Groq] Resumo do dia gerado');
       this.setCache(cacheKey, finalResult);
-      
-      console.log('✅ [Groq] Resumo do dia gerado com sucesso (tamanho:', finalResult.length, 'caracteres)');
       return finalResult;
     } catch (error: any) {
       if (error?.response?.status === 429) {
@@ -164,18 +156,15 @@ Seja ESPECÍFICO sobre ${cityName} e o clima atual. Use no máximo 300 palavras 
 
   async generateMoodInsights(weatherData: FullWeatherData, cityName: string): Promise<string> {
     if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada. Usando fallback para generateMoodInsights.');
       return this.getFallbackMoodInsights(weatherData);
     }
 
     const cacheKey = this.getCacheKey('moodInsights', { cityName, temperature: weatherData.temperature, weathercode: weatherData.weathercode });
     const cached = this.getFromCache(cacheKey);
     if (cached) {
-      console.log('✅ [Groq] Insights de humor retornados do cache para:', cityName);
       return cached;
     }
 
-    console.log('✅ [Groq] Gerando insights de humor com IA para:', cityName);
     try {
       const weatherDescription = this.getWeatherDescription(weatherData.weathercode);
       
@@ -210,9 +199,8 @@ Seja DIRETO e ESPECÍFICO. Evite repetições e textos longos. Foque no essencia
       
       const finalResult = typeof result === 'string' ? result.trim() : String(result);
       
+      console.log('✅ [Groq] Insights de humor gerados');
       this.setCache(cacheKey, finalResult);
-      
-      console.log('✅ [Groq] Insights de humor gerados com sucesso');
       return finalResult;
     } catch (error: any) {
       if (error?.response?.status === 429) {
@@ -226,18 +214,15 @@ Seja DIRETO e ESPECÍFICO. Evite repetições e textos longos. Foque no essencia
 
   async generateSmartAlerts(weatherData: FullWeatherData, cityName: string): Promise<string[]> {
     if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada. Usando fallback para generateSmartAlerts.');
       return this.getFallbackSmartAlerts(weatherData);
     }
 
     const cacheKey = this.getCacheKey('smartAlerts', { cityName, temperature: weatherData.temperature, weathercode: weatherData.weathercode });
     const cached = this.getFromCache(cacheKey);
     if (cached) {
-      console.log('✅ [Groq] Alertas inteligentes retornados do cache para:', cityName);
       return cached;
     }
 
-    console.log('✅ [Groq] Gerando alertas inteligentes com IA para:', cityName);
     try {
       const weatherDescription = this.getWeatherDescription(weatherData.weathercode);
       
@@ -284,9 +269,8 @@ Formate como uma lista. Seja criativo e não repita os mesmos alertas sempre. Fo
       
       const finalResult = Array.isArray(result) ? result : [];
       
+      console.log('✅ [Groq] Alertas inteligentes gerados');
       this.setCache(cacheKey, finalResult);
-      
-      console.log('✅ [Groq] Alertas inteligentes gerados com sucesso (', finalResult.length, 'alertas)');
       return finalResult;
     } catch (error: any) {
       if (error?.response?.status === 429) {
@@ -300,18 +284,15 @@ Formate como uma lista. Seja criativo e não repita os mesmos alertas sempre. Fo
 
   async generateActivityRecommendations(weatherData: FullWeatherData, cityName: string): Promise<string[]> {
     if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada. Usando fallback para generateActivityRecommendations.');
       return this.getFallbackActivityRecommendations(weatherData);
     }
 
     const cacheKey = this.getCacheKey('activityRecommendations', { cityName, temperature: weatherData.temperature, weathercode: weatherData.weathercode });
     const cached = this.getFromCache(cacheKey);
     if (cached) {
-      console.log('✅ [Groq] Recomendações de atividades retornadas do cache para:', cityName);
       return cached;
     }
 
-    console.log('✅ [Groq] Gerando recomendações de atividades com IA para:', cityName);
     try {
       const weatherDescription = this.getWeatherDescription(weatherData.weathercode);
       const cityInfo = this.getCityRegionInfo(cityName);
@@ -372,7 +353,7 @@ Formate como uma lista numerada (1. 2. 3. etc.) ou com marcadores (- ou •). Se
           activities = bulletedActivities.slice(0, 6);
         } else {
           const combined = [...numberedActivities, ...bulletedActivities]
-            .filter((value, index, self) => self.indexOf(value) === index) // Remover duplicatas
+            .filter((value, index, self) => self.indexOf(value) === index)
             .filter(line => line.length > 10);
           
           if (combined.length >= 6) {
@@ -426,9 +407,8 @@ Formate como uma lista numerada (1. 2. 3. etc.) ou com marcadores (- ou •). Se
       
       finalResult = finalResult.slice(0, 6);
       
+      console.log('✅ [Groq] Recomendações de atividades geradas');
       this.setCache(cacheKey, finalResult);
-      
-      console.log('✅ [Groq] Recomendações de atividades geradas com sucesso (', finalResult.length, 'atividades)');
       return finalResult;
     } catch (error: any) {
       if (error?.response?.status === 429) {
@@ -442,18 +422,15 @@ Formate como uma lista numerada (1. 2. 3. etc.) ou com marcadores (- ou •). Se
 
   async generateMovieCriteria(weatherData: FullWeatherData, cityName?: string): Promise<any> {
     if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada. Usando fallback para generateMovieCriteria.');
       return this.getFallbackMovieCriteria(weatherData);
     }
 
     const cacheKey = this.getCacheKey('movieCriteria', { cityName, temperature: weatherData.temperature, weathercode: weatherData.weathercode });
     const cached = this.getFromCache(cacheKey);
     if (cached) {
-      console.log('✅ [Groq] Critérios de filmes retornados do cache para:', cityName || 'localização atual');
       return cached;
     }
 
-    console.log('✅ [Groq] Gerando critérios de filmes com IA para:', cityName || 'localização atual');
     try {
       const weatherDescription = this.getWeatherDescription(weatherData.weathercode);
       
@@ -503,6 +480,7 @@ Seja ESPECÍFICO e baseado nas condições climáticas. Retorne APENAS o JSON, s
         const jsonContent = jsonMatch ? jsonMatch[0] : content;
         const criteria = JSON.parse(jsonContent);
         
+        console.log('✅ [Groq] Critérios de filmes gerados');
         return {
           tema: criteria.tema || 'variado',
           generos_sugeridos: Array.isArray(criteria.generos_sugeridos) ? criteria.generos_sugeridos : [],
@@ -531,18 +509,15 @@ Seja ESPECÍFICO e baseado nas condições climáticas. Retorne APENAS o JSON, s
 
   async generateHealthAndWellnessConditions(weatherData: FullWeatherData, cityName: string): Promise<string[]> {
     if (!this.apiKey) {
-      console.warn('⚠️ [Groq] GROQ_API_KEY não configurada. Usando fallback para generateHealthAndWellnessConditions.');
       return this.getFallbackHealthConditions(weatherData);
     }
 
     const cacheKey = this.getCacheKey('healthConditions', { cityName, temperature: weatherData.temperature, weathercode: weatherData.weathercode });
     const cached = this.getFromCache(cacheKey);
     if (cached) {
-      console.log('✅ [Groq] Condições de saúde retornadas do cache para:', cityName);
       return cached;
     }
 
-    console.log('✅ [Groq] Gerando condições de saúde com IA para:', cityName);
     try {
       const weatherDescription = this.getWeatherDescription(weatherData.weathercode);
       
@@ -613,9 +588,8 @@ Seja ESPECÍFICO, MÉDICO e DETALHADO. Mencione doenças reais, sintomas, e medi
       
       const finalResult = Array.isArray(result) ? result : [];
       
+      console.log('✅ [Groq] Condições de saúde geradas');
       this.setCache(cacheKey, finalResult);
-      
-      console.log('✅ [Groq] Condições de saúde geradas com sucesso (', finalResult.length, 'condições)');
       return finalResult;
     } catch (error: any) {
       if (error?.response?.status === 429) {

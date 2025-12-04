@@ -9,6 +9,22 @@ export interface CityCoordinates {
 
 @Injectable()
 export class CityCoordinatesService {
+  private readonly countryTranslationMap: Map<string, string> = new Map([
+    ['USA', 'Estados Unidos'],
+    ['Norway', 'Noruega'],
+    ['Japan', 'Japão'],
+    ['Iceland', 'Islândia'],
+    ['Sweden', 'Suécia'],
+    ['UK', 'Reino Unido'],
+    ['India', 'Índia'],
+    ['Brazil', 'Brasil'],
+    ['UAE', 'Emirados Árabes Unidos'],
+    ['Australia', 'Austrália'],
+    ['Egypt', 'Egito'],
+    ['Russia', 'Rússia'],
+    ['Thailand', 'Tailândia'],
+  ]);
+
   private readonly citiesMap: Map<string, CityCoordinates> = new Map([
     ['Anchorage', { latitude: 61.2181, longitude: -149.9003, name: 'Anchorage', country: 'USA' }],
     ['Oslo', { latitude: 59.9139, longitude: 10.7522, name: 'Oslo', country: 'Norway' }],
@@ -37,6 +53,10 @@ export class CityCoordinatesService {
     ['Curitiba', { latitude: -25.4284, longitude: -49.2733, name: 'Curitiba', country: 'Brazil' }],
   ]);
 
+  private translateCountry(country: string): string {
+    return this.countryTranslationMap.get(country) || country;
+  }
+
   getCoordinates(cityName: string): CityCoordinates | null {
     const normalized = this.normalizeCityName(cityName);
     
@@ -61,9 +81,14 @@ export class CityCoordinatesService {
   }
 
   getAllCities(): CityCoordinates[] {
-    return Array.from(this.citiesMap.values()).sort((a, b) => 
-      a.name.localeCompare(b.name)
-    );
+    return Array.from(this.citiesMap.values())
+      .map(city => ({
+        ...city,
+        country: this.translateCountry(city.country)
+      }))
+      .sort((a, b) => 
+        a.name.localeCompare(b.name)
+      );
   }
 
   searchCities(query: string): CityCoordinates[] {
@@ -72,8 +97,13 @@ export class CityCoordinatesService {
     return Array.from(this.citiesMap.values())
       .filter(city => 
         city.name.toLowerCase().includes(normalizedQuery) ||
-        city.country.toLowerCase().includes(normalizedQuery)
+        city.country.toLowerCase().includes(normalizedQuery) ||
+        this.translateCountry(city.country).toLowerCase().includes(normalizedQuery)
       )
+      .map(city => ({
+        ...city,
+        country: this.translateCountry(city.country)
+      }))
       .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, 10); 
   }

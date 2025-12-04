@@ -32,9 +32,10 @@ export class TmdbController {
   @Get('search')
   searchMovies(
     @Query('query') query: string,
-    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('page') page?: string,
   ): Observable<any> {
-    return this.tmdbService.searchMovies(query, page);
+    const pageNum = page ? parseInt(page, 10) : 1;
+    return this.tmdbService.searchMovies(query, pageNum);
   }
 
   @Get('movie/:id')
