@@ -78,21 +78,23 @@ export default function WeatherHistory({ city, latitude, longitude }: WeatherHis
 
       <div className="space-y-2">
         <h5 className="text-xs font-medium text-[#E5E7EB]">Temperatura nos últimos {historyData.temperatureData.length} dias</h5>
-        <div className="flex items-end space-x-2 h-24 border-b border-white/5 pb-2">
-          {historyData.temperatureData.map((data, index) => {
-            const height = ((data.temperature - minTemp) / range) * 100;
-            return (
-              <div key={index} className="flex-1 flex flex-col items-center space-y-1">
-                <div 
-                  className="w-full bg-[#3B82F6] rounded-t transition-all hover:bg-[#3B82F6]/80"
-                  style={{ height: `${Math.max(height, 5)}%` }}
-                  title={`${data.temperature.toFixed(1)}°C - ${format(parseISO(data.date), 'dd/MM')}`}
-                />
-                <span className="text-xs text-[#9CA3AF]">{format(parseISO(data.date), 'dd/MM')}</span>
-                <span className="text-xs font-semibold text-[#E5E7EB]">{data.temperature.toFixed(1)}°C</span>
-              </div>
-            );
-          })}
+        <div className="overflow-x-auto">
+          <div className="flex items-end space-x-2 h-24 border-b border-white/5 pb-2 min-w-[440px] sm:min-w-0">
+            {historyData.temperatureData.map((data, index) => {
+              const height = ((data.temperature - minTemp) / range) * 100;
+              return (
+                <div key={index} className="flex-1 flex flex-col items-center space-y-1">
+                  <div 
+                    className="w-full bg-[#3B82F6] rounded-t transition-all hover:bg-[#3B82F6]/80"
+                    style={{ height: `${Math.max(height, 5)}%` }}
+                    title={`${data.temperature.toFixed(1)}°C - ${format(parseISO(data.date), 'dd/MM')}`}
+                  />
+                  <span className="text-xs text-[#9CA3AF]">{format(parseISO(data.date), 'dd/MM')}</span>
+                  <span className="text-xs font-semibold text-[#E5E7EB]">{data.temperature.toFixed(1)}°C</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

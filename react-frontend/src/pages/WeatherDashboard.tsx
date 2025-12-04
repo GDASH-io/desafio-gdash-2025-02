@@ -259,10 +259,10 @@ export function WeatherDashboard() {
   const next24HoursForecast = hourlyForecast.filter((_, index) => index >= currentHour && index < currentHour + 24);
 
   return (
-    <div className="w-full max-w-[1000px] mx-auto p-4 space-y-4">
-      <div className="flex flex-col items-center gap-4 mb-4">
-        <h2 className="text-2xl font-semibold text-[#E5E7EB] text-center">Painel de Clima e Recomendações</h2>
-        <div className="w-full flex justify-center">
+    <div className="w-full max-w-5xl mx-auto p-3 sm:p-4 space-y-4">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 mb-4 text-center">
+        <h2 className="text-2xl font-semibold text-[#E5E7EB]">Painel de Clima e Recomendações</h2>
+        <div className="w-full flex justify-center px-2 sm:px-0">
           <CitySelector 
             selectedCity={selectedCity} 
             onCityChange={(city) => {
@@ -291,13 +291,13 @@ export function WeatherDashboard() {
             </div>
           </div>
 
-          <div className="text-center mb-3">
+          <div className="text-center mb-3 px-2">
             <p className="text-sm font-light text-[#9CA3AF]">
               Tema: <span className="text-[#E5E7EB] font-medium">{aiInsights?.movieCriteria.tema}</span> — {aiInsights?.movieCriteria.description}
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-4 text-[#E5E7EB] text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[#E5E7EB] text-xs sm:text-sm">
             <div className="flex items-center space-x-1">
               <Droplet size={14} style={{ color: 'var(--weather-rain)' }} />
               <span className="font-light">{currentWeather.humidity ?? 'N/A'}%</span>

@@ -77,6 +77,7 @@ html, body {
 
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -135,6 +136,16 @@ button:focus, button:focus-visible {
 
 .ai-card li {
   margin-bottom: 5px;
+}
+
+@media (max-width: 640px) {
+  .ai-card {
+    padding: 16px;
+  }
+
+  .speech-bubble {
+    padding: 10px 12px;
+  }
 }
 
 .expandable-card-header-hover:hover {

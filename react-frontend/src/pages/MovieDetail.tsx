@@ -41,31 +41,31 @@ export const MovieDetail = () => {
   if (!movie) return <div className="text-[#E5E7EB]">Filme não encontrado.</div>;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="w-full max-w-4xl mx-auto p-4">
       <div className="flex flex-col md:flex-row bg-[#161B22] border border-[#1F2937] shadow-lg rounded-lg overflow-hidden">
-        <div className="md:w-1/3">
+        <div className="md:w-1/3 w-full">
           <img
             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             alt={movie.title}
-            className="w-full h-auto object-cover"
+            className="w-full h-full object-cover max-h-[480px]"
           />
         </div>
-        <div className="md:w-2/3 p-6">
+        <div className="md:w-2/3 p-4 sm:p-6 space-y-4">
           <h1 className="text-3xl font-bold mb-2 text-[#E5E7EB]">{movie.title}</h1>
-          <p className="text-[#E5E7EB] text-lg mb-4">{movie.overview}</p>
-          <div className="mb-4">
+          <p className="text-[#E5E7EB] text-base sm:text-lg">{movie.overview}</p>
+          <div>
             <span className="font-semibold text-[#E5E7EB]">Data de Lançamento:</span>
             <span className="text-[#9CA3AF] ml-2">{movie.release_date}</span>
           </div>
-          <div className="mb-4">
+          <div>
             <span className="font-semibold text-[#E5E7EB]">Avaliação:</span>
             <span className="text-[#9CA3AF] ml-2">{movie.vote_average?.toFixed(1)}/10</span>
           </div>
-          <div className="mb-4">
+          <div>
             <span className="font-semibold text-[#E5E7EB]">Duração:</span>
             <span className="text-[#9CA3AF] ml-2">{movie.runtime} minutos</span>
           </div>
-          <div className="mb-4">
+          <div>
             <span className="font-semibold text-[#E5E7EB]">Gêneros:</span>
             <span className="text-[#9CA3AF] ml-2">{movie.genres.map((genre) => genre.name).join(', ')}</span>
           </div>

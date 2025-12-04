@@ -107,7 +107,7 @@ export const MovieList = () => {
       </div>
 
       <div className="p-4 bg-[#161B22] border border-[#1F2937] rounded-lg">
-        <form onSubmit={handleSearch} className="flex gap-3">
+        <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#9CA3AF]" />
             <Input
@@ -118,13 +118,14 @@ export const MovieList = () => {
               className="pl-10 pr-4 h-11 bg-[#0D1117] border-[#1F2937] text-[#E5E7EB] placeholder:text-[#9CA3AF] focus:border-[#3B82F6] focus:ring-[#3B82F6]"
             />
           </div>
-          <Button 
-            type="submit" 
-            className="px-6 h-11 bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white"
-            disabled={loading}
-          >
-            {loading ? 'Buscando...' : 'Buscar'}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 sm:w-auto">
+            <Button 
+              type="submit" 
+              className="px-6 h-11 bg-[#3B82F6] hover:bg-[#3B82F6]/90 text-white w-full sm:w-auto"
+              disabled={loading}
+            >
+              {loading ? 'Buscando...' : 'Buscar'}
+            </Button>
           {searchQuery && (
             <Button
               type="button"
@@ -133,11 +134,12 @@ export const MovieList = () => {
                 setPage(1);
                 setIsSearching(false);
               }}
-              className="px-6 h-11 bg-[#1F2937] hover:bg-[#374151] text-[#E5E7EB]"
+                className="px-6 h-11 bg-[#1F2937] hover:bg-[#374151] text-[#E5E7EB] w-full sm:w-auto"
             >
               Limpar
             </Button>
           )}
+          </div>
         </form>
       </div>
 
@@ -200,11 +202,11 @@ export const MovieList = () => {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-[#161B22] border border-[#1F2937] rounded-lg">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 p-4 bg-[#161B22] border border-[#1F2937] rounded-lg">
             <div className="text-sm text-[#9CA3AF]">
               Página {page} de {totalPages}
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap w-full md:w-auto justify-center">
               <Button
                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={page === 1 || loading}
