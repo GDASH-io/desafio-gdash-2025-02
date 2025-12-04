@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/auth/AuthProvider';
 
 const navItems = [
   { label: 'Painel', path: '/dashboard' },
@@ -11,8 +12,16 @@ const navItems = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   const closeMenu = () => setIsMenuOpen(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    closeMenu();
+  };
 
   return (
     <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 text-foreground border-b border-white/5 sticky top-0 z-30">
@@ -29,6 +38,20 @@ export function Header() {
               </Button>
             </Link>
           ))}
+          {user && (
+            <div className="flex items-center gap-2 ml-2 pl-2 border-l border-white/10">
+              <span className="text-xs text-[#9CA3AF] hidden lg:inline">{user.email}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-sm text-foreground hover:text-red-400 hover:bg-red-400/10"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                Sair
+              </Button>
+            </div>
+          )}
         </nav>
 
         <button
@@ -54,6 +77,21 @@ export function Header() {
                 </Button>
               </Link>
             ))}
+            {user && (
+              <>
+                <div className="px-3 py-2 text-xs text-[#9CA3AF] border-t border-white/5 mt-2 pt-2">
+                  {user.email}
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="w-full justify-start text-base text-foreground hover:text-red-400 hover:bg-red-400/10"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       )}
