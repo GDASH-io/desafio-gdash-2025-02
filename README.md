@@ -158,4 +158,3 @@ Observações
     O sistema foi projetado para rodar totalmente em Docker, com todos os serviços orquestrados via docker-compose.
 
 [**Video**](https://www.youtube.com/watch?v=R0S2FkTced8)
-[**Repositorio**](https://github.com/Facelless/gdash-repo)
