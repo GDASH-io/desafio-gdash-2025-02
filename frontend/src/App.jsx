@@ -1,6 +1,36 @@
 import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { Loader2, Cloud, Wind, Users, Zap, Download, LogOut, Trash, Edit, Plus, RefreshCw, ChevronLeft, ChevronRight, Sun, Droplet } from 'lucide-react';
 
+const getWeatherDescription = (code) => {
+    const weatherCodes = {
+        0: 'Ensolarado',
+        1: 'Céu limpo',
+        2: 'Parcialmente nublado',
+        3: 'Nublado',
+        45: 'Nevoeiro',
+        48: 'Nevoeiro com geada',
+        51: 'Chuvisco fraco',
+        53: 'Chuvisco moderado',
+        55: 'Chuvisco intenso',
+        61: 'Chuva fraca',
+        63: 'Chuva moderada',
+        65: 'Chuva forte',
+        71: 'Neve fraca',
+        73: 'Neve moderada',
+        75: 'Neve forte',
+        77: 'Grãos de neve',
+        80: 'Chuva isolada fraca',
+        81: 'Chuva isolada moderada',
+        82: 'Chuva isolada forte',
+        85: 'Neve isolada fraca',
+        86: 'Neve isolada forte',
+        95: 'Tempestade',
+        96: 'Tempestade com granizo fraco',
+        99: 'Tempestade com granizo forte',
+    };
+    return weatherCodes[code] || `Código ${code}`;
+};
+
 // --- CONFIGURAÇÃO E CONTEXTO ---
 // CORREÇÃO: Usando window.location.origin para montar o URL base da API
 // Em ambientes modernos como Vite/Next.js, 'import.meta.env' é usado,
@@ -286,20 +316,20 @@ const Dashboard = () => {
                                 colorClass="bg-green-50 text-green-600"
                             />
                             <StatCard
-                                icon={Sun}
-                                title="Latitude"
-                                value={latestData.latitude?.toFixed(4)}
-                                unit=""
-                                description="Localização da coleta de dados"
-                                colorClass="bg-yellow-50 text-yellow-600"
+                                icon={Droplet}
+                                title="Umidade Atual"
+                                value={latestData.humidity?.toFixed(0) || 'N/A'}
+                                unit="%"
+                                description="Umidade relativa do ar"
+                                colorClass="bg-cyan-50 text-cyan-600"
                             />
                             <StatCard
-                                icon={Droplet}
-                                title="Código do Clima"
-                                value={latestData.weather_code}
+                                icon={Sun}
+                                title="Condição"
+                                value={getWeatherDescription(latestData.weather_code)}
                                 unit=""
-                                description="Código da Open-Meteo"
-                                colorClass="bg-purple-50 text-purple-600"
+                                description={`Código: ${latestData.weather_code}`}
+                                colorClass="bg-yellow-50 text-yellow-600"
                             />
                         </div>
                         
@@ -324,7 +354,7 @@ const Dashboard = () => {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            {["Data/Hora", "Temp (°C)", "Vento (km/h)", "Insight de IA"].map((header) => (
+                                            {["Data/Hora", "Temp (°C)", "Umidade (%)", "Vento (km/h)", "Condição", "Insight de IA"].map((header) => (
                                                 <th key={header} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{header}</th>
                                             ))}
                                         </tr>
@@ -336,7 +366,9 @@ const Dashboard = () => {
                                                     {new Date(data.timestamp).toLocaleString()}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.temperature.toFixed(1)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.humidity ? data.humidity.toFixed(0) : 'N/A'}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.wind_speed.toFixed(1)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getWeatherDescription(data.weather_code)}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-700 max-w-lg break-words">{data.insight || <span className='italic text-gray-400'>Aguardando...</span>}</td>
                                             </tr>
                                         ))}

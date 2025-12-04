@@ -6,6 +6,7 @@ export interface WeatherData extends Document {
 	longitude: number;
 	temperature: number;
 	wind_speed: number;
+	humidity: number;
 	weather_code: number;
 	insight?: string;
 }
@@ -16,6 +17,8 @@ export const WeatherDataSchema = new Schema<WeatherData>({
 	longitude: { type: Number, required: true },
 	temperature: { type: Number, required: true },
 	wind_speed: { type: Number, required: true },
+	humidity: { type: Number, required: false },
 	weather_code: { type: Number, required: true },
 	insight: { type: String, required: false },
 });
+

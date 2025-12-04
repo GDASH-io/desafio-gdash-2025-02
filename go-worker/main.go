@@ -19,6 +19,7 @@ type WeatherData struct {
 	Longitude   float64 `json:"longitude"`
 	Temperature float64 `json:"temperature"`
 	WindSpeed   float64 `json:"wind_speed"`
+	Humidity    float64 `json:"humidity"`
 	WeatherCode int     `json:"weather_code"`
 }
 
