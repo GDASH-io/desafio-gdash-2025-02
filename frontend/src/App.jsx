@@ -555,18 +555,15 @@ const PokeAPIPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [offset, setOffset] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
     const limit = 20;
 
     const fetchPokemon = useCallback(async (newOffset) => {
         setLoading(true);
         setError(null);
         try {
-            // OBS: A API NestJS está mockada para ignorar offset/limit, mas o fetch usa o endpoint
             const data = await apiFetch(`/pokeapi?limit=${limit}&offset=${newOffset}`);
-            // Simula a paginação no cliente, pois a API backend só retorna a primeira página
-            const allResults = data.results || [];
-            setPokemonList(allResults.slice(newOffset, newOffset + limit));
-            
+            setPokemonList(data.results || []);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -578,36 +575,121 @@ const PokeAPIPage = () => {
         fetchPokemon(offset);
     }, [fetchPokemon, offset]);
     
+    const filteredPokemon = pokemonList.filter(p => 
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.id?.toString().includes(searchTerm)
+    );
+
     const handleNext = () => setOffset(prev => prev + limit);
     const handlePrev = () => setOffset(prev => Math.max(0, prev - limit));
 
+    const getTypeColor = (type) => {
+        const colors = {
+            fire: 'bg-red-100 text-red-800',
+            water: 'bg-blue-100 text-blue-800',
+            grass: 'bg-green-100 text-green-800',
+            electric: 'bg-yellow-100 text-yellow-800',
+            ice: 'bg-cyan-100 text-cyan-800',
+            fighting: 'bg-orange-100 text-orange-800',
+            poison: 'bg-purple-100 text-purple-800',
+            ground: 'bg-amber-100 text-amber-800',
+            flying: 'bg-sky-100 text-sky-800',
+            psychic: 'bg-pink-100 text-pink-800',
+            bug: 'bg-lime-100 text-lime-800',
+            rock: 'bg-stone-100 text-stone-800',
+            ghost: 'bg-indigo-100 text-indigo-800',
+            dragon: 'bg-violet-100 text-violet-800',
+            dark: 'bg-gray-700 text-white',
+            steel: 'bg-slate-200 text-slate-800',
+            fairy: 'bg-fuchsia-100 text-fuchsia-800',
+        };
+        return colors[type] || 'bg-gray-100 text-gray-800';
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-            <h2 className="text-3xl font-extrabold text-gray-900">Integração Opcional: Lista de Pokémon (PokéAPI)</h2>
-            <p className='text-gray-600'>Exemplo de integração com uma API pública paginada (a paginação está simulada no frontend, usando a primeira página da API por limitação do backend mockado).</p>
-            
+            <div>
+                <h2 className="text-3xl font-extrabold text-gray-900">Pokédex</h2>
+                <p className="text-gray-600 mt-2">Explore Pokémon com detalhes de tipo, altura, peso e muito mais.</p>
+            </div>
+
             {error && <p className="text-red-600 p-4 bg-red-50 rounded-lg border border-red-200">Erro: {error}</p>}
 
-            <Card title={`Pokémon de ${offset + 1} a ${offset + pokemonList.length}`}>
-                {loading ? (
-                    <div className="flex justify-center items-center h-32"><Loader2 className="w-8 h-8 animate-spin text-blue-500" /></div>
-                ) : (
-                    <>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
-                            {pokemonList.map((pokemon, index) => (
-                                <div key={index} className="bg-gray-50 p-4 rounded-lg text-center shadow-sm hover:shadow-md transition duration-200">
-                                    <p className="text-lg font-semibold capitalize">{pokemon.name}</p>
-                                    <p className="text-sm text-gray-500">#{offset + index + 1}</p>
-                                    <a href={pokemon.url} target="_blank" rel="noopener noreferrer" className='text-xs text-blue-600 hover:underline mt-1 block'>
-                                        Detalhes
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="w-full sm:w-64">
+                    <Input
+                        placeholder="Buscar por nome ou ID..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setOffset(0);
+                        }}
+                    />
+                </div>
+                <span className="text-sm text-gray-600">
+                    Exibindo {filteredPokemon.length} de {pokemonList.length} Pokémon
+                </span>
+            </div>
+
+            {loading ? (
+                <div className="flex justify-center items-center h-64">
+                    <Loader2 className="w-12 h-12 animate-spin text-blue-500" />
+                </div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {filteredPokemon.map((pokemon) => (
+                            <div key={pokemon.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+                                <div className="bg-gradient-to-br from-blue-400 to-blue-600 h-32 flex items-center justify-center">
+                                    {pokemon.image ? (
+                                        <img src={pokemon.image} alt={pokemon.name} className="w-32 h-32 object-contain" />
+                                    ) : (
+                                        <div className="text-white text-sm">Sem imagem</div>
+                                    )}
+                                </div>
+                                <div className="p-4">
+                                    <p className="text-2xl font-bold text-gray-900 capitalize">#{pokemon.id} {pokemon.name}</p>
+                                    
+                                    <div className="flex flex-wrap gap-2 mt-2 mb-3">
+                                        {pokemon.types?.map((type) => (
+                                            <Badge key={type} variant="secondary" className={`${getTypeColor(type)} capitalize text-xs`}>
+                                                {type}
+                                            </Badge>
+                                        ))}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 text-sm border-t pt-3">
+                                        <div>
+                                            <p className="text-gray-500 text-xs uppercase">Altura</p>
+                                            <p className="font-semibold">{pokemon.height?.toFixed(1)}m</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500 text-xs uppercase">Peso</p>
+                                            <p className="font-semibold">{pokemon.weight?.toFixed(1)}kg</p>
+                                        </div>
+                                    </div>
+
+                                    <a 
+                                        href={pokemon.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className='mt-3 block w-full text-center bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition text-sm font-medium'
+                                    >
+                                        Ver Detalhes
                                     </a>
                                 </div>
-                            ))}
+                            </div>
+                        ))}
+                    </div>
+
+                    {filteredPokemon.length === 0 && (
+                        <div className="text-center py-8">
+                            <p className="text-gray-500 text-lg">Nenhum Pokémon encontrado com "{searchTerm}"</p>
                         </div>
-                        
-                        {/* Controles de Paginação */}
-                        <div className="flex justify-between mt-6 pt-4 border-t">
+                    )}
+
+                    {searchTerm === '' && (
+                        <div className="flex justify-between items-center pt-8 border-t">
                             <Button 
                                 variant="outline" 
                                 onClick={handlePrev} 
@@ -616,20 +698,20 @@ const PokeAPIPage = () => {
                             >
                                 Anterior
                             </Button>
-                            <span className='text-sm text-gray-600 self-center'>Página {(offset / limit) + 1}</span>
+                            <span className='text-sm text-gray-600'>
+                                Página {Math.floor(offset / limit) + 1}
+                            </span>
                             <Button 
                                 variant="outline" 
-                                onClick={handleNext} 
+                                onClick={handleNext}
                                 icon={ChevronRight}
-                                // Desabilita se for a última página de 20 (mockada na API)
-                                disabled={(offset + limit) >= 20} 
                             >
                                 Próxima
                             </Button>
                         </div>
-                    </>
-                )}
-            </Card>
+                    )}
+                </>
+            )}
         </div>
     );
 };
