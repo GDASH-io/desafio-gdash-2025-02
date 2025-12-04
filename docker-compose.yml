@@ -1,0 +1,93 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: weather_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - weather-network
+      
+  rabbitmq:
+    image: rabbitmq:4.2.1-management
+    container_name: weather_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" 
+    networks:
+      - weather-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  python-collector:
+    build:
+      context: ./backend/PythonDIR
+      dockerfile: Dockerfile
+    container_name: weather_python_collector
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@weather_rabbitmq:5672/%2F
+      - QUEUE_NAME=weather
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - weather-network
+
+  backend:
+    build:
+      context: ./backend/wather-app-api
+      dockerfile: Dockerfile
+    container_name: weather_backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb+srv://root:3691@cluster0.tk8cwea.mongodb.net/?appName=Cluster0
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - weather-network
+
+  frontend:
+    build:
+      context: ./frontend/weatherApp
+      dockerfile: Dockerfile
+    container_name: weather_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000/
+    depends_on:
+      - backend
+    networks:
+      - weather-network
+
+  go-worker:
+    build:
+      context: ./backend/GoDIR
+      dockerfile: Dockerfile
+    container_name: weather_go_worker
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq/
+      - QUEUE_NAME=weather
+      - NEST_API_URL=http://backend:3000/weather
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    networks:
+      - weather-network
+      
+networks:
+  weather-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
