@@ -14,3 +14,8 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+docker-compose.yml
+docker-compose.override.yml
+*.env.local
+.env.production
+.env.development
