@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # 🍃 1. Banco de Dados
+  mongo:
+    image: mongo:latest
+    container_name: gdash_mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - gdash-net
+
+  # 🐰 2. Fila (RabbitMQ)
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: password123
+    networks:
+      - gdash-net
+
+  # 🧠 3. Backend (NestJS)
+  backend:
+    build: ./backend-nestjs
+    container_name: gdash_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: mongodb://admin:password123@mongo:27017/gdash?authSource=admin
+      TZ: America/Sao_Paulo
+    depends_on:
+      - mongo
+    networks:
+      - gdash-net
+
+  # 🐍 4. Coletor (Python)
+  collector:
+    build: ./collector-python
+    container_name: gdash_collector
+    restart: always
+    environment:
+      RABBIT_HOST: rabbitmq
+      TZ: America/Sao_Paulo
+      GEMINI_API_KEY: "SUA_CHAVE_AQUI"
+    depends_on:
+      - rabbitmq
+    networks:
+      - gdash-net
+
+  # 🐹 5. Worker (Go)
+  worker:
+    build: ./worker-go
+    container_name: gdash_worker
+    restart: always
+    environment:
+      RABBIT_HOST: rabbitmq
+      API_HOST: backend
+      TZ: America/Sao_Paulo
+    depends_on:
+      - rabbitmq
+      - backend
+    networks:
+      - gdash-net
+
+  # 🎨 6. Frontend (React)
+  frontend:
+    build: ./frontend-react
+    container_name: gdash_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    networks:
+      - gdash-net
+
+volumes:
+  mongo_data:
+
+networks:
+  gdash-net:
+    driver: bridge
