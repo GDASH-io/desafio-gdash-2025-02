@@ -1,0 +1,1 @@
+/*! tsParticles Emitters Shape Square Plugin v3.9.1 by Matteo Bruni */

@@ -1,0 +1,47 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+ 
+  collector:
+    build:
+      context: ./collector-python
+      dockerfile: Dockerfile
+    env_file:
+      - .env 
+    command: python -u collector.py
+    depends_on:
+      - rabbitmq
+
+  worker:
+    build:
+      context: ./queue-worker-go
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8080:8080"
+    command: sh -c "sleep 10 && ./worker"
+
+  api:
+    build:
+      context: ./nestapi
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
