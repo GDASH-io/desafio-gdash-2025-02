@@ -54,7 +54,7 @@ services:
     environment:
       RABBIT_HOST: rabbitmq
       TZ: America/Sao_Paulo
-      GEMINI_API_KEY: AIzaSyDCMurLKljgVFmFsoW0lN3Jlzwer8abgW0
+      GEMINI_API_KEY: "SUA_CHAVE_AQUI"
     depends_on:
       - rabbitmq
     networks:
