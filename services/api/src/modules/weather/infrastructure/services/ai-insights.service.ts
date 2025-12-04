@@ -135,7 +135,7 @@ export class AIInsightsService {
 
             return {
                 summary: parsed.summary || 'Sem resumo disponível',
-                trends: Array.isArray(parsed.trends) ? parsed.trens: [],
+                trends: Array.isArray(parsed.trends) ? parsed.trends: [],
                 alerts: Array.isArray(parsed.alerts) ? parsed.alerts : [],
                 comfortScore: Math.min(100, Math.max(0, parsed.comfortScore || 50)),
                 recommendations: Array.isArray(parsed.recommendations)

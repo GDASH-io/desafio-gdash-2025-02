@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+
+:root {
+  --color-brand-50:  #f4fdfb;
+  --color-brand-100: #d7faf2;
+  --color-brand-200: #a8f3df;
+  --color-brand-300: #74ebd1;
+  --color-brand-400: #50e3c2;
+  --color-brand-500: #00947c;
+  --color-brand-600: #097d77;
+  --color-brand-700: #18857f;
+  --color-brand-800: #0f5c55;
+  --color-brand-900: #083c38;
+
+  --color-black:     #000000;
+  --color-gray-900:  #323232;
+  --color-gray-700:  #4b4b4b;
+  --color-gray-500:  #8c8c8c;
+  --color-gray-300:  #d1d1d1;
+  --color-gray-100:  #f4f4f4;
+  --color-white:     #ffffff;
+
+  --color-focus: #6ef2d9;
+  --color-hover: #0aa08c;
+
+  --surface-0: var(--color-white);
+  --surface-1: #f8fdfc;
+  --surface-2: #eefaf7;
+}
+
+@theme {
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+
+  --surface-0: var(--surface-0);
+  --surface-1: var(--surface-1);
+  --surface-2: var(--surface-2);
+
+  --color-focus: var(--color-focus);
+}
+
+:root {
+  --primary: var(--color-brand-500);
+  --primary-foreground: var(--color-white);
+
+  --secondary: var(--color-brand-300);
+  --secondary-foreground: var(--color-black);
+
+  --background: var(--surface-0);
+  --foreground: var(--color-gray-900);
+
+  --card: var(--surface-1);
+  --card-foreground: var(--color-gray-900);
+
+  --border: #e5e5e5;
+  --input: #d1d1d1;
+
+  --radius: 8px;
+}
