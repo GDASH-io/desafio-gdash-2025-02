@@ -209,11 +209,15 @@ start_rabbitmq() {
 
 # Iniciar MongoDB
 start_mongodb() {
+    # Garantir que diretório de dados existe
+    mkdir -p "$PROJECT_DIR/data/db"
+
     info "Iniciando MongoDB na porta $MONGODB_PORT..."
     docker run -d --name mongodb \
         -p $MONGODB_PORT:27017 \
         -e MONGO_INITDB_ROOT_USERNAME=gdash_user \
         -e MONGO_INITDB_ROOT_PASSWORD=gdash_password_secure \
+        -v "$PROJECT_DIR/data/db:/data/db" \
         --restart unless-stopped \
         mongo:latest >/dev/null
 
@@ -382,10 +386,19 @@ stop_all() {
     done
 
     # Mata por pattern de forma síncrona e segura
-    # REMOVIDO: Comandos pkill globais causavam crash na IDE e no plugin Gemini
-    # pkill -9 -f "node" >/dev/null 2>&1 || true
-    # pkill -9 -f "python" >/dev/null 2>&1 || true
-    # pkill -9 -f "vite" >/dev/null 2>&1 || true
+    # Mata por pattern de forma síncrona e segura
+    # Backend (NestJS)
+    pkill -f "nest start" >/dev/null 2>&1 || true
+    pkill -f "node.*dist/main" >/dev/null 2>&1 || true
+    
+    # Frontend (Vite)
+    pkill -f "vite" >/dev/null 2>&1 || true
+    
+    # Producer (Python)
+    pkill -f "producer.py" >/dev/null 2>&1 || true
+    
+    # Worker (Go)
+    pkill -f "/exe/worker" >/dev/null 2>&1 || true
     
     log "Processos interrompidos" 2>/dev/null || true
 

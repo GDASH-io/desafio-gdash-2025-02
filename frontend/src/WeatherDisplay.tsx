@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Wind, Droplets, RefreshCw, Cpu, Cloud, Download, Gamepad2 } from "lucide-react";
+import { Wind, Droplets, RefreshCw, Cpu, Cloud, Download, Gamepad2, LogOut } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ interface WeatherDisplayProps {
 }
 
 export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh: propOnRefresh, refreshError: propRefreshError }: WeatherDisplayProps) {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const navigate = useNavigate();
   const [logs, setLogs] = useState<WeatherLog[]>(propLogs || []);
   const [loading, setLoading] = useState(propLoading || false);
@@ -195,6 +195,14 @@ export function WeatherDisplay({ logs: propLogs, loading: propLoading, onRefresh
             >
               <Download className="mr-2 h-4 w-4" />
               XLSX
+            </Button>
+            <Button
+              onClick={logout}
+              variant="destructive"
+              className="bg-red-600 hover:bg-red-700 text-white border border-red-500 transition-all duration-300 backdrop-blur-md shadow-lg hover:shadow-red-600/50"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair
             </Button>
           </div>
         </div>
