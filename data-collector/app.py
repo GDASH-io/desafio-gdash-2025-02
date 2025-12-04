@@ -11,7 +11,7 @@ REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
 REDIS_CHANNEL = 'weather_data_queue'
 LATITUDE = os.getenv('LATITUDE', '-22.9099') # Campinas (padrão)
 LONGITUDE = os.getenv('LONGITUDE', '-47.0626') # Campinas (padrão)
-COLLECTION_INTERVAL_SECONDS = int(os.getenv('COLLECTION_INTERVAL_SECONDS', 10)) # Coleta a cada 10 segundos por padrão (ambiente pode sobrescrever)
+COLLECTION_INTERVAL_SECONDS = int(os.getenv('COLLECTION_INTERVAL_SECONDS', 60)) # Coleta a cada 60 segundos (1 minuto)
 
 # Conexão com o Redis
 try:
