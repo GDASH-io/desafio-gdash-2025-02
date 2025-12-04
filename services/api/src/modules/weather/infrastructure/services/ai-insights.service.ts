@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
@@ -23,19 +23,17 @@ export interface AIInsights {
 @Injectable()
 export class AIInsightsService {
     private readonly logger = new Logger(AIInsightsService.name);
-    private genAI: GoogleGenerativeAI;
-    private model: any;
+    private client: GoogleGenAI;
+    private readonly modelName: string;
     private readonly enabled: boolean | undefined;
 
     constructor(private configService: ConfigService) {
         const apiKey = this.configService.get<string>('ai.gemini.apiKey');
+        this.modelName = String(this.configService.get<string>('ai.gemini.model') || 'gemini-2.5-flash');
         this.enabled = this.configService.get<boolean>('ai.enabled') && !!apiKey;
 
         if (this.enabled && apiKey) {
-            this.genAI = new GoogleGenerativeAI(apiKey);
-            this.model = this.genAI.getGenerativeModel({
-                model: String(this.configService.get<string>('ai.gemini.model')),
-            });
+            this.client = new GoogleGenAI({ apiKey: apiKey })
             this.logger.log('AI Insights initialized with Gemini');
         } else {
             this.logger.warn('AI Insights Service disabled - no API key provided')
@@ -54,15 +52,26 @@ export class AIInsightsService {
         try {
             const prompt = this.buildPrompt(city, statistics, recentData);
 
-            const result = await this.model.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text()
+            const result = await this.client.models.generateContent({
+                model: this.modelName,
+                contents: [{ parts: [{ text: prompt }]}],
+                config: {
+                    responseMimeType: 'application/json',
+                },
+            });
+
+            const text = result.text;
+
+            if (!text) {
+                throw new Error('Empty response from AI')
+            }
 
             const insights = this.parseAIResponse(text);
 
             this.logger.log(`Generated AI insights for ${city}`);
 
             return insights;
+
         } catch (error) {
             this.logger.error('Failed to generate insights', error.stack);
             return this.getFallbackInsights(city, statistics);
@@ -122,16 +131,11 @@ export class AIInsightsService {
 
     private parseAIResponse(text: string): AIInsights {
         try {
-            const jsonText = text
-                .replace(/```json\n?/g, '')
-                .replace(/```\n?/g, '')
-                .trim();
-
-            const parsed = JSON.parse(jsonText);
+            const parsed = JSON.parse(text);
 
             return {
                 summary: parsed.summary || 'Sem resumo disponível',
-                trends: Array.isArray(parsed.trens) ? parsed.trens: [],
+                trends: Array.isArray(parsed.trends) ? parsed.trens: [],
                 alerts: Array.isArray(parsed.alerts) ? parsed.alerts : [],
                 comfortScore: Math.min(100, Math.max(0, parsed.comfortScore || 50)),
                 recommendations: Array.isArray(parsed.recommendations)
