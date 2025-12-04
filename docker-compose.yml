@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  mongo:
+    image: mongo:6
+    container_name: gdash-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend-nest:
+    build:
+      context: ./backend-nest
+      dockerfile: Dockerfile
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/gdash
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - rabbitmq
+
+volumes:
+  mongo-data:

@@ -1,0 +1,48 @@
+{
+    "name": "@types/passport-jwt",
+    "version": "4.0.1",
+    "description": "TypeScript definitions for passport-jwt",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/passport-jwt",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "TANAKA Koichi",
+            "githubUsername": "mugeso",
+            "url": "https://github.com/mugeso"
+        },
+        {
+            "name": "Alex Young",
+            "githubUsername": "alsiola",
+            "url": "https://github.com/alsiola"
+        },
+        {
+            "name": "Carlos Eduardo Scheffer",
+            "githubUsername": "carlosscheffer",
+            "url": "https://github.com/carlosscheffer"
+        },
+        {
+            "name": "Byungjin Kim",
+            "githubUsername": "jindev",
+            "url": "https://github.com/jindev"
+        },
+        {
+            "name": "Svyatoslav Bychkov",
+            "githubUsername": "stbychkov",
+            "url": "https://github.com/stbychkov"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/passport-jwt"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/jsonwebtoken": "*",
+        "@types/passport-strategy": "*"
+    },
+    "typesPublisherContentHash": "7c3350e3ae467c229425831617967a44d4935d45f40a3c28b4a241aa6d0bf635",
+    "typeScriptVersion": "4.6"
+}
