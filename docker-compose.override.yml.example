@@ -1,0 +1,29 @@
+# docker-compose.override.yml.example
+# Copy this file to docker-compose.override.yml and customize with your credentials
+# This file overrides docker-compose.yml settings
+
+services:
+  mongodb:
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=your_secure_password_here
+
+  rabbitmq:
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=your_secure_password_here
+
+  python-weather-collector:
+    environment:
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASS=your_secure_password_here
+
+  go-weather-worker:
+    environment:
+      - RABBITMQ_URL=amqp://admin:your_secure_password_here@rabbitmq:5672/
+
+  nestjs-api:
+    environment:
+      - MONGODB_URI=mongodb://admin:your_secure_password_here@mongodb:27017/weather_dashboard?authSource=admin
+      - JWT_SECRET=your_secure_jwt_secret_here
+      - TOGETHER_API_KEY=your_together_ai_api_key_here

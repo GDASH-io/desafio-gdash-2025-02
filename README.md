@@ -1,371 +1,874 @@
-# Desafio para o processo seletivo GDASH 2025/02
+# 🌦️ Weather Dashboard - Full-Stack Microservices
 
-Repositório destinado aos interessados em participar do processo seletivo GDASH 2025/02.
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Go](https://img.shields.io/badge/Go-00ADD8?style=flat&logo=go&logoColor=white)](https://golang.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=flat&logo=rabbitmq&logoColor=white)](https://www.rabbitmq.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Sobre o GDASH
+## 🎬 Apresentação em Vídeo
 
-No ramo da produção de energia fotovoltaica, há a modalidade de produção compartilhada. Nessa modalidade, diferentes pessoas investem na construção de uma mesma usina fotovoltaica e dividem o retorno finaceiro referente à energia gerada pela usina.
-
-Acreditamos que as energias renováveis terão um lugar dominante em nossa economia pelo resto de nossas vidas. Trabalhamos no sentido de ampliar o impacto positivo que as energias renováveis podem ter no meio ambiente e nas nossas vidas. O sucesso da GDASH é resultado de nossa equipe apaixonada, juntamente com nosso compromisso de oferecer a melhor solução.
-
-Sabemos que negócios enfrentam desafios únicos e por isso oferecemos soluções turnkey, customizadas, economicamente viáveis e seguras.
-
-Somos uma startup em estágio de crescimento e você trabalhará diretamente com os fundadores, ajudando a definir a visão, o produto e a experiência do usuário.
-
-<p align="left">
-  <a href="https://www.linkedin.com/company/gdash/">
-    <img src="https://img.shields.io/badge/LinkedIn-%230077B5.svg?&style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn Button">
-  </a>
-  <a href="https://gdash.io/">
-    <img src="https://img.shields.io/badge/-Website-red" alt="GDASH Website Button">
-  </a>
-</p>
-
-## Sobre a vaga
-
-Já pensou em potencializar o setor que mais cresce na galáxia e trabalhar com uma solução que utiliza tecnologia web de ponta, altamente distribuída com foco em performance e disponibilidade? 👀
-
-Os desenvolvedores GDASH são responsáveis por criar e manter aplicações para clientes internos e externos, prover soluções escaláveis, resilientes e altamente disponíveis que sustentem picos de acesso além de atuar como referência técnica e tutores de outros desenvolvedores.
-
-Procuramos por pessoas dinâmicas e que queiram estar aprendendo sempre. Nossa equipe é jovem, motivada e estamos sempre em busca de soluções criativas para alcançar os resultados que nossos clientes esperam. Se você tem esse perfil, é autoconfiante, autodidata e tem facilidade para lidar com desafios diários, essa vaga é para você!
-
-# 🚀 O Desafio
-
-## 🧭 Visão geral
-O objetivo deste desafio é desenvolver uma aplicação **full-stack** moderna que integre múltiplas linguagens e serviços, com foco em **integração entre sistemas, dados reais e uso de IA**.
-
-Você deverá construir um sistema que:
-
-1. **Coleta dados climáticos** (via **Open-Meteo** ou **OpenWeather**) da sua **cidade/localização**;  
-2. **Envia esses dados periodicamente** para uma **fila** (Message Broker, como RabbitMQ ou até Redis), processada por um **worker em Go**;  
-3. **Armazena os dados** em uma **API NestJS** com **MongoDB**;  
-4. **Exibe um Dashboard** no frontend (React + Vite + Tailwind + shadcn/ui) com os dados coletados;  
-5. Gera **insights baseados em IA** a partir das informações climáticas — podendo ser gerados automaticamente, sob demanda, ou de qualquer outra forma que você julgar adequada;  
-6. Inclui:
-   - **CRUD de usuários** (com autenticação e usuário padrão);
-   - **Página opcional** de integração com uma **API pública paginada** (ex.: PokéAPI, Star Wars API, etc.);
-   - **Exportação de dados** em **CSV/XLSX**;  
-7. Toda a solução deve rodar via **Docker Compose**.
-
-> ⚙️ **Observação importante:**  
-> Os nomes de **endpoints, coleções, entidades, variáveis, bibliotecas e estruturas** usados neste documento são **apenas exemplos ilustrativos**.  
-> Você pode (e deve) adotar as convenções e estruturas que considerar mais adequadas, desde que a **funcionalidade final** seja mantida.
+> **📹 [Assista à apresentação técnica completa no YouTube](https://youtu.be/2N6iTDiLapU)**
+> 
+> Demonstração da arquitetura, pipeline de dados, decisões técnicas e aplicação funcionando (5 minutos)
 
 ---
 
-## 🧩 Stack obrigatória
+Sistema completo de monitoramento climático em **tempo real** com arquitetura de microserviços, processamento concorrente, insights com IA e gamificação Pokémon.
 
-- **Frontend:** React + Vite + Tailwind + [shadcn/ui](https://ui.shadcn.com)  
-- **Backend (API):** NestJS (TypeScript)  
-- **Banco de dados:** MongoDB (Atlas ou container)  
-- **Fila:** Go + Message Broker (`RabbitMQ`, `Redis`, etc.)  
-- **Coleta de dados:** Python (`requests`, `httpx`, `pandas`, etc.)  
-- **APIs externas:**
-  - Clima (obrigatória): [Open-Meteo](https://open-meteo.com/) ou [OpenWeather](https://openweathermap.org/)
-  - Opcional: qualquer API pública com **paginação**, por exemplo:
-    - [PokéAPI](https://pokeapi.co/)
-    - [SWAPI (Star Wars API)](https://swapi.dev/)
-- **Infra:** Docker / Docker Compose  
-- **Linguagem base:** **TypeScript obrigatório** (frontend e backend)
+> 🎯 **Desafio Técnico Full-Stack** - Implementação completa do pipeline de dados: Python → RabbitMQ → Go → NestJS → MongoDB → React
+
+> ⚠️ **Importante:** Configure suas próprias credenciais em `.env` e `docker-compose.override.yml` antes de usar em produção!
 
 ---
 
-## ⚙️ Escopo funcional
+## 📋 Índice
 
-### 1️⃣ Coleta de dados (Python → Fila)
-
-O serviço em **Python** será responsável por:
-
-- Buscar periodicamente (ex.: a cada 1 hora) dados da **previsão do tempo** da sua cidade/localização;  
-- Extrair informações relevantes, como (exemplos):
-  - Temperatura
-  - Umidade
-  - Velocidade do vento
-  - Condição do céu
-  - Probabilidade de chuva  
-- Enviar os dados normalizados para uma **fila** em formato **JSON**.
-
-> 🔹 Estrutura do JSON, nomes de campos e cron/intervalo são **livres** — podem ser adaptados conforme sua arquitetura.
-
-O Python é o **produtor dos dados meteorológicos**. A camada de IA pode ser implementada em Python, no NestJS ou em outro serviço, desde que integrada.
-
----
-
-### 2️⃣ Fila (Go + Message Broker)
-
-Implemente um **worker em Go**, responsável por:
-
-- Consumir mensagens da fila;  
-- Validar e transformar os dados, se necessário;  
-- Enviar os registros para a **API NestJS** (por exemplo, um endpoint como `POST /api/weather/logs`);  
-- Confirmar as mensagens com **ack/nack**, implementar **retry básico**;  
-- Registrar logs das operações principais.
-
-> 📘 **Observação:**  
-> O nome do endpoint, o body do JSON e a estrutura de erro são **apenas exemplos** neste README.  
-> Você pode definir o contrato de comunicação da forma que achar melhor, desde que o fluxo Python → Message Broker → Go → NestJS funcione corretamente.
-
-Bibliotecas sugeridas (não obrigatórias):
-
-- `github.com/rabbitmq/amqp091-go`  
-- `encoding/json`  
-- `net/http`  
+- [✨ Características](#-características)
+- [🏗️ Arquitetura](#️-arquitetura)
+- [🚀 Quick Start](#-quick-start)
+- [📦 Pré-requisitos](#-pré-requisitos)
+- [⚙️ Instalação](#️-instalação)
+- [🌐 Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [🔧 Uso](#-uso)
+- [📊 Endpoints da API](#-endpoints-da-api)
+- [🎨 Páginas do Frontend](#-páginas-do-frontend)
+- [🧪 Testes](#-testes)
+- [🐛 Troubleshooting](#-troubleshooting)
+- [📚 Documentação Adicional](#-documentação-adicional)
+- [🛠️ Stack Tecnológica](#️-stack-tecnológica)
+- [👥 Contribuição](#-contribuição)
+- [📄 Licença](#-licença)
 
 ---
 
-### 3️⃣ API (NestJS + MongoDB)
+## ✨ Características
 
-A API em **NestJS** será o núcleo do sistema, responsável por:
+### 🎯 Core Features
 
-- Receber e armazenar os dados de clima;  
-- Expor endpoints para consumo pelo frontend;  
-- Orquestrar ou acionar a camada de IA;  
-- Gerenciar usuários.
+- ✅ **Pipeline Completo de Dados**: Python → RabbitMQ → Go → NestJS → MongoDB → React
+- ✅ **Coleta Automática**: Dados climáticos a cada 5 minutos (Open-Meteo API)
+- ✅ **Processamento Concorrente**: 5 workers Go com retry e ACK/NACK
+- ✅ **API REST Completa**: 16 endpoints NestJS com validação e autenticação
+- ✅ **Dashboard Interativo**: React com gráficos, tabelas e filtros
+- ✅ **Autenticação JWT**: Sistema completo com roles (admin/user)
+- ✅ **Export de Dados**: CSV e XLSX formatados
 
-#### a) Dados de clima
+### 🤖 Features Avançados
 
-Responsabilidades sugeridas:
+- 🤖 **IA Preditiva**: Together AI (Meta-Llama 3.1 8B) com análise e previsão de 6 horas
+- 📦 **Cache Inteligente**: Sistema de cache de 6 horas (economia de 99% em chamadas)
+- ⚡ **Weather Pokémon**: Gamificação com 8 condições climáticas + sistema de lendários
+- 📊 **Insights Avançados**: Estatísticas, tendências e recomendações automáticas
+- 🎨 **UI Moderna**: Tailwind CSS com animações e design responsivo
+- 🔗 **PokéAPI Integration**: 1328 Pokémon com detalhes completos
 
-- Receber registros vindos do worker Go;  
-- Armazenar em uma coleção no MongoDB (ex.: `weather_logs`);  
-- Expor endpoints, como (exemplos):
-  - `GET /api/weather/logs` — listar registros climáticos;
-  - `GET /api/weather/export.csv` — exportar CSV;
-  - `GET /api/weather/export.xlsx` — exportar XLSX;
-  - `GET ou POST /api/weather/insights` — gerar e/ou retornar insights de IA.
+### 🎮 Funcionalidades Extras
 
-Os **insights de IA** podem ser:
-
-- Gerados automaticamente quando novos dados são inseridos;  
-- Calculados sob demanda (quando o frontend solicitar);  
-- Atualizados de forma agendada.
-
-> 💡 O importante é que o sistema seja capaz de **usar os dados históricos de clima** para produzir informações mais ricas, não apenas listar valores crus.
-
----
-
-#### b) Usuários
-
-- Implementar um **CRUD completo de usuários** (ex.: `/api/users`);  
-- Implementar autenticação (JWT ou similar);  
-- Criar um **usuário padrão** automaticamente na inicialização (ex.: `admin@example.com / 123456` — valores podem ser configuráveis via `.env`).
+- 🎲 **Sistema de Lendários**: 2% chance base + bônus por condições extremas
+- 📈 **Gráficos Interativos**: Recharts com temperatura, umidade, vento
+- 👥 **CRUD de Usuários**: Gerenciamento completo com modal e validações
+- 🔐 **Protected Routes**: Sistema de rotas protegidas no frontend
+- 📱 **Responsivo**: Design adaptativo para mobile, tablet e desktop
+- 🌍 **Localização**: Suporte a português BR com date-fns
 
 ---
 
-#### c) Integração com API pública (opcional)
+## 🏗️ Arquitetura
 
-Como parte opcional do desafio, implemente uma funcionalidade que consuma uma **API pública com paginação**, por exemplo:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      WEATHER DASHBOARD                          │
+└─────────────────────────────────────────────────────────────────┘
 
-- [PokéAPI](https://pokeapi.co/) — listagem de Pokémons + detalhe de um Pokémon;  
-- [SWAPI](https://swapi.dev/) — listagem de personagens, planetas ou naves + detalhe.
+    📡 Python Collector (5 min interval)
+    │   ├─ Open-Meteo API
+    │   └─ Weather data: temp, humidity, wind, precipitation
+    │
+    ▼
+    📨 RabbitMQ (Message Broker)
+    │   ├─ Queue: weather_data
+    │   ├─ Management UI: :15672
+    │   └─ Persistent messages
+    │
+    ▼
+    ⚙️  Go Worker (5 concurrent workers)
+    │   ├─ ACK/NACK handling
+    │   ├─ Retry mechanism (3x)
+    │   └─ HTTP POST to NestJS
+    │
+    ▼
+    🚀 NestJS API (:3000)
+    │   ├─ Weather Module (7 endpoints)
+    │   ├─ Users Module (5 endpoints)
+    │   ├─ Auth Module (JWT)
+    │   ├─ Pokemon Module (3 endpoints)
+    │   └─ Together AI Integration
+    │
+    ▼
+    🗄️  MongoDB
+    │   ├─ Collection: weathers
+    │   └─ Collection: users
+    │
+    ◄───────────────────┐
+                        │
+    🎨 React Frontend (:5173)
+        ├─ Dashboard (weather + pokémon)
+        ├─ Insights (IA + predictions)
+        ├─ Export (CSV/XLSX)
+        ├─ Explore (1328 pokémon)
+        ├─ Users Management
+        └─ Authentication
+```
 
-Sugestão de funcionalidades (opcionais):
+### 📐 Padrões de Arquitetura
 
-- Endpoint no backend que consome a API externa — o frontend não chama a API pública diretamente;  
-- Paginação simples;  
-- Endpoint de detalhe de um item (ex.: Pokémon, personagem, planeta).
-
-> 🌍 Tanto o nome dos endpoints quanto o desenho das rotas ficam **totalmente a seu critério**.
-
----
-
-## 🖥️ Frontend (React + Vite + Tailwind + shadcn/ui)
-
-A aplicação frontend deve ser construída com **React + Vite**, estilizada com **Tailwind** e utilizando componentes do **shadcn/ui**.
-
-Ela deve ter, no mínimo, **essas áreas de funcionalidade**:
-
----
-
-### 🌦️ 1. Dashboard de Clima
-
-O Dashboard será a **página principal** do sistema, exibindo:
-
-- **Dados reais de clima** da sua cidade/localização, obtidos via pipeline Python → Go → NestJS → MongoDB;  
-- **Insights de IA** gerados a partir desses dados.
-
-A forma de exibir essas informações é **livre**.
-
-Você pode, por exemplo, incluir:
-
-- **Cards principais** (exemplos):
-  - Temperatura atual  
-  - Umidade atual  
-  - Velocidade do vento  
-  - Condição (ensolarado, nublado, chuvoso, etc.)  
-
-- **Gráficos** (exemplos):
-  - Temperatura ao longo do tempo;  
-  - Probabilidade de chuva ao longo do tempo;  
-
-- **Tabela de registros** (exemplo):
-  - Data/hora  
-  - Local  
-  - Condição  
-  - Temperatura  
-  - Umidade  
-  - Botões para exportar **CSV/XLSX** (integração com os endpoints do backend).
-
-- **Insights de IA** (forma livre), como:
-  - Texto explicativo (“Alta chance de chuva nas próximas horas”);  
-  - Cards com alertas (“Calor extremo”, “Clima agradável”);  
-  - Gráficos ou visualizações adicionais.
-
-> 💡 Tudo acima são **exemplos ilustrativos**.  
-> O requisito é: o Dashboard deve **mostrar os dados de clima da região + insights de IA**, mas você decide **como** isso será exibido (layout, tipos de gráfico, componentes etc.).
+- **Microserviços**: Separação clara de responsabilidades
+- **Message Broker**: Desacoplamento com RabbitMQ
+- **Concurrent Workers**: Processamento paralelo em Go
+- **REST API**: Interface padronizada com NestJS
+- **MVC Pattern**: Separação de camadas (Controller → Service → Repository)
+- **Context API**: Gerenciamento de estado global no React
 
 ---
 
-### 🌐 2. Página opcional – API pública paginada
+## 🚀 Quick Start
 
-Uma página (por exemplo, `/explorar`) consumindo a funcionalidade opcional do backend que integra com uma API pública paginada.
+### Opção 1: Docker Compose (Recomendado)
 
-Exemplos de UX (apenas sugestões):
+```bash
+# 1. Clone o repositório
+git clone https://github.com/RobertoSilvaDevFullStack/desafio_gdash
+cd desafio_gdash
 
-- Lista de Pokémons com paginação + página de detalhes de um Pokémon;  
-- Lista de personagens de Star Wars com paginação + detalhes de um personagem.
+# 2. Configure as variáveis de ambiente (IMPORTANTE!)
+cp .env.example .env
+cp docker-compose.override.yml.example docker-compose.override.yml
+# Edite os arquivos criados e configure suas próprias credenciais
 
----
+# 3. Suba todos os serviços
+docker compose up -d
 
-### 👤 3. Usuários
+# 4. Aguarde os serviços iniciarem (30-45 segundos)
+docker compose ps
 
-Requisitos para a parte de usuários:
+# 5. Acesse o frontend
+# Frontend: http://localhost:5173
+# API: http://localhost:3000
+# RabbitMQ UI: http://localhost:15672 (credenciais no docker-compose.yml)
+```
 
-- Tela de **login**;  
-- Rotas protegidas (somente usuário autenticado acessa o Dashboard);  
-- CRUD de usuários (listar, criar, editar, remover);  
-- Uso de componentes do **shadcn/ui** (Button, Input, Table, Dialog, Toast, etc.);  
-- Feedback visual adequado (loading, erro, sucesso).
+**Pronto! 🎉** O sistema está rodando:
 
----
+- ✅ Python coletando dados a cada 5 minutos
+- ✅ Go processando mensagens
+- ✅ NestJS API ativa
+- ✅ React Dashboard disponível
 
-## 📁 Exportação de dados
+### 🔑 Credenciais de Teste
 
-- O backend deve expor endpoints para exportar dados de clima em **CSV** e **XLSX**;  
-- O frontend deve oferecer botões no Dashboard para fazer o download desses arquivos.
+**Usuário de teste já cadastrado:**
 
----
+```
+Email: user@test.com
+Senha: 123456
+```
 
-## 💡 Ideias de insights (para `/api/weather/insights` ou similar)
+> ⚠️ **Importante:** Este usuário é criado automaticamente no primeiro início da aplicação e pode ser usado para testar todas as funcionalidades do sistema.
 
-A forma de aplicar IA é livre. Algumas ideias possíveis:
+> 🔒 **Segurança:** As credenciais padrão no `docker-compose.yml` são seguras (valores placeholder). Configure suas próprias credenciais em `docker-compose.override.yml` antes de subir em produção!
 
-- Cálculo de média de temperatura e umidade em determinados períodos;  
-- Detecção de tendência (temperaturas subindo ou caindo);  
-- Pontuação de conforto climático (0–100);  
-- Classificação do dia: “frio”, “quente”, “agradável”, “chuvoso”;  
-- Alertas: “Alta chance de chuva”, “Calor extremo”, “Frio intenso”;  
-- Geração de resumos em texto (ex.: “Nos últimos 3 dias, a temperatura média foi de 28°C, com alta umidade e tendência de chuva no fim da tarde.”).
+### Opção 2: Desenvolvimento Local
 
-> 🔍 Os exemplos acima são **sugestões inspiracionais**.  
-> O que será implementado (e em qual serviço) fica a seu critério, desde que seja **coerente com os dados de clima**.
+```bash
+# Terminal 1: MongoDB
+docker run -d -p 27017:27017 --name mongodb \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=<sua_senha_segura> \
+  mongo:7
 
----
+# Terminal 2: RabbitMQ
+docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq \
+  -e RABBITMQ_DEFAULT_USER=admin \
+  -e RABBITMQ_DEFAULT_PASS=<sua_senha_segura> \
+  rabbitmq:3-management
 
-## 🧠 Critérios de avaliação
+# Terminal 3: Python Collector
+cd python-weather-collector
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python src/main.py
 
-- **Funcionalidade completa:** pipeline Python → Message Broker → Go → NestJS → MongoDB → Frontend;  
-- **Clareza de arquitetura:** organização de pastas, camadas e responsabilidades;  
-- **Qualidade de código:** tipagem, legibilidade, padrões adotados;  
-- **Integração entre serviços:** comunicação estável e bem tratada;  
-- **Boas práticas:** validação, tratamento de erros, logs, eslint/prettier;  
-- **UX:** experiência de uso do Dashboard e das telas;  
-- **Criatividade:** na forma de mostrar dados e insights;  
-- **Documentação:** README claro, com passos de execução e configuração;  
-- **Uso correto do Docker Compose** para subir tudo.
+# Terminal 4: Go Worker
+cd go-weather-worker
+go mod download
+go run cmd/worker/main.go
 
-**Bônus (não obrigatório):**
+# Terminal 5: NestJS API
+cd nestjs-api
+npm install
+npm run start:dev
 
-- Logs detalhados por serviço;  
-- CI (lint/test) configurado;  
-- Dashboard com filtros, múltiplos tipos de gráfico;  
-- Deploy em ambiente gratuito (Railway, Render, etc.);  
-- Testes automatizados (unitários e/ou e2e).
-
----
-
-## ⚠️ Regras
-
-- Respeitar termos de uso das APIs utilizadas (Open-Meteo/OpenWeather, PokéAPI, SWAPI, etc.);  
-- Não coletar ou armazenar dados pessoais sensíveis;  
-- Usar intervalos razoáveis para chamadas às APIs externas;  
-- Focar em **integração, clareza e coesão**, não apenas em adicionar complexidade;  
-- Você é livre para:
-  - Renomear endpoints;
-  - Alterar nomes de coleções;
-  - Mudar estruturas de diretórios;
-  - Escolher bibliotecas auxiliares — desde que a proposta do desafio seja atendida.
-
----
-
-## 📹 Vídeo obrigatório
-
-Grave um vídeo de **até 5 minutos** explicando:
-
-- Arquitetura geral da aplicação;  
-- Pipeline de dados (Python → Message Broker → Go → NestJS → Frontend);  
-- Como os insights de IA são gerados e exibidos;  
-- Principais decisões técnicas;  
-- Demonstração rápida da aplicação rodando via Docker Compose.
-
-O vídeo deve ser enviado via:
-
-- **YouTube (não listado)**.
-
-Inclua o link no README e/ou na descrição do Pull Request.
+# Terminal 6: React Frontend
+cd desafio_gdash
+npm install
+npm run dev
+```
 
 ---
 
-## 🧪 Entrega
+## 📦 Pré-requisitos
 
-A entrega deve ser feita via **Pull Request**, em uma **branch com o seu nome completo**, por exemplo:
+### Para Docker (Recomendado)
 
-- `joao-silva`  
-- `maria-fernanda-souza`
+- [Docker](https://www.docker.com/get-started) 20.10+
+- [Docker Compose](https://docs.docker.com/compose/install/) 2.0+
+- 4GB RAM disponível
+- 5GB espaço em disco
 
-O Pull Request deve conter:
+### Para Desenvolvimento Local
 
-- Código do **backend (NestJS)**;  
-- Código do **frontend (Vite)**;  
-- Código **Python** (coleta de clima);  
-- Código **Go** (worker da fila);  
-- `docker-compose.yml` com todos os serviços (API, frontend, banco, Message Broker, etc.);  
-- Arquivo `.env.example` com todas as variáveis necessárias;  
-- Link do vídeo explicativo (YouTube não listado);  
-- README com:
-  - Como rodar tudo via Docker Compose;  
-  - Como rodar o serviço Python;  
-  - Como rodar o worker Go;  
-  - URLs principais (API, frontend, Swagger, etc.);  
-  - Usuário padrão (login/senha) para acesso inicial.
+- **Python**: 3.10+
+- **Go**: 1.21+
+- **Node.js**: 20+
+- **MongoDB**: 7+
+- **RabbitMQ**: 3+
 
 ---
 
-## ✅ Checklist rápido
+## ⚙️ Instalação
 
-- [ ] Python coleta dados de clima (Open-Meteo ou OpenWeather)  
-- [ ] Python envia dados para a fila  
-- [ ] Worker Go consome a fila e envia para a API NestJS  
-- [ ] API NestJS:
-  - [ ] Armazena logs de clima em MongoDB  
-  - [ ] Exponde endpoints para listar dados  
-  - [ ] Gera/retorna insights de IA (endpoint próprio)  
-  - [ ] Exporta dados em CSV/XLSX  
-  - [ ] Implementa CRUD de usuários + autenticação  
-  - [ ] (Opcional) Integração com API pública paginada  
-- [ ] Frontend React + Vite + Tailwind + shadcn/ui:
-  - [ ] Dashboard de clima com dados reais  
-  - [ ] Exibição de insights de IA  
-  - [ ] CRUD de usuários + login  
-  - [ ] (Opcional) Página consumindo API pública paginada  
-- [ ] Docker Compose sobe todos os serviços  
-- [ ] Código em TypeScript (backend e frontend)  
-- [ ] Vídeo explicativo (máx. 5 minutos)  
-- [ ] Pull Request via branch com seu nome completo  
-- [ ] README completo com instruções de execução  
-- [ ] Logs e tratamento de erros básicos em cada serviço  
+### 1. Clone o Repositório
+
+```bash
+git clone https://github.com/RobertoSilvaDevFullStack/desafio_gdash
+cd desafio_gdash
+```
+
+### 2. Configure Variáveis de Ambiente
+
+#### 2.1 NestJS API
+
+Crie `nestjs-api/.env`:
+
+```env
+# MongoDB
+MONGODB_URI=mongodb://admin:<sua_senha>@mongodb:27017/weather_dashboard?authSource=admin
+
+# JWT
+JWT_SECRET=<sua_chave_secreta_jwt>
+JWT_EXPIRES_IN=7d
+
+# App
+PORT=3000
+NODE_ENV=development
+
+# Together AI (opcional - para insights avançados)
+# Obtenha em: https://api.together.xyz/
+TOGETHER_API_KEY=<sua_api_key_together_ai>
+
+# Default User (criado automaticamente)
+DEFAULT_USER_EMAIL=user@test.com
+DEFAULT_USER_PASSWORD=123456
+DEFAULT_USER_NAME=Usuário Teste
+```
+
+#### 2.2 Frontend React
+
+Crie `desafio_gdash/.env`:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+#### 2.3 Docker Compose
+
+Edite `docker-compose.yml` e atualize `TOGETHER_API_KEY`:
+
+```yaml
+nestjs-api:
+  environment:
+    - TOGETHER_API_KEY=<sua_api_key_together_ai> # ← Substituir pela sua chave
+```
+
+### 3. Suba os Serviços
+
+```bash
+# Build e start de todos os containers
+docker compose up --build -d
+
+# Verificar status
+docker compose ps
+
+# Ver logs
+docker compose logs -f
+```
+
+### 4. Verifique a Instalação
+
+```bash
+# Testar API
+curl http://localhost:3000/api/weather/stats
+
+# Testar Frontend
+# Abra no navegador: http://localhost:5173
+```
 
 ---
 
-Boa sorte! 🚀  
-Mostre sua capacidade de integrar múltiplas linguagens e serviços em uma aplicação moderna, escalável e inteligente — unindo **engenharia de dados**, **backend**, **frontend** e **IA aplicada**.
+## 🌐 Variáveis de Ambiente
+
+### NestJS API
+
+| Variável                | Descrição                 | Padrão                                                                      | Obrigatório |
+| ----------------------- | ------------------------- | --------------------------------------------------------------------------- | ----------- |
+| `MONGODB_URI`           | String de conexão MongoDB | `mongodb://admin:<senha>@mongodb:27017/weather_dashboard?authSource=admin` | ✅          |
+| `JWT_SECRET`            | Chave secreta para JWT    | `<string_aleatoria_segura>`                                                 | ✅          |
+| `JWT_EXPIRES_IN`        | Tempo de expiração do JWT | `7d`                                                                        | ❌          |
+| `PORT`                  | Porta da API              | `3000`                                                                      | ❌          |
+| `NODE_ENV`              | Ambiente de execução      | `development`                                                               | ❌          |
+| `TOGETHER_API_KEY`      | API key do Together AI    | `<obter_em_api.together.xyz>`                                               | ❌          |
+| `DEFAULT_USER_EMAIL`    | Email do usuário padrão   | `user@test.com`                                                             | ❌          |
+| `DEFAULT_USER_PASSWORD` | Senha do usuário padrão   | `123456` (apenas para testes)                                               | ❌          |
+| `DEFAULT_USER_NAME`     | Nome do usuário padrão    | `Usuário Teste`                                                             | ❌          |
+
+### Python Collector
+
+| Variável              | Descrição                      | Padrão         | Obrigatório |
+| --------------------- | ------------------------------ | -------------- | ----------- |
+| `RABBITMQ_HOST`       | Host do RabbitMQ               | `rabbitmq`     | ✅          |
+| `RABBITMQ_PORT`       | Porta do RabbitMQ              | `5672`         | ✅          |
+| `RABBITMQ_USER`       | Usuário do RabbitMQ            | `admin`        | ✅          |
+| `RABBITMQ_PASS`       | Senha do RabbitMQ              | `<sua_senha>`  | ✅          |
+| `RABBITMQ_QUEUE`      | Nome da fila                   | `weather_data` | ✅          |
+| `COLLECTION_INTERVAL` | Intervalo de coleta (segundos) | `300`          | ❌          |
+| `LATITUDE`            | Latitude da localização        | `-23.5505`     | ❌          |
+| `LONGITUDE`           | Longitude da localização       | `-46.6333`     | ❌          |
+
+### Go Worker
+
+| Variável         | Descrição                      | Padrão                                 | Obrigatório |
+| ---------------- | ------------------------------ | -------------------------------------- | ----------- |
+| `RABBITMQ_URL`   | URL completa do RabbitMQ       | `amqp://admin:<senha>@rabbitmq:5672/` | ✅          |
+| `RABBITMQ_QUEUE` | Nome da fila                   | `weather_data`                         | ✅          |
+| `API_URL`        | URL da API NestJS              | `http://nestjs-api:3000`               | ✅          |
+| `NUM_WORKERS`    | Número de workers concorrentes | `5`                                    | ❌          |
+| `RETRY_ATTEMPTS` | Tentativas de retry            | `3`                                    | ❌          |
+| `RETRY_DELAY`    | Delay entre retries            | `2s`                                   | ❌          |
+
+### React Frontend
+
+| Variável       | Descrição          | Padrão                  | Obrigatório |
+| -------------- | ------------------ | ----------------------- | ----------- |
+| `VITE_API_URL` | URL da API backend | `http://localhost:3000` | ✅          |
+
+---
+
+## 🔧 Uso
+
+### Comandos Docker
+
+```bash
+# Iniciar todos os serviços
+docker compose up -d
+
+# Parar todos os serviços
+docker compose down
+
+# Ver logs de um serviço específico
+docker compose logs -f nestjs-api
+docker compose logs -f python-weather-collector
+docker compose logs -f go-weather-worker
+
+# Rebuild de um serviço
+docker compose up -d --build nestjs-api
+
+# Verificar status
+docker compose ps
+
+# Acessar shell de um container
+docker compose exec nestjs-api sh
+docker compose exec mongodb mongosh
+```
+
+### Acesso aos Serviços
+
+| Serviço                 | URL                       | Credenciais                |
+| ----------------------- | ------------------------- | -------------------------- |
+| **Frontend**            | http://localhost:5173     | `user@test.com` / `123456` |
+| **API REST**            | http://localhost:3000     | -                          |
+| **RabbitMQ Management** | http://localhost:15672    | (ver docker-compose.yml)   |
+| **MongoDB**             | mongodb://localhost:27017 | (ver docker-compose.yml)   |
+
+### Testando a Coleta de Dados
+
+```bash
+# Ver logs do coletor Python
+docker compose logs -f python-weather-collector
+
+# Você verá:
+# ✅ Dados climáticos coletados com sucesso
+# 📤 Mensagem publicada na fila
+```
+
+### Testando o Worker Go
+
+```bash
+# Ver logs do worker
+docker compose logs -f go-weather-worker
+
+# Você verá:
+# [Worker 1] ✅ Dados enviados com sucesso
+# [Worker 2] 📨 Processando mensagem...
+```
+
+---
+
+## 📊 Endpoints da API
+
+### Weather (7 endpoints)
+
+```http
+POST   /api/weather/logs              # Receber dados do Go Worker
+GET    /api/weather/logs?limit=100    # Listar registros
+GET    /api/weather/recent?hours=24   # Dados recentes
+GET    /api/weather/stats             # Estatísticas
+GET    /api/weather/export.csv        # Exportar CSV
+GET    /api/weather/export.xlsx       # Exportar XLSX
+GET    /api/weather/insights?hours=24 # Insights com IA
+```
+
+### Users (5 endpoints)
+
+```http
+POST   /api/users                # Criar usuário
+GET    /api/users                # Listar usuários
+GET    /api/users/:id            # Buscar por ID
+PATCH  /api/users/:id            # Atualizar usuário
+DELETE /api/users/:id            # Deletar usuário
+```
+
+### Auth (1 endpoint)
+
+```http
+POST   /api/auth/login           # Login (retorna JWT)
+```
+
+### Pokemon (3 endpoints)
+
+```http
+GET    /api/pokemon                    # Listar (paginado)
+GET    /api/pokemon/search?q=pikachu   # Buscar
+GET    /api/pokemon/:idOrName          # Detalhes
+```
+
+### Exemplos de Uso
+
+```bash
+# Login
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@example.com", "password": "123456"}'
+
+# Buscar estatísticas (autenticado)
+curl http://localhost:3000/api/weather/stats \
+  -H "Authorization: Bearer SEU_TOKEN_JWT"
+
+# Insights com IA
+curl http://localhost:3000/api/weather/insights?hours=24 \
+  -H "Authorization: Bearer SEU_TOKEN_JWT"
+```
+
+---
+
+## 🎨 Páginas do Frontend
+
+### 1. Dashboard (/) 🏠
+
+- Cards climáticos com dados em tempo real
+- Gráfico de temperatura (24 horas)
+- Tabela paginada de registros
+- **Weather Pokémon** baseado no clima atual
+- Estatísticas: total, médias, tendências
+
+### 2. Insights (/insights) 🤖
+
+- 4 cards estatísticos (temp/humidity/wind/precipitation)
+- Padrões detectados (tendências, anomalias)
+- **Análise com IA Together AI** (Meta-Llama 3.1 8B)
+- Previsão para as próximas 6 horas
+- Recomendações práticas
+- Seletor de período (6h, 12h, 24h, 48h)
+
+### 3. Export (/export) 📥
+
+- Download CSV com cabeçalhos em português
+- Download XLSX formatado (cores, bordas, auto-width)
+- Seletor de limite de registros (50, 100, 500, 1000, Todos)
+- Preview das colunas exportadas
+- Estatísticas de registros disponíveis
+
+### 4. Explore (/explore) 🎮
+
+- Grid com 1328 Pokémon da PokéAPI
+- Paginação (20 por página)
+- Sprites oficiais em alta qualidade
+- Layout responsivo (1-5 colunas)
+- Click para ver detalhes
+
+### 5. PokemonDetail (/explore/:id) 📖
+
+- Artwork oficial em destaque
+- 6 base stats com progress bars coloridas
+- Tipos com badges coloridas
+- Lista de abilities
+- 4 sprites (front/back/shiny)
+
+### 6. Profile (/profile) 👤
+
+- Informações do usuário logado
+- Formulário para trocar senha
+- Validações em tempo real
+
+### 7. Users Management (/users) 👥
+
+- **Admin only**: CRUD completo de usuários
+- Tabela com avatar, email, role, status
+- Modal para criar/editar usuários
+- Confirmação para deletar
+- Toast messages de sucesso/erro
+
+### 8. Login (/login) 🔐
+
+- Form unificado (login/register)
+- Toggle entre modos
+- Validação de email
+- Feedback visual de erros
+
+---
+
+## 🧪 Testes
+
+### Testes Manuais
+
+```bash
+# Testar coleta de dados
+docker compose logs -f python-weather-collector
+
+# Testar processamento
+docker compose logs -f go-weather-worker
+
+# Testar API
+curl http://localhost:3000/api/weather/stats
+```
+
+### Testes Automatizados (Em desenvolvimento)
+
+```bash
+# NestJS
+cd nestjs-api
+npm run test           # Unit tests
+npm run test:e2e       # E2E tests
+npm run test:cov       # Coverage
+
+# React
+cd desafio_gdash
+npm run test           # Jest + React Testing Library
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Problema: Containers não sobem
+
+```bash
+# Verificar portas em uso
+netstat -ano | findstr :3000
+netstat -ano | findstr :5672
+netstat -ano | findstr :27017
+
+# Solução: Parar processos nas portas ou alterar portas no docker-compose.yml
+```
+
+### Problema: MongoDB não conecta
+
+```bash
+# Verificar se o container está rodando
+docker compose ps mongodb
+
+# Ver logs
+docker compose logs mongodb
+
+# Solução: Aguardar o healthcheck (10-15 segundos)
+docker compose up -d mongodb
+docker compose ps  # Esperar status "healthy"
+```
+
+### Problema: RabbitMQ não aceita conexões
+
+```bash
+# Ver logs
+docker compose logs rabbitmq
+
+# Verificar healthcheck
+docker compose ps rabbitmq
+
+# Solução: Aguardar inicialização completa (20-30 segundos)
+```
+
+### Problema: Go Worker não processa mensagens
+
+```bash
+# Ver logs
+docker compose logs go-weather-worker
+
+# Verificar se a fila existe
+# Acesse: http://localhost:15672
+# Login: admin/admin123
+# Vá em Queues → weather_data
+
+# Solução: Garantir que Python Collector está rodando
+docker compose restart python-weather-collector
+```
+
+### Problema: NestJS retorna erro 500
+
+```bash
+# Ver logs detalhados
+docker compose logs nestjs-api
+
+# Problemas comuns:
+# - MongoDB não conectado (aguardar healthcheck)
+# - Variável de ambiente faltando (verificar .env)
+# - Together AI key inválida (opcional, sistema funciona sem)
+```
+
+### Problema: Frontend não carrega dados
+
+```bash
+# Verificar se API está respondendo
+curl http://localhost:3000/api/weather/stats
+
+# Verificar variável de ambiente
+cat desafio_gdash/.env  # VITE_API_URL deve apontar para :3000
+
+# Solução: Verificar CORS no NestJS (já configurado)
+```
+
+### Problema: Insights com IA retornam null
+
+```bash
+# Verificar API key do Together AI
+docker compose exec nestjs-api printenv TOGETHER_API_KEY
+
+# Ver logs
+docker compose logs nestjs-api | grep Together
+
+# Solução:
+# 1. Adicionar TOGETHER_API_KEY no docker-compose.yml
+# 2. Fazer rebuild: docker compose up -d --build nestjs-api
+# 3. Sistema funciona sem IA (só não gera insights textuais)
+```
+
+### Problema: Dados não aparecem no Dashboard
+
+```bash
+# Verificar se Python está coletando
+docker compose logs python-weather-collector | tail -20
+
+# Verificar se há dados no MongoDB
+docker compose exec mongodb mongosh \
+  -u admin -p admin123 --authenticationDatabase admin \
+  weather_dashboard --eval "db.weathers.countDocuments()"
+
+# Solução: Aguardar primeira coleta (5 minutos) ou forçar restart
+docker compose restart python-weather-collector
+```
+
+### Comandos Úteis para Debug
+
+```bash
+# Ver todos os logs
+docker compose logs --tail=100
+
+# Reiniciar serviço específico
+docker compose restart nestjs-api
+
+# Rebuild completo
+docker compose down
+docker compose up --build -d
+
+# Limpar tudo e recomeçar
+docker compose down -v  # ⚠️ Remove volumes (dados)
+docker compose up --build -d
+```
+
+---
+
+## 🚀 Deploy em Produção
+
+### Railway (Recomendado)
+
+Deploy completo com 6 serviços em 10 minutos:
+
+```powershell
+# 1. Preparar projeto
+.\prepare-railway-deploy.ps1
+
+# 2. Commit e push
+git add .
+git commit -m "Preparar deploy Railway"
+git push origin main
+
+# 3. Seguir guia rápido
+```
+
+📖 **Guias de Deploy:**
+- 🚄 [RAILWAY_QUICK_START.md](./docs/RAILWAY_QUICK_START.md) - Deploy em 10 minutos
+- 📋 [RAILWAY_DEPLOY.md](./docs/RAILWAY_DEPLOY.md) - Guia completo e detalhado
+- ⚙️ [railway-config.json](./railway-config.json) - Configuração dos serviços
+
+**Custos Railway:**
+- ✅ $5/mês grátis (créditos)
+- 📊 ~$15-25/mês após créditos (6 serviços)
+
+### Outras Opções de Deploy
+
+- **Vercel** - Frontend only (gratuito)
+- **Heroku** - API + Workers ($7/mês por serviço)
+- **AWS** - Completo com ECS/Fargate
+- **DigitalOcean** - App Platform ou Droplets
+- **Azure** - Container Apps
+
+---
+
+## 📚 Documentação Adicional
+
+- 📘 [PROJECT_OVERVIEW.md](./docs/PROJECT_OVERVIEW.md) - Arquitetura detalhada
+- 📗 [GEMINI_SETUP.md](./docs/GEMINI_SETUP.md) - Configuração Together AI
+- 📙 [FRONTEND.md](./desafio_gdash/FRONTEND.md) - Guia do frontend
+- 📕 [test-system.ps1](./test-system.ps1) - Script de teste automatizado
+- 🚄 [RAILWAY_DEPLOY.md](./docs/RAILWAY_DEPLOY.md) - Deploy Railway (guia completo)
+- ⚡ [RAILWAY_QUICK_START.md](./docs/RAILWAY_QUICK_START.md) - Quick start (10 min)
+- ✅ [RAILWAY_CHECKLIST.md](./docs/RAILWAY_CHECKLIST.md) - Checklist passo a passo
+- 🤝 [CONTRIBUTING.md](./docs/CONTRIBUTING.md) - Como contribuir
+- 🎨 [PRETTIER_SETUP.md](./docs/PRETTIER_SETUP.md) - Setup de formatação
+
+---
+
+## 🛠️ Stack Tecnológica
+
+### Backend
+
+- **NestJS** 10.3.0 - Framework Node.js
+- **TypeScript** 5.3.3
+- **Mongoose** 8.0.3 - ODM para MongoDB
+- **JWT** (@nestjs/jwt 10.2.0) - Autenticação
+- **Passport** - Estratégias de autenticação
+- **bcrypt** 5.1.1 - Hash de senhas
+- **class-validator** - Validação de DTOs
+- **Axios** 1.6.2 - HTTP client
+- **@json2csv/plainjs** 7.0.6 - Export CSV
+- **exceljs** 4.4.0 - Export XLSX
+
+### Frontend
+
+- **React** 19.2.0
+- **Vite** 7.2.2 - Build tool
+- **TypeScript**
+- **React Router DOM** 6.x - Roteamento
+- **Tailwind CSS** - Estilização
+- **Recharts** 2.x - Gráficos
+- **Lucide React** 0.554.0 - Ícones
+- **date-fns** - Manipulação de datas
+- **Axios** - Cliente HTTP
+
+### Microserviços
+
+- **Python** 3.10+ - Coletor de dados
+- **Go** 1.21+ - Worker consumidor
+- **RabbitMQ** 3-management - Message broker
+- **MongoDB** 7 - Banco de dados NoSQL
+
+### DevOps
+
+- **Docker** 20.10+
+- **Docker Compose** 2.0+
+
+### APIs Externas
+
+- **Open-Meteo API** - Dados climáticos gratuitos
+- **PokéAPI** - Dados de Pokémon
+- **Together AI** - Meta-Llama 3.1 8B (IA)
+
+---
+
+## 👥 Contribuição
+
+Contribuições são muito bem-vindas! Por favor, leia o [CONTRIBUTING.md](CONTRIBUTING.md) para detalhes sobre:
+
+- 🎯 Código de conduta
+- 📝 Processo de contribuição
+- ✅ Padrões de código
+- 🐛 Como reportar bugs
+- 💡 Como sugerir melhorias
+
+### Quick Start para Contribuir
+
+```bash
+# 1. Fork o projeto no GitHub
+
+# 2. Clone seu fork
+git clone https://github.com/RobertoSilvaDevFullStack/desafio_gdash
+cd desafio_gdash
+
+# 3. Crie uma branch
+git checkout -b feature/minha-feature
+
+# 4. Faça suas alterações e commit
+git add .
+git commit -m "feat: adiciona nova funcionalidade"
+
+# 5. Push e abra um Pull Request
+git push origin feature/minha-feature
+```
+
+---
+
+## 📄 Licença
+
+Este projeto é licenciado sob a [Licença MIT](LICENSE) - veja o arquivo LICENSE para detalhes.
+
+---
+
+## 🙏 Agradecimentos
+
+- [Open-Meteo](https://open-meteo.com/) - API climática gratuita
+- [PokéAPI](https://pokeapi.co/) - API de Pokémon
+- [Together AI](https://www.together.ai/) - Plataforma de IA
+
+---
+
+## 📞 Contato
+
+Para dúvidas, sugestões ou reportar problemas, abra uma [issue no GitHub](https://github.com/RobertoSilvaDevFullStack/desafio_gdash).
+
+---
+
+**Desenvolvido com ❤️ como desafio técnico full-stack**
+
+---
+
+<div align="center">
+
+**🌦️ Desenvolvido por Roberto Silva como desafio técnico full-stack**
+
+[⬆ Voltar ao topo](#-weather-dashboard---full-stack-microservices)
+
+</div>
