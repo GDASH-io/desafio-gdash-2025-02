@@ -6,7 +6,10 @@ import { UsersService } from "./services/users.service";
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     
-    app.enableCors();
+    app.enableCors({
+    origin: process.env.FRONTEND_URL, // 👈 frontend Vite
+    credentials: true,               // 👈 permite cookies/autorização
+  });
 
     // ValidationPipe global
   app.useGlobalPipes(new ValidationPipe({
