@@ -7,35 +7,6 @@
 ![Badge AI](https://img.shields.io/badge/AI-Gemini-purple)
 
 ---
----
-
-  ## 🧠 Configuração da Inteligência Artificial (IMPORTANTE)
-
-  O sistema utiliza o **Google Gemini 1.5 Flash** para gerar *insights* climáticos avançados.  
-  Sem a chave de API, o projeto funciona em modo de contingência (Fallback), com regras locais simplificadas.
-
-  ### 🔑 Como gerar sua chave
-
-  1. Acesse o **Google AI Studio**:  
-     https://aistudio.google.com/app/apikey
-  2. Clique em **Create API key**.
-  3. Copie a chave gerada (começa com `AIza...`).
-
-  ### 📥 Onde inserir a chave
-
-  Abra o arquivo `docker-compose.yml` na raiz do projeto e cole a sua chave na variável `GEMINI_API_KEY`:
-
-  ```yaml
-  collector:
-    environment:
-      GEMINI_API_KEY: "SUA_CHAVE_AQUI"
-
-**Alternativa:** você pode exportar a variável no terminal antes de subir os containers:
-
-bash
-Copiar código
-export GEMINI_API_KEY="AIza...SUA_CHAVE..."
-docker-compose up -d --build
 
 ## 📋 Sobre o Projeto
 
@@ -97,36 +68,24 @@ O sistema segue uma arquitetura desacoplada onde cada serviço possui responsabi
 
 ### Passo a Passo
 
-* **1.** Clone o repositório
+1.  **Clone o repositório:**
+    ```bash
+    git clone <https://github.com/alvaro-amorim/desafio-gdash-2025-02.git>
+    cd gdash-challenge
+    ```
 
-git clone https://github.com/alvaro-amorim/desafio-gdash-2025-02.git
-cd gdash-challenge
+2.  **Suba a infraestrutura:**
+    Execute o comando abaixo na raiz do projeto. O flag `--build` garante que as imagens mais recentes (com as configurações de IA e temas) sejam geradas.
+    ```bash
+    docker-compose up -d --build
+    ```
+    *Aguarde alguns instantes para o download das imagens e inicialização dos serviços.*
 
-* **2.** Gere sua chave de API no Google
-
-Acesse:
-https://aistudio.google.com/app/apikey
-
-Clique em Create API Key
-Copie a chave AIza...
-
-* **3.** Adicione sua chave ao docker-compose.yml
-collector:
-  environment:
-    GEMINI_API_KEY: "SUA_CHAVE_AQUI"
-
-Ou exporte no terminal:
-
-export GEMINI_API_KEY="AIza...sua_chave"
-
-* **4.** Suba a infraestrutura
-docker-compose up -d --build
-
-
-Aguarde a inicialização completa.
-
-* **5.** Verifique os serviços
-docker ps
+3.  **Verifique o status:**
+    ```bash
+    docker ps
+    ```
+    Todos os 6 containers (`gdash_frontend`, `gdash_backend`, `gdash_worker`, `gdash_collector`, `mongo`, `rabbitmq`) devem estar com status `Up`.
 
 ---
 
@@ -145,6 +104,16 @@ docker ps
 ### 🐰 Painel do RabbitMQ
 * **URL:** [http://localhost:15672](http://localhost:15672)
 * **Login:** `admin` / `password123`
+
+---
+
+## ⚠️ Nota sobre a API de IA (Google Gemini)
+
+Para facilitar a avaliação deste desafio, o arquivo `docker-compose.yml` **inclui uma API Key de demonstração** pré-configurada.
+
+> **Observação de Segurança:** Em um ambiente de produção real, esta chave seria injetada via variáveis de ambiente (CI/CD) e nunca commitada no repositório.
+
+Caso a chave de demonstração atinja o limite de uso ou seja revogada, o sistema entrará automaticamente no modo de **Fallback**, utilizando um algoritmo local robusto para gerar os insights, garantindo que a aplicação **nunca pare de funcionar**.
 
 ---
 
