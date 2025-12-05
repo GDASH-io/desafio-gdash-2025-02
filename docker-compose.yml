@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # 1. Banco de Dados
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-123456}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-gdash_db}
+    volumes:
+      - mongodb_data:/data/db
+
+  # 2. Fila de Mensagens (Atualizado para 4.2 conforme sua escolha)
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-user}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-password}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Backend API (NestJS)
+  backend-api:
+    build:
+      context: ./backend-api
+      dockerfile: Dockerfile
+    container_name: nest-api
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend-api:/app
+      - /app/node_modules
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # Força o host correto internamente
+      MONGO_HOST: mongodb
+      RABBITMQ_HOST: rabbitmq
+      # Passa as demais variáveis do .env se existirem
+      MONGO_USER: ${MONGO_USER:-admin}
+      MONGO_PASSWORD: ${MONGO_PASSWORD:-123456}
+
+  # 4. Worker de Fila (Go)
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: go-worker
+    restart: always
+    volumes:
+      - ./go-worker:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend-api:
+        condition: service_started
+    environment:
+      # CRÍTICO: Define explicitamente o host
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: ${RABBITMQ_USER:-user}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-password}
+      RABBITMQ_QUEUE_NAME: weather_data_queue
+      NEST_API_URL: http://nest-api:3000/api/weather/logs
+
+  # 5. Coletor de Dados (Python)
+  python-collector:
+    build:
+      context: ./python-collector
+      dockerfile: Dockerfile
+    container_name: python-collector
+    restart: always
+    volumes:
+      - ./python-collector:/usr/src/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      # CRÍTICO: Define explicitamente o host
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_QUEUE_NAME: weather_data_queue
+      WEATHER_API_KEY: ${WEATHER_API_KEY}
+      WEATHER_LAT: ${WEATHER_LAT}
+      WEATHER_LON: ${WEATHER_LON}
+      # Credenciais opcionais se o seu python script as usa
+      RABBITMQ_USER: ${RABBITMQ_USER:-user}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-password}
+
+  # 6. Frontend (React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      backend-api:
+        condition: service_started
+
+volumes:
+  mongodb_data:
