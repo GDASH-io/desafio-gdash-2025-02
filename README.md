@@ -418,15 +418,15 @@ cd desafio-GDASH
 
 ### 2. Configure as variáveis de ambiente
 
-```bash
-cp .env.example .env
-```
+Crie um arquivo `.env` na raiz do projeto (ou use as variáveis padrão do `docker-compose.yml`). Principais variáveis que você pode configurar:
 
-Edite o arquivo `.env` e configure:
 - `OPENAI_API_KEY` (opcional, para insights de IA)
 - `GEMINI_API_KEY` (opcional, para fallback de IA)
 - `LATITUDE` e `LONGITUDE` (coordenadas da sua localização)
+- `JWT_SECRET` (chave secreta para JWT - altere em produção!)
 - Outras configurações conforme necessário
+
+> 💡 **Nota**: Se não criar o arquivo `.env`, o sistema usará os valores padrão definidos no `docker-compose.yml`.
 
 ### 3. Execute com Docker Compose
 
@@ -457,6 +457,9 @@ docker-compose up
 ### 4. Acesse a aplicação
 
 - **Frontend**: http://localhost:5173
+  - **Dashboard**: Visualização de dados climáticos, gráficos e insights de IA
+  - **Usuários**: Gerenciamento de usuários (requer autenticação)
+  - **Explorar**: Página para explorar Pokémons (funcionalidade adicional)
 - **Backend API**: http://localhost:3000
 - **Swagger**: http://localhost:3000/api
 - **RabbitMQ Management**: http://localhost:15672 (guest/guest)
@@ -485,9 +488,18 @@ docker-compose up
 ├── frontend/                   # Aplicação React
 │   ├── src/
 │   │   ├── components/         # Componentes reutilizáveis
+│   │   │   ├── ui/             # Componentes shadcn/ui
+│   │   │   ├── Header.tsx
+│   │   │   ├── Sidebar.tsx
+│   │   │   └── ProtectedRoute.tsx
 │   │   ├── pages/              # Páginas da aplicação
+│   │   │   ├── Dashboard.tsx   # Dashboard de clima
+│   │   │   ├── Users.tsx       # Gerenciamento de usuários
+│   │   │   ├── Explore.tsx     # Explorar Pokémons
+│   │   │   ├── Login.tsx
+│   │   │   └── Register.tsx
 │   │   ├── services/           # Serviços de API
-│   │   ├── context/            # Context API
+│   │   ├── context/            # Context API (AuthContext)
 │   │   └── App.tsx
 │   ├── Dockerfile
 │   └── package.json
@@ -578,6 +590,17 @@ go run .
 - `GET /api/pokemon` - Listar Pokémons (paginado)
 - `GET /api/pokemon/:id` - Detalhes de Pokémon
 
+## 🎨 Rotas do Frontend
+
+O frontend possui as seguintes rotas:
+
+- `/login` - Página de login
+- `/register` - Página de registro
+- `/dashboard` - Dashboard principal com dados climáticos, gráficos e insights de IA (protegida)
+- `/users` - Gerenciamento de usuários com CRUD completo (protegida)
+- `/explore` - Página para explorar Pokémons com paginação e detalhes (protegida)
+- `/` - Redireciona para `/dashboard`
+
 ## 🧪 Testes
 
 Para testar o pipeline completo:
@@ -596,6 +619,7 @@ docker-compose logs -f backend
 
 3. Acesse o frontend e faça login
 4. Verifique o dashboard de clima
+5. Explore outras funcionalidades: gerenciamento de usuários e exploração de Pokémons
 
 ## 📝 Características Técnicas
 
@@ -613,6 +637,8 @@ docker-compose logs -f backend
 - ✅ **Interface moderna** com Tailwind CSS e componentes shadcn/ui
 - ✅ **Gráficos interativos** com Recharts
 - ✅ **Autenticação JWT** com rotas protegidas
+- ✅ **Página de exploração de Pokémons** (funcionalidade adicional)
+- ✅ **Gerenciamento de usuários** com CRUD completo
 
 ### Notas Importantes
 
@@ -670,7 +696,7 @@ Para garantir que os dados sejam coletados automaticamente a cada hora, mesmo qu
 
 ## 🔐 Variáveis de Ambiente
 
-Consulte o arquivo `.env.example` para todas as variáveis disponíveis. Principais:
+As variáveis de ambiente podem ser configuradas através de um arquivo `.env` na raiz do projeto ou diretamente no `docker-compose.yml`. Principais variáveis:
 
 ### Backend
 - `MONGODB_URI`: String de conexão do MongoDB (gerada automaticamente no docker-compose)
