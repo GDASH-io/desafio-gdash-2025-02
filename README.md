@@ -136,6 +136,27 @@ powershell -ExecutionPolicy Bypass -File .\start-all.ps1 stop
 
 ---
 
+## Variáveis de Ambiente
+
+Para que o sistema funcione corretamente, é **essencial** configurar as variáveis de ambiente.
+
+1.  **Backend**: Copie `backend/.env.example` para `backend/.env`
+2.  **Raiz (Docker)**: Copie `.env.example` para `.env`
+
+### Principais Variáveis
+
+| Variável | Descrição | Exemplo |
+|----------|-----------|---------|
+| `GEMINI_API_KEY` | Chave da API do Google Gemini (IA) | `AIzaSy...` |
+| `JWT_SECRET` | Chave secreta para tokens JWT (min 32 chars) | `minha_chave_super_secreta_32_chars` |
+| `MONGODB_URI` | String de conexão do MongoDB | `mongodb://user:pass@host:27017/db` |
+| `RABBITMQ_URL` | URL de conexão do RabbitMQ | `amqp://guest:guest@localhost:5672` |
+
+> [!IMPORTANT]
+> Nunca commite seus arquivos `.env` com chaves reais!
+
+---
+
 ## Instalação e Execução
 
 ### 1. Configuração Inicial
@@ -147,9 +168,13 @@ Clone o repositório e configure as variáveis de ambiente:
 git clone https://github.com/seu-usuario/desafio-gdash-2025-02.git
 cd desafio-gdash-2025-02
 
-# Configure o backend
+# 1. Configure o Backend
 cp backend/.env.example backend/.env
-# EDITE o arquivo backend/.env e adicione sua GEMINI_API_KEY
+# EDITE backend/.env e adicione sua GEMINI_API_KEY e JWT_SECRET
+
+# 2. Configure o Docker/Raiz
+cp .env.example .env
+# EDITE .env se necessário (geralmente o padrão funciona para dev)
 ```
 
 ### 2. Setup Automático (Recomendado)
