@@ -205,32 +205,32 @@ Aqui estão algumas telas reais do sistema em funcionamento, mostrando interface
 
 ### Dashboard e Indicadores
 <p align="center">
-  <img src="./assets/preview-01.jpg" width="800" alt="Dashboard principal com métricas, cartões de clima e gráficos gerais">
+  <img src="./assets/preview-01.jpg" width="900" alt="Dashboard principal com métricas, cartões de clima e gráficos gerais">
 </p>
 
 ### Resumo Inteligente e Alertas
 <p align="center">
-  <img src="./assets/preview-02.jpg" width="800" alt="Resumo climático com alertas automáticos e interpretação do clima">
+  <img src="./assets/preview-02.jpg" width="900" alt="Resumo climático com alertas automáticos e interpretação do clima">
 </p>
 
 ### Condições de Saúde, Roupas e Índice UV
 <p align="center">
-  <img src="./assets/preview-03.jpg" width="800" alt="Tela exibindo recomendações de saúde, roupas ideais e índice UV">
+  <img src="./assets/preview-03.jpg" width="900" alt="Tela exibindo recomendações de saúde, roupas ideais e índice UV">
 </p>
 
 ### Atividades Recomendadas e Humor
 <p align="center">
-  <img src="./assets/preview-04.jpg" width="800" alt="Sugestões de atividades com base no clima e análise de humor contextual">
+  <img src="./assets/preview-04.jpg" width="900" alt="Sugestões de atividades com base no clima e análise de humor contextual">
 </p>
 
 ### Recomendações de Filmes
 <p align="center">
-  <img src="./assets/preview-05.jpg" width="800" alt="Tela de sugestões de filmes alinhados ao clima e momento do dia">
+  <img src="./assets/preview-05.jpg" width="900" alt="Tela de sugestões de filmes alinhados ao clima e momento do dia">
 </p>
 
 ### Insight da IA
 <p align="center">
-  <img src="./assets/preview-06.jpg" width="800" alt="Insight interpretativo da IA com análise comportamental do clima">
+  <img src="./assets/preview-06.jpg" width="900" alt="Insight interpretativo da IA com análise comportamental do clima">
 </p>
 
 ---
