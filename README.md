@@ -70,6 +70,11 @@ RABBITMQ_PASSWORD=
 
 # Chave da API de IA (Google AI Studio)
 GEMINI_API_KEY=SUA_CHAVE_AQUI
+GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent
+RABBITMQ_HOST=
+QUEUE_NAME=
+CITY_LAT=
+CITY_LON=
 ```
 
 ### 3\. Comandos de Execução
@@ -79,13 +84,17 @@ Abra o terminal na pasta raiz do projeto e execute:
 ```bash
 # 1. Limpar containers antigos (Garante uma instalação limpa)
 docker compose down
-
+```
+```bash
 # 2. Subir a aplicação (Constrói as imagens e inicia em background)
 docker compose up -d --build
-
+```
+```bash
 # 3. Verificar se tudo subiu corretamente
 docker ps
 ```
+
+
 
 -----
 
@@ -116,6 +125,8 @@ docker logs -f gdash-frontend  # Frontend
 docker logs -f gdash-api       # Backend NestJS
 docker logs -f gdash-worker    # Worker Go
 docker logs -f gdash-python    # Coletor Python
+docker logs -f gdash-mongo     # mongoDB
+docker logs -f gdash-rabbitmq  # RabbitMQ
 ```
 
 **Reiniciar Apenas um Serviço:**

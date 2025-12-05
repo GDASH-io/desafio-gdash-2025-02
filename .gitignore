@@ -12,7 +12,6 @@ Thumbs.db
 # NÃO IGNORE O .env.example 
 !.env.example
 
-# --- NODE.JS / NESTJS / REACT ---
 # Dependências 
 node_modules/
 **/node_modules/
@@ -31,7 +30,6 @@ build/
 coverage/
 
 # --- PYTHON (Coletor) ---
-# Bytecode compilado pelo Python
 __pycache__/
 *.pyc
 
@@ -42,17 +40,12 @@ env/
 .env/
 
 # --- GO (Worker) ---
-# Binários compilados (O avaliador compila na máquina dele)
-# Ignora o arquivo executável chamado 'worker' ou 'main'
 /queue-worker-go/worker
 /queue-worker-go/main
 *.exe
 *.test
 
 # --- DOCKER ---
-# Se você tivesse mapeado o banco para uma pasta local, ignoraríamos aqui.
-# Como usamos volumes nomeados, geralmente não cria pasta no projeto,
-# mas por segurança ignoramos pastas comuns de dados:
 mongo_data/
 postgres_data/
 mysql_data/

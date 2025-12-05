@@ -4,12 +4,16 @@ import json
 import time
 import schedule
 import logging
+import os
 
 # Configuração
-RABBITMQ_HOST = 'rabbitmq'
-QUEUE_NAME = 'weather_data'
-CITY_LAT = -23.5505
-CITY_LON = -46.6333
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+QUEUE_NAME = os.getenv('QUEUE_NAME', 'weather_data')
+RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
+RABBITMQ_PASSWORD = os.getenv('RABBITMQ_PASSWORD', 'guest')
+# São João Evangelista - MG
+CITY_LAT = os.getenv('CITY_LAT', -18.547777)
+CITY_LON = os.getenv('CITY_LON', -42.763611)
 
 # Configurar Logs
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -47,9 +51,9 @@ def send_to_queue():
 
     try:
         # Conexão com RabbitMQ
-        credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
+        credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASSWORD)
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq', credentials=credentials))
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials))
         channel = connection.channel()
         channel.queue_declare(queue=QUEUE_NAME, durable=True)
         
@@ -61,8 +65,8 @@ def send_to_queue():
     except Exception as e:
         logging.error(f"Erro ao conectar/enviar RabbitMQ: {e}")
 
-# Agenda para rodar a cada 1 hora
-schedule.every(1).hours.do(send_to_queue)
+# Agenda para rodar a cada 1 minuto
+schedule.every(1).minutes.do(send_to_queue)
 
 logging.info("Iniciando Coletor Python...")
 # Executa uma vez

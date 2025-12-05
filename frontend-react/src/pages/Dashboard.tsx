@@ -107,7 +107,7 @@ function Dashboard() {
         const interval = setInterval(() => {
             fetchLogs(token);
             fetchInsights(token);
-        }, 3600000); // 1 hora
+        }, 30000); // 30 segundos
         
         // Função de limpeza do useEffect (roda ao desmontar)
         return () => {
