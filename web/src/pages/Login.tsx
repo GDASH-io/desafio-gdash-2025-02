@@ -54,7 +54,7 @@ export default function Login() {
     });
     if (response.ok) {
       alert("Conta criada com sucesso!");
-      navigate("/");
+      navigate(0);
     } else {
       alert("Erro ao criar conta");
     }

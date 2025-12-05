@@ -34,11 +34,9 @@ export default function Navbar() {
       
         const found = data.find((user: any) => {
           if(user.email === email) {
-            console.log("user =>", user);
             return user.id;
           }
         });
-        console.log("retorno =>",found);
         const id = found ? found.id : '';
         setLoggedUser({ id, email, token });
       }
@@ -49,7 +47,6 @@ export default function Navbar() {
   
   
   const handleDelete = async (id?: string) => {
-    console.log("id =>", id);
     
     const url = `${API_URL}api/users/${id}`;
 
@@ -63,10 +60,15 @@ export default function Navbar() {
 
     if (response.ok) {
       alert("Conta excluída com sucesso!");
-      localStorage.clear();
-      navigate("/");
+      if(id == loggedUser?.id){
+        localStorage.clear();
+        navigate("/");
+      } else {
+        navigate(0);
+      }
     } else {
-      alert("Erro ao excluir conta");
+      alert("Usuario não autorizado para essa ação");
+      
     }
   };
 
