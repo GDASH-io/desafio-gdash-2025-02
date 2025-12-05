@@ -1,0 +1,9 @@
+# Para requisições HTTP (coleta de dados da API de Clima)
+requests
+
+# Para a comunicação com o RabbitMQ
+pika
+
+# Para a IA (Regressão Linear Simples com Scikit-learn)
+scikit-learn
+numpy

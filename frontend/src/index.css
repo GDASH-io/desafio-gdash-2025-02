@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background:  0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 210 35% 98%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 174 62% 43%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --success: 145 0.78 0.50; /* verde vibrante */
+    --success-foreground: 145 0.12 0.98;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 210 41% 96%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 174 62% 43%;
+    --radius: 0.5rem;
+    
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.704 0.14 182.503);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --chart-green: oklch(0.723 0.219 149.579);
+    --chart-orange: oklch(0.828 0.189 84.429);
+    --chart-red: oklch(0.577 0.245 27.325);
+
+    --toast-success-background: oklch(0.70 0.21 150);
+    --toast-success-foreground: white;
+    --toast-error-background: oklch(0.62 0.21 25);
+    --toast-error-foreground: white;
+
+    --sidebar-background: 210 35% 98%;
+    --sidebar-foreground: 215.38 18% 47%;
+    --sidebar-muted-foreground: 218 11% 35%;
+    --sidebar-primary: 212.72 30% 84%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 174 62% 43%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 215 28% 25%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --progress-primary: hsl(174, 78%, 43%);
+  }
+  .dark {
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
