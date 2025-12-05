@@ -120,7 +120,7 @@ export const Register = () => {
                 <Input
                   id="name"
                   type="text"
-                  placeholder="João Silva"
+                  placeholder="Digite seu nome"
                   {...register('name', {
                     required: 'Nome é obrigatório',
                     minLength: {
@@ -143,7 +143,7 @@ export const Register = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="joao@example.com"
+                  placeholder="Digite seu email"
                   {...register('email', {
                     required: 'Email é obrigatório',
                     validate: validateEmail,

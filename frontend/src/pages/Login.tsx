@@ -89,7 +89,7 @@ export const Login = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@example.com"
+                  placeholder="Digite seu email"
                   {...register('email', {
                     required: 'Email é obrigatório',
                     validate: validateEmail,
@@ -105,7 +105,7 @@ export const Login = () => {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="123456"
+                  placeholder="Digite sua senha"
                   {...register('password', {
                     required: 'Senha é obrigatória',
                     validate: validatePassword,

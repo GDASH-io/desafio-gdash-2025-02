@@ -486,6 +486,11 @@ docker-compose up -d
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── docker-compose.yml          # Orquestração de serviços
+├── LICENSE                     # Licença MIT
+├── scripts/                     # Scripts auxiliares (Windows)
+│   ├── check-containers.ps1
+│   ├── setup-autostart.ps1
+│   └── start-docker-containers.ps1
 ├── .env.example                # Exemplo de variáveis de ambiente
 └── README.md
 ```
@@ -526,17 +531,23 @@ go run .
 
 ## 📡 Endpoints da API
 
+### Health Check
+- `GET /health` - Verificar status da API
+
 ### Autenticação
 - `POST /api/auth/login` - Login
+- `POST /api/auth/register` - Registrar novo usuário
 
 ### Clima
-- `GET /api/weather/logs` - Listar registros climáticos
+- `GET /api/weather/logs` - Listar registros climáticos (com paginação e filtro por localização)
+  - Query params: `page`, `limit`, `location`
 - `POST /api/weather/logs` - Receber dados do worker (interno)
 - `GET /api/weather/insights` - Obter insights de IA
-- `GET /api/weather/export.csv` - Exportar CSV
-- `GET /api/weather/export.xlsx` - Exportar XLSX
+- `POST /api/weather/collect` - Coletar dados climáticos manualmente
+- `GET /api/weather/export.csv` - Exportar dados em CSV
+- `GET /api/weather/export.xlsx` - Exportar dados em XLSX
 
-### Usuários (protegido - requer autenticação)
+### Usuários (protegido - requer autenticação JWT)
 - `GET /api/users` - Listar usuários
 - `GET /api/users/:id` - Obter usuário por ID
 - `POST /api/users` - Criar usuário
@@ -586,10 +597,13 @@ docker-compose logs -f backend
 ### Notas Importantes
 
 - O producer coleta dados a cada hora por padrão (configurável via `COLLECTION_INTERVAL` em segundos)
-- Os insights de IA são gerados sob demanda quando solicitados via endpoint
+- Os insights de IA são gerados sob demanda quando solicitados via endpoint e são cacheados para evitar chamadas desnecessárias
 - O usuário padrão é criado automaticamente na primeira inicialização do backend
 - As APIs de IA (OpenAI/Gemini) são opcionais - o sistema funciona sem elas usando fallback
 - Todos os serviços têm retry logic implementado para maior resiliência
+- O sistema possui healthchecks configurados em todos os serviços Docker
+- A API possui validação de dados em todas as rotas usando class-validator
+- CORS está configurado para permitir requisições do frontend
 
 ## 🔄 Autostart no Windows (Coleta Automática)
 
@@ -638,13 +652,32 @@ Para garantir que os dados sejam coletados automaticamente a cada hora, mesmo qu
 
 Consulte o arquivo `.env.example` para todas as variáveis disponíveis. Principais:
 
-- `MONGODB_URI`: String de conexão do MongoDB
+### Backend
+- `MONGODB_URI`: String de conexão do MongoDB (gerada automaticamente no docker-compose)
+- `MONGO_ROOT_USERNAME`: Usuário root do MongoDB (padrão: admin)
+- `MONGO_ROOT_PASSWORD`: Senha root do MongoDB (padrão: admin123)
+- `MONGO_DATABASE`: Nome do banco de dados (padrão: gdash)
+- `JWT_SECRET`: Chave secreta para JWT (altere em produção!)
+- `JWT_EXPIRES_IN`: Tempo de expiração do token JWT (padrão: 24h)
+- `OPENAI_API_KEY`: Chave da API OpenAI (opcional, para insights)
+- `GEMINI_API_KEY`: Chave da API Gemini (opcional, para fallback)
+- `LATITUDE` / `LONGITUDE`: Coordenadas para coleta de dados climáticos (padrão: 52.52, 13.41)
+- `OPEN_METEO_URL`: URL da API Open-Meteo (padrão: https://api.open-meteo.com/v1/forecast)
+- `NODE_ENV`: Ambiente de execução (development/production)
+- `PORT`: Porta do backend (padrão: 3000)
+
+### Frontend
+- `VITE_API_URL`: URL da API backend (padrão: http://localhost:3000)
+
+### Producer
 - `RABBITMQ_URL`: URL de conexão do RabbitMQ
-- `JWT_SECRET`: Chave secreta para JWT
-- `OPENAI_API_KEY`: Chave da API OpenAI (opcional)
-- `GEMINI_API_KEY`: Chave da API Gemini (opcional)
-- `LATITUDE` / `LONGITUDE`: Coordenadas para coleta de dados climáticos
+- `RABBITMQ_USER`: Usuário do RabbitMQ (padrão: guest)
+- `RABBITMQ_PASS`: Senha do RabbitMQ (padrão: guest)
+- `QUEUE_NAME`: Nome da fila (padrão: weather_data)
 - `COLLECTION_INTERVAL`: Intervalo de coleta em segundos (padrão: 3600 = 1 hora)
+
+### Worker
+- `API_URL`: URL da API backend para envio de dados (padrão: http://backend:3000/api/weather/logs)
 
 ## 🧪 Testando o Pipeline
 
@@ -683,8 +716,21 @@ curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@example.com","password":"123456"}'
 
+# Registrar novo usuário
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"123456","name":"Nome do Usuário"}'
+
 # Listar registros climáticos (requer token JWT)
 curl http://localhost:3000/api/weather/logs \
+  -H "Authorization: Bearer <seu-token>"
+
+# Coletar dados climáticos manualmente
+curl -X POST http://localhost:3000/api/weather/collect \
+  -H "Authorization: Bearer <seu-token>"
+
+# Obter insights de IA
+curl http://localhost:3000/api/weather/insights \
   -H "Authorization: Bearer <seu-token>"
 ```
 
@@ -736,6 +782,8 @@ docker-compose down --rmi all
 Caio Dias Oliveira
 
 ## 📄 Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
 
 Este projeto foi desenvolvido para o processo seletivo GDASH 2025/02.
 
