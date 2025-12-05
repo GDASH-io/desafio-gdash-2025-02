@@ -9,9 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 def connect_rmq(max_retries=10, retry_delay=5):
-    """
-    Conecta ao RabbitMQ com retry automático para aguardar inicialização do container
-    """
     for attempt in range(1, max_retries + 1):
         try:
             credentials = pk.PlainCredentials(os.getenv('RABBITMQ_USER'), os.getenv('RABBITMQ_PASSWORD'))

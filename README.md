@@ -2,6 +2,10 @@
 
 Sistema full-stack de monitoramento climático com insights de IA, desenvolvido com React, NestJS, Python, Go e RabbitMQ.
 
+## Link do Video explicativo
+
+[![Assista](https://i.ytimg.com/vi/uzY5uKRCbtE/hqdefault.jpg?sqp=-oaymwFBCPYBEIoBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGH8gPCg0MA8=&rs=AOn4CLBhLFpxe2Kyf4JNvSaUkEHTwJ9oug)](https://youtu.be/uzY5uKRCbtE?si=hCLWJavsP-Pteu4W)
+
 ## Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)

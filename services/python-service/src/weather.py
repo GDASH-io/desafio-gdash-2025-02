@@ -4,7 +4,6 @@ from geopy.geocoders import Nominatim
 from datetime import datetime
 from pytz import timezone
 
-# Configurar logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
