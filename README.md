@@ -187,7 +187,7 @@ docker-compose up --build
 # 🔐 Usuário padrão
 ```
 Email: admin@gdash.com
-Senha: 123456
+Senha: admin123
 ```
 
 ---
