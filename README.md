@@ -430,9 +430,29 @@ Edite o arquivo `.env` e configure:
 
 ### 3. Execute com Docker Compose
 
+**Primeira execução ou após mudanças no código (recomendado):**
+```bash
+docker-compose up --build -d
+```
+
+Este comando irá:
+- Construir todas as imagens Docker dos serviços
+- Iniciar todos os containers em modo detached (background)
+- Garantir que você tenha as versões mais recentes do código
+
+**Execuções subsequentes (sem mudanças no código):**
 ```bash
 docker-compose up -d
 ```
+
+**Para ver os logs em tempo real durante a inicialização:**
+```bash
+docker-compose up --build
+# ou sem rebuild:
+docker-compose up
+```
+
+> 💡 **Dica**: Use `--build` sempre que houver mudanças no código, dependências ou Dockerfiles para garantir que as imagens estejam atualizadas.
 
 ### 4. Acesse a aplicação
 
@@ -754,14 +774,23 @@ O vídeo deve incluir:
 
 ## 🚀 Deploy
 
-### Build Local
+### Build e Execução
 
 ```bash
-# Build de todos os serviços
+# Build e iniciar todos os serviços (recomendado na primeira execução)
+docker-compose up --build -d
+
+# Build e iniciar com logs visíveis
+docker-compose up --build
+
+# Apenas build das imagens (sem iniciar os containers)
 docker-compose build
 
 # Build de um serviço específico
 docker-compose build backend
+
+# Rebuild forçado (ignora cache)
+docker-compose build --no-cache
 ```
 
 ### Limpeza
