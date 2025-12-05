@@ -79,6 +79,13 @@ if (Test-Command "python") {
     $has_errors = $true
 }
 
+if (Test-Command "go") {
+    Write-Success "✓ Go encontrado"
+} else {
+    Write-Error "Go não encontrado"
+    $has_errors = $true
+}
+
 if ($has_errors) {
     Write-Host ""
     Write-Error "Alguns pré-requisitos não foram encontrados."
@@ -87,6 +94,7 @@ if ($has_errors) {
     Write-Host "  - Docker: https://www.docker.com/products/docker-desktop"
     Write-Host "  - Node.js 18+: https://nodejs.org/"
     Write-Host "  - Python 3.10+: https://www.python.org/downloads/"
+    Write-Host "  - Go 1.20+: https://go.dev/dl/"
     Write-Host ""
     exit 1
 }

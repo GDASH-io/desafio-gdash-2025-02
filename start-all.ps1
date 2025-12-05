@@ -110,6 +110,15 @@ function Stop-AllServices {
         Write-Warning "Nenhum processo Node encontrado"
     }
     
+    # Parar processos Worker (Go)
+    try {
+        Get-Process worker -ErrorAction SilentlyContinue | Stop-Process -Force
+        Write-Success "Worker (Go) parado"
+    }
+    catch {
+        Write-Warning "Nenhum processo Worker encontrado"
+    }
+
     # Parar processos Python
     try {
         Get-Process python -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*producer*" } | Stop-Process -Force
@@ -206,6 +215,14 @@ function Start-AllServices {
     Pop-Location
     Write-Success "Frontend iniciado (porta $FRONTEND_PORT)"
     
+    # Iniciar Worker (Go)
+    Write-Info "Iniciando Worker (Go)..."
+    Push-Location $WORKER_DIR
+    $workerLog = Join-Path $LOGS_DIR "worker.log"
+    Start-Process "go" -ArgumentList "run worker.go" -NoNewWindow -RedirectStandardOutput $workerLog -RedirectStandardError $workerLog
+    Pop-Location
+    Write-Success "Worker iniciado"
+    
     # Iniciar Producer
     Write-Info "Iniciando Producer..."
     Push-Location $PROJECT_DIR
@@ -250,6 +267,7 @@ switch ($Command.ToLower()) {
         Write-Info "Verificando status..."
         Get-Process node -ErrorAction SilentlyContinue | ForEach-Object { Write-Success "Node rodando: $($_.ProcessName) (PID: $($_.Id))" }
         Get-Process python -ErrorAction SilentlyContinue | ForEach-Object { Write-Success "Python rodando: $($_.ProcessName) (PID: $($_.Id))" }
+        Get-Process worker -ErrorAction SilentlyContinue | ForEach-Object { Write-Success "Worker (Go) rodando: $($_.ProcessName) (PID: $($_.Id))" }
         docker ps | Select-Object -Skip 1 | ForEach-Object { Write-Success "Docker: $_" }
     }
     "restart" {
