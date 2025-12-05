@@ -254,7 +254,7 @@ DEFAULT_ADMIN_PASSWORD=admin123
 
 # 🧠 Decisões Técnicas Importantes
 - Utilizei **OpenWeather** por oferecer mais métricas úteis.
-- IA implementada diretamente no backend para centralizar regras.
+- IA implementada com groq utilizando llama no backend para centralizar regras.
 - Worker Go simples e eficiente, com retry básico.
 - Tailwind + shadcn/ui para UI moderna e rápida.
 - Repositório modular, serviços independentes e bem organizados.
