@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: gdash-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+
+  api-nestjs:
+    build: ./api-nestjs
+    container_name: gdash-api
+    restart: always
+    depends_on:
+      - mongodb
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"
+
+  queue-worker:
+    build: ./queue-worker-go
+    container_name: gdash-worker
+    restart: always
+    depends_on:
+      - rabbitmq
+      - api-nestjs
+    env_file:
+      - ./.env
+
+  weather-collector:
+    build: ./weather-collector-python
+    container_name: gdash-python
+    restart: always
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ./.env
+    environment:
+      PYTHONUNBUFFERED: 1
+
+  frontend:
+    build: ./frontend-react
+    container_name: gdash-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api-nestjs
+
+volumes:
+  mongo_data:
