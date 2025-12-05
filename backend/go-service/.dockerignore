@@ -1,0 +1,19 @@
+vendor/
+
+pkg/
+bin/
+
+.dockerignore
+.gcloudignore # If using Google Cloud
+.gitignore
+
+.git
+.gitattributes
+.editorconfig
+
+*_test.go
+test/
+
+*.md
+*.log
+tmp/

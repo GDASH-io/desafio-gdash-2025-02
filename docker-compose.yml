@@ -1,0 +1,85 @@
+services:
+  go:
+    build: ./backend/go-service
+    container_name: go-worker
+    restart: unless-stopped
+    depends_on:
+      nest:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+    env_file:
+      - ./backend/.env.shared
+      - ./backend/go-service/.env
+    networks:
+      - services-net
+
+  python:
+    build: ./backend/python-service
+    container_name: python-worker
+    restart: unless-stopped
+    depends_on:
+      - redis
+    env_file:
+      - ./backend/.env.shared
+      - ./backend/python-service/.env
+    networks:
+      - services-net
+  
+  nest:
+    build: ./backend/nest-service
+    container_name: nest-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/nest-service/.env
+    depends_on:
+      - mongo
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/v1/health || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+    networks:
+      - services-net
+  
+  mongo:
+    image: mongo:8.2.2
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    networks:
+      - services-net
+  
+  redis:
+    image: redis:alpine3.22
+    container_name: message-broker
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    networks:
+      - services-net
+  
+  frontend:
+    build: ./frontend
+    container_name: dashboard
+    ports:
+      - "5173:80"
+    depends_on:
+      - nest
+    networks:
+      - services-net
+
+networks:
+  services-net:
+    driver: bridge
