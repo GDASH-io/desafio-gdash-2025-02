@@ -209,11 +209,29 @@ O vídeo demonstra:
 
 # 📦 Variáveis de Ambiente (.env.example)
 ```
-MONGO_URI=mongodb://mongodb:27017/gdash
-JWT_SECRET=supersecret
+
+WEATHER_API_KEY=SUA_CHAVE
+WEATHER_CITY=SUA_CIDADE,BR
 OPENWEATHER_API_KEY=SUA_CHAVE
 RABBIT_URL=amqp://guest:guest@rabbitmq:5672/
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:80
+
+# ===========================
+# GROQ AI
+# ===========================
+GROQ_API_KEY=SUA_CHAVE
+
+# ===========================
+# MONGODB (Docker)
+# ===========================
+MONGO_URI=mongodb://admin:admin123@mongodb:27017/gdash_weather?authSource=admin
+
+# ===========================
+# JWT AUTH
+# ===========================
+JWT_SECRET=super-secret-change-in-production
+DEFAULT_ADMIN_EMAIL=admin@gdash.com
+DEFAULT_ADMIN_PASSWORD=admin123
 ```
 
 ---
