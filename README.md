@@ -6,7 +6,7 @@ Monitorei clima, gerei alertas, indiquei filmes e até inventei uma área de sa�
 
 ---
 
-## O que ele faz de verdade
+## O que ele faz
 
 - Mostra o clima atual da sua cidade (ou de qualquer cidade pré-configurada).
 - Gera resumo inteligente do dia, alertas e dicas usando Groq (LLM).
@@ -19,8 +19,6 @@ Monitorei clima, gerei alertas, indiquei filmes e até inventei uma área de sa�
 
 ## Bastidores e escolhas
 
-Eu queria algum fluxo parecido com “coleta > fila > worker > API > dashboard”. Então ficou assim:
-
 - **Coleta:** script Python chamando Open-Meteo, hora a hora.
 - **Fila:** RabbitMQ para segurar as mensagens.
 - **Processamento:** worker em Go para consumir a fila e enviar para o backend.
@@ -28,7 +26,7 @@ Eu queria algum fluxo parecido com “coleta > fila > worker > API > dashboard�
 - **Frontend:** React + Vite + Tailwind + shadcn/ui para o dashboard.
 - **IA:** Groq API para gerar textos mais interessantes que “vai chover, leve guarda-chuva”.
 
-Tudo roda em containers via Docker Compose. Não quis esconder nada em serviços misteriosos.
+Tudo roda em containers via Docker Compose.
 
 ---
 
@@ -189,9 +187,9 @@ Quis fugir daquele dashboard genérico que só mostra “temperatura e chance de
 1. Dados reais chegando em fila (sem depender só do frontend).
 2. IA respondendo em português e com contexto do dia.
 3. UX mais caprichada, inclusive em mobile.
-4. Recomendações de saúde e atividades diárias geradas por IA.
+4. Recomendações de saúde e atividades diárias geradas por IA, incluindo sugestões de filmes e lugares para sair.
 
-Esse mix deixou o teste bem mais divertido de desenvolver.
+Esse mix deixou o Código bem mais divertido de desenvolver.
 
 ---
 
