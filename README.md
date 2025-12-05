@@ -201,7 +201,7 @@ Fique à vontade para testar outras APIs de clima, trocar o modelo de IA ou plug
 
 ## Preview do Projeto
 
-Aqui estão algumas telas reais do sistema em funcionamento, mostrando interface, inteligência ambiental e recursos do GDASH.
+Aqui estão algumas telas reais do sistema em funcionamento, mostrando interface, inteligência ambiental e recursos.
 
 ### Dashboard e Indicadores
 <p align="center">
