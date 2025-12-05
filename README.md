@@ -1,4 +1,4 @@
-# GDASH Weather + IA (projeto pessoal)
+# GDASH Weather + IA
 
 Esse projeto começou como um teste de um processo seletivo. A ideia inicial era bem simples, mas eu acabei levando além: quis deixar mais autoral, criativo e ainda assim totalmente dentro do escopo pedido. 
 
