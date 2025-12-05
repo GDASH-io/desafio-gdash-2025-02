@@ -176,7 +176,7 @@ docker-compose up --build
 ### Endpoints principais
 | Serviço | URL |
 |--------|-----|
-| Frontend | http://localhost:5173 |
+| Frontend | http://localhost:80 |
 | API NestJS | http://localhost:3000 |
 | Swagger | http://localhost:3000/api |
 | RabbitMQ UI | http://localhost:15672 |
