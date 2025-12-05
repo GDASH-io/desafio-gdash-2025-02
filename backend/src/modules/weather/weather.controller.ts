@@ -12,7 +12,12 @@ import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { WeatherService } from './weather.service';
 import { WeatherInsightsService } from './weather-insights.service';
-import { CreateWeatherLogDto, WeatherLogResponseDto, WeatherInsightsDto } from './weather.dto';
+import { WeatherCollectorService } from './weather-collector.service';
+import {
+  CreateWeatherLogDto,
+  WeatherLogResponseDto,
+  WeatherInsightsDto,
+} from './weather.dto';
 import * as XLSX from 'xlsx';
 import * as csvWriter from 'csv-writer';
 
@@ -22,6 +27,7 @@ export class WeatherController {
   constructor(
     private readonly weatherService: WeatherService,
     private readonly insightsService: WeatherInsightsService,
+    private readonly collectorService: WeatherCollectorService,
   ) {}
 
   @Post('logs')
@@ -29,7 +35,10 @@ export class WeatherController {
   @ApiOperation({ summary: 'Criar registro de clima (usado pelo worker)' })
   @ApiResponse({ status: 201, description: 'Registro criado com sucesso' })
   async create(@Body() createWeatherLogDto: CreateWeatherLogDto) {
-    return this.weatherService.create(createWeatherLogDto);
+    const createdLog = await this.weatherService.create(createWeatherLogDto);
+    // Invalidar cache de insights para forçar atualização com novos dados
+    this.insightsService.invalidateCache();
+    return createdLog;
   }
 
   @Get('logs')
@@ -49,12 +58,35 @@ export class WeatherController {
   }
 
   @Get('insights')
-  @ApiOperation({ summary: 'Obter insights de IA sobre o clima' })
-  @ApiQuery({ name: 'days', required: false, type: Number })
+  @ApiOperation({
+    summary: 'Obter insights de IA sobre o clima baseado na última coleta',
+  })
   @ApiResponse({ status: 200, type: WeatherInsightsDto })
-  async getInsights(@Query('days') days?: string) {
-    const daysNum = days ? parseInt(days, 10) : 7;
-    return this.insightsService.generateInsights(daysNum);
+  async getInsights() {
+    return this.insightsService.generateInsights();
+  }
+
+  @Post('collect')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Coletar dados climáticos manualmente',
+    description:
+      'Força uma coleta de dados climáticos da API Open-Meteo e salva no banco de dados',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados coletados com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        data: { type: 'object' },
+      },
+    },
+  })
+  async collectWeatherData() {
+    return this.collectorService.collectWeatherData();
   }
 
   @Get('export.csv')
@@ -84,10 +116,15 @@ export class WeatherController {
       rainProbability: log.rainProbability.toFixed(2),
     }));
 
-    const csvContent = csvStringifier.getHeaderString() + csvStringifier.stringifyRecords(records);
+    const csvContent =
+      csvStringifier.getHeaderString() +
+      csvStringifier.stringifyRecords(records);
 
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=weather_data.csv');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=weather_data.csv',
+    );
     res.send(csvContent);
   }
 
@@ -98,11 +135,11 @@ export class WeatherController {
 
     const worksheetData = logs.data.map((log) => ({
       'Data/Hora': new Date(log.timestamp).toLocaleString('pt-BR'),
-      'Localização': log.location,
+      Localização: log.location,
       'Temperatura (°C)': log.temperature,
       'Umidade (%)': log.humidity,
       'Velocidade do Vento (km/h)': log.windSpeed,
-      'Condição': log.condition,
+      Condição: log.condition,
       'Probabilidade de Chuva (%)': log.rainProbability,
     }));
 
@@ -112,9 +149,14 @@ export class WeatherController {
 
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=weather_data.xlsx');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=weather_data.xlsx',
+    );
     res.send(buffer);
   }
 }
-

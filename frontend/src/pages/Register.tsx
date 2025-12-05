@@ -188,7 +188,7 @@ export const Register = () => {
               </div>
               <Button 
                 type="submit" 
-                className="w-full h-11 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200" 
+                className="w-full h-11 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200" 
                 disabled={loading || isSubmitting}
               >
                 {loading || isSubmitting ? 'Criando conta...' : 'Criar Conta'}

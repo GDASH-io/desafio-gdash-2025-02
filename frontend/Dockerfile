@@ -15,6 +15,9 @@ COPY index.html ./
 # Install dependencies
 RUN npm ci
 
+# Copy public assets (including logo) - must be before build
+COPY public ./public
+
 # Copy source code
 COPY src ./src
 

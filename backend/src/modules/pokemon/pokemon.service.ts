@@ -30,7 +30,10 @@ export class PokemonService {
         results,
       };
     } catch (error) {
-      throw new HttpException('Erro ao buscar Pokémons', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Erro ao buscar Pokémons',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -67,4 +70,3 @@ export class PokemonService {
     return response.data;
   }
 }
-

@@ -9,4 +9,3 @@ export class AppController {
     return { status: 'ok', timestamp: new Date().toISOString() };
   }
 }
-

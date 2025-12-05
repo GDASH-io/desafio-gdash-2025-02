@@ -55,4 +55,3 @@ export const WeatherLogSchema = SchemaFactory.createForClass(WeatherLog);
 
 WeatherLogSchema.index({ timestamp: -1 });
 WeatherLogSchema.index({ location: 1 });
-

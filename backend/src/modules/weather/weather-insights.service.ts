@@ -11,7 +11,10 @@ export class WeatherInsightsService {
   private readonly logger = new Logger(WeatherInsightsService.name);
   private openai: OpenAI | null = null;
   private gemini: GoogleGenerativeAI | null = null;
-  private insightsCache: Map<string, { data: WeatherInsightsDto; timestamp: Date }> = new Map();
+  private insightsCache: Map<
+    string,
+    { data: WeatherInsightsDto; timestamp: Date }
+  > = new Map();
   private readonly CACHE_TTL = 3600000; // 1 hora
 
   constructor(
@@ -29,70 +32,109 @@ export class WeatherInsightsService {
     }
   }
 
-  async generateInsights(days: number = 7): Promise<WeatherInsightsDto> {
-    const cacheKey = `insights_${days}`;
+  /**
+   * Invalida o cache de insights
+   * Deve ser chamado quando novos dados são coletados
+   */
+  invalidateCache(): void {
+    this.insightsCache.clear();
+    this.logger.log('Cache de insights invalidado');
+  }
+
+  async generateInsights(): Promise<WeatherInsightsDto> {
+    const cacheKey = 'insights_latest';
     const cached = this.insightsCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp.getTime() < this.CACHE_TTL) {
       return cached.data;
     }
 
-    const historicalData = await this.getHistoricalData(days);
+    // Buscar apenas o último registro (mais recente)
+    const latestLog = await this.weatherLogModel
+      .findOne()
+      .sort({ timestamp: -1 })
+      .exec();
 
-    if (historicalData.length === 0) {
+    if (!latestLog) {
       return this.getDefaultInsights();
     }
 
     try {
-      const insights = await this.generateWithAI(historicalData, days);
-      this.insightsCache.set(cacheKey, { data: insights, timestamp: new Date() });
+      const insights = await this.generateWithAI(latestLog);
+      this.insightsCache.set(cacheKey, {
+        data: insights,
+        timestamp: new Date(),
+      });
       return insights;
     } catch (error) {
-      this.logger.error('Error generating insights with AI, using fallback', error);
-      return this.generateFallbackInsights(historicalData);
+      this.logger.error(
+        'Error generating insights with AI, using fallback',
+        error,
+      );
+      return this.generateFallbackInsights(latestLog);
     }
   }
 
-  private async generateWithAI(
-    data: WeatherLogDocument[],
-    days: number,
-  ): Promise<WeatherInsightsDto> {
-    const summary = this.prepareDataSummary(data);
+  private getLocationName(latitude: number, longitude: number): string {
+    // Verificar se as coordenadas correspondem a Florianópolis
+    // Tolerância de 0.1 grau para permitir pequenas variações
+    if (
+      Math.abs(latitude - -27.78) < 0.1 &&
+      Math.abs(longitude - -48.52) < 0.1
+    ) {
+      return 'Florianópolis';
+    }
 
-    const latestData = data[data.length - 1];
+    // Se a localização já for um nome (não coordenadas), retornar como está
+    // Caso contrário, retornar as coordenadas formatadas
+    return `Lat ${latitude.toFixed(2)}, Lon ${longitude.toFixed(2)}`;
+  }
+
+  private async generateWithAI(
+    latestLog: WeatherLogDocument,
+  ): Promise<WeatherInsightsDto> {
+    // Obter nome da cidade baseado nas coordenadas
+    const cityName = this.getLocationName(
+      latestLog.latitude,
+      latestLog.longitude,
+    );
+
     const currentConditions = `
-Condições atuais:
-- Temperatura: ${latestData.temperature}°C
-- Umidade: ${latestData.humidity}%
-- Velocidade do vento: ${latestData.windSpeed} km/h
-- Condição: ${latestData.description || latestData.condition}
-- Probabilidade de chuva: ${latestData.rainProbability}%
-${latestData.visibility ? `- Visibilidade: ${latestData.visibility} km` : ''}
-${latestData.solarRadiation ? `- Radiação solar: ${latestData.solarRadiation} W/m²` : ''}
-${latestData.pressure ? `- Pressão atmosférica: ${latestData.pressure} hPa` : ''}
+Condições climáticas atuais:
+- Temperatura: ${latestLog.temperature}°C
+- Umidade: ${latestLog.humidity}%
+- Velocidade do vento: ${latestLog.windSpeed} km/h
+- Condição: ${latestLog.description || latestLog.condition}
+- Probabilidade de chuva: ${latestLog.rainProbability}%
+${latestLog.visibility ? `- Visibilidade: ${latestLog.visibility} km` : ''}
+${latestLog.solarRadiation ? `- Radiação solar: ${latestLog.solarRadiation} W/m²` : ''}
+${latestLog.pressure ? `- Pressão atmosférica: ${latestLog.pressure} hPa` : ''}
+${latestLog.windDirection ? `- Direção do vento: ${latestLog.windDirection}°` : ''}
+- Localização: ${cityName}
 `;
 
-    const prompt = `Analise os seguintes dados climáticos dos últimos ${days} dias e forneça insights detalhados em formato JSON:
-
-${summary}
+    const prompt = `Você é um especialista em meteorologia e clima. Analise as seguintes condições climáticas atuais e forneça uma resposta em formato JSON:
 
 ${currentConditions}
 
 Forneça uma resposta JSON com a seguinte estrutura:
 {
-  "summary": "Resumo geral das condições climáticas em português",
-  "trends": "Tendências observadas (temperatura subindo/caindo, padrões de chuva, etc.) em português",
-  "alerts": ["Alerta 1", "Alerta 2"],
-  "comfortScore": 75,
-  "classification": "agradável|quente|frio|chuvoso|extremo",
-  "detailedAnalysis": "Análise detalhada e completa das condições climáticas atuais, incluindo temperatura, umidade, vento, visibilidade, radiação solar e pressão atmosférica. Descreva como essas condições se relacionam e o que significam para o conforto e atividades ao ar livre. Em português.",
-  "activitySuggestions": ["Sugestão de atividade 1", "Sugestão de atividade 2", "Sugestão de atividade 3"]
+  "analysis": "Análise completa e detalhada das condições climáticas atuais. Seja um especialista do clima e traga informações relevantes para o usuário, explicando o que essas condições significam, como elas se relacionam entre si, e o impacto no conforto e bem-estar. Use linguagem clara e profissional. Em português.",
+  "activitySuggestions": [
+    "Sugestão de atividade 1 baseada nas condições atuais",
+    "Sugestão de atividade 2 baseada nas condições atuais",
+    "Sugestão de atividade 3 baseada nas condições atuais"
+  ],
+  "classification": "agradável|quente|frio|chuvoso|extremo"
 }
 
-O comfortScore deve ser um número de 0 a 100, onde 100 é o clima mais confortável.
-A classificação deve ser uma das opções: "agradável", "quente", "frio", "chuvoso", ou "extremo".
-As activitySuggestions devem ser sugestões práticas de atividades adequadas para as condições climáticas atuais (ex: "Ideal para caminhadas ao ar livre", "Recomendado usar protetor solar", "Melhor fazer atividades indoor"). Em português.
-Retorne APENAS o JSON, sem markdown ou texto adicional.`;
+IMPORTANTE:
+- A análise deve ser completa, detalhada e profissional, como um especialista em clima explicaria
+- Quando mencionar a localização, use sempre o nome da cidade (ex: "Florianópolis") e NUNCA mencione coordenadas numéricas como (-27.78, -48.52)
+- Forneça exatamente 3 sugestões de atividades práticas e relevantes para as condições atuais
+- A classificação deve ser uma das opções: "agradável", "quente", "frio", "chuvoso", ou "extremo"
+- Retorne APENAS o JSON, sem markdown ou texto adicional
+- Todas as respostas devem estar em português`;
 
     try {
       if (this.openai) {
@@ -109,14 +151,16 @@ Retorne APENAS o JSON, sem markdown ou texto adicional.`;
     throw new Error('No AI service available');
   }
 
-  private async generateWithOpenAI(prompt: string): Promise<WeatherInsightsDto> {
+  private async generateWithOpenAI(
+    prompt: string,
+  ): Promise<WeatherInsightsDto> {
     if (!this.openai) throw new Error('OpenAI not configured');
 
     const response = await this.openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
-      max_tokens: 500,
+      max_tokens: 800,
     });
 
     const content = response.choices[0]?.message?.content;
@@ -125,7 +169,9 @@ Retorne APENAS o JSON, sem markdown ou texto adicional.`;
     return this.parseAIResponse(content);
   }
 
-  private async generateWithGemini(prompt: string): Promise<WeatherInsightsDto> {
+  private async generateWithGemini(
+    prompt: string,
+  ): Promise<WeatherInsightsDto> {
     if (!this.gemini) throw new Error('Gemini not configured');
 
     const model = this.gemini.getGenerativeModel({ model: 'gemini-pro' });
@@ -139,17 +185,33 @@ Retorne APENAS o JSON, sem markdown ou texto adicional.`;
   private parseAIResponse(content: string): WeatherInsightsDto {
     try {
       // Remove markdown code blocks if present
-      const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const cleaned = content
+        .replace(/```json\n?/g, '')
+        .replace(/```\n?/g, '')
+        .trim();
       const parsed = JSON.parse(cleaned);
 
+      // Garantir que activitySuggestions seja um array com exatamente 3 itens
+      let activitySuggestions = Array.isArray(parsed.activitySuggestions)
+        ? parsed.activitySuggestions
+        : [];
+
+      // Se tiver mais de 3, pegar apenas os 3 primeiros
+      if (activitySuggestions.length > 3) {
+        activitySuggestions = activitySuggestions.slice(0, 3);
+      }
+
+      // Se tiver menos de 3, completar com sugestões genéricas
+      while (activitySuggestions.length < 3) {
+        activitySuggestions.push(
+          'Condições adequadas para atividades ao ar livre',
+        );
+      }
+
       return {
-        summary: parsed.summary || 'Análise não disponível',
-        trends: parsed.trends || 'Tendências não identificadas',
-        alerts: Array.isArray(parsed.alerts) ? parsed.alerts : [],
-        comfortScore: parsed.comfortScore || 50,
-        classification: parsed.classification || 'agradável',
-        detailedAnalysis: parsed.detailedAnalysis || '',
-        activitySuggestions: Array.isArray(parsed.activitySuggestions) ? parsed.activitySuggestions : [],
+        analysis: parsed.analysis || 'Análise não disponível',
+        activitySuggestions: activitySuggestions.slice(0, 3),
+        classification: this.validateClassification(parsed.classification),
       };
     } catch (error) {
       this.logger.error('Error parsing AI response', error);
@@ -157,255 +219,198 @@ Retorne APENAS o JSON, sem markdown ou texto adicional.`;
     }
   }
 
-  private prepareDataSummary(data: WeatherLogDocument[]): string {
-    const temps = data.map((d) => d.temperature);
-    const humidities = data.map((d) => d.humidity);
-    const rainProbs = data.map((d) => d.rainProbability);
-    const visibilities = data.map((d) => d.visibility).filter((v) => v != null);
-    const solarRads = data.map((d) => d.solarRadiation).filter((v) => v != null);
-    const pressures = data.map((d) => d.pressure).filter((v) => v != null);
-
-    const avgTemp = temps.reduce((a, b) => a + b, 0) / temps.length;
-    const avgHumidity = humidities.reduce((a, b) => a + b, 0) / humidities.length;
-    const avgRainProb = rainProbs.reduce((a, b) => a + b, 0) / rainProbs.length;
-    const maxTemp = Math.max(...temps);
-    const minTemp = Math.min(...temps);
-    const avgVisibility = visibilities.length > 0 ? visibilities.reduce((a, b) => a + b, 0) / visibilities.length : null;
-    const avgSolarRad = solarRads.length > 0 ? solarRads.reduce((a, b) => a + b, 0) / solarRads.length : null;
-    const avgPressure = pressures.length > 0 ? pressures.reduce((a, b) => a + b, 0) / pressures.length : null;
-
-    return `
-- Total de registros: ${data.length}
-- Temperatura média: ${avgTemp.toFixed(1)}°C
-- Temperatura máxima: ${maxTemp.toFixed(1)}°C
-- Temperatura mínima: ${minTemp.toFixed(1)}°C
-- Umidade média: ${avgHumidity.toFixed(1)}%
-- Probabilidade de chuva média: ${avgRainProb.toFixed(1)}%
-${avgVisibility ? `- Visibilidade média: ${avgVisibility.toFixed(1)} km` : ''}
-${avgSolarRad ? `- Radiação solar média: ${avgSolarRad.toFixed(1)} W/m²` : ''}
-${avgPressure ? `- Pressão atmosférica média: ${avgPressure.toFixed(1)} hPa` : ''}
-- Condições mais comuns: ${this.getMostCommonConditions(data)}
-`;
-  }
-
-  private getMostCommonConditions(data: WeatherLogDocument[]): string {
-    const conditions = data.map((d) => d.condition);
-    const counts: Record<string, number> = {};
-    conditions.forEach((c) => {
-      counts[c] = (counts[c] || 0) + 1;
-    });
-    return Object.entries(counts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([condition]) => condition)
-      .join(', ');
-  }
-
-  private async getHistoricalData(days: number): Promise<WeatherLogDocument[]> {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-
-    return this.weatherLogModel
-      .find({
-        timestamp: { $gte: startDate },
-      })
-      .sort({ timestamp: 1 })
-      .exec();
-  }
-
-  private generateFallbackInsights(data: WeatherLogDocument[]): WeatherInsightsDto {
-    const temps = data.map((d) => d.temperature);
-    const humidities = data.map((d) => d.humidity);
-    const rainProbs = data.map((d) => d.rainProbability);
-
-    const avgTemp = temps.reduce((a, b) => a + b, 0) / temps.length;
-    const avgHumidity = humidities.reduce((a, b) => a + b, 0) / humidities.length;
-    const avgRainProb = rainProbs.reduce((a, b) => a + b, 0) / rainProbs.length;
-
-    let classification = 'agradável';
-    if (avgTemp > 30) classification = 'quente';
-    else if (avgTemp < 15) classification = 'frio';
-    if (avgRainProb > 50) classification = 'chuvoso';
-
-    const alerts: string[] = [];
-    if (avgTemp > 35) alerts.push('Calor extremo');
-    if (avgTemp < 5) alerts.push('Frio intenso');
-    if (avgRainProb > 70) alerts.push('Alta probabilidade de chuva');
-
-    const comfortScore = this.calculateComfortScore(avgTemp, avgHumidity, avgRainProb);
-
-    const latest = data[data.length - 1];
-    const activitySuggestions = this.generateActivitySuggestions(latest, avgTemp, avgRainProb);
-
-    return {
-      summary: `Nos últimos ${data.length} registros, a temperatura média foi de ${avgTemp.toFixed(1)}°C, com umidade de ${avgHumidity.toFixed(1)}% e probabilidade de chuva de ${avgRainProb.toFixed(1)}%.`,
-      trends: this.calculateTrends(data),
-      alerts,
-      comfortScore,
-      classification,
-      detailedAnalysis: this.generateDetailedAnalysis(latest, avgTemp, avgHumidity, avgRainProb),
-      activitySuggestions,
-    };
-  }
-
-  private calculateComfortScore(temp: number, humidity: number, rainProb: number): number {
-    let score = 100;
-
-    // Penalizar temperaturas extremas
-    if (temp > 30 || temp < 10) score -= 30;
-    else if (temp > 25 || temp < 15) score -= 15;
-
-    // Penalizar umidade extrema
-    if (humidity > 80 || humidity < 30) score -= 20;
-    else if (humidity > 70 || humidity < 40) score -= 10;
-
-    // Penalizar alta probabilidade de chuva
-    if (rainProb > 70) score -= 25;
-    else if (rainProb > 50) score -= 10;
-
-    return Math.max(0, Math.min(100, score));
-  }
-
-  private calculateTrends(data: WeatherLogDocument[]): string {
-    if (data.length < 2) return 'Dados insuficientes para identificar tendências';
-
-    const recent = data.slice(-5);
-    const older = data.slice(0, 5);
-
-    if (recent.length === 0 || older.length === 0) {
-      return 'Dados insuficientes para identificar tendências';
+  private validateClassification(classification: string): string {
+    const validClassifications = [
+      'agradável',
+      'quente',
+      'frio',
+      'chuvoso',
+      'extremo',
+    ];
+    if (validClassifications.includes(classification?.toLowerCase())) {
+      return classification.toLowerCase();
     }
-
-    const recentAvg = recent.reduce((sum, d) => sum + d.temperature, 0) / recent.length;
-    const olderAvg = older.reduce((sum, d) => sum + d.temperature, 0) / older.length;
-
-    const diff = recentAvg - olderAvg;
-
-    if (diff > 2) return 'Temperatura em tendência de aumento';
-    if (diff < -2) return 'Temperatura em tendência de queda';
-    return 'Temperatura estável';
+    return 'agradável'; // Default
   }
 
-  private getDefaultInsights(): WeatherInsightsDto {
+  private generateFallbackInsights(
+    latestLog: WeatherLogDocument,
+  ): WeatherInsightsDto {
+    const analysis = this.generateDetailedAnalysis(latestLog);
+    const activitySuggestions = this.generateActivitySuggestions(latestLog);
+    const classification = this.determineClassification(latestLog);
+
     return {
-      summary: 'Dados insuficientes para análise. Aguarde a coleta de mais dados climáticos.',
-      trends: 'Não há dados suficientes para identificar tendências.',
-      alerts: [],
-      comfortScore: 50,
-      classification: 'agradável',
-      detailedAnalysis: 'Aguardando mais dados para análise detalhada.',
-      activitySuggestions: [],
+      analysis,
+      activitySuggestions,
+      classification,
     };
   }
 
-  private generateDetailedAnalysis(
-    latest: WeatherLogDocument,
-    avgTemp: number,
-    avgHumidity: number,
-    avgRainProb: number,
-  ): string {
-    let analysis = `O tempo está ${latest.description || latest.condition.toLowerCase()}, com temperatura em torno de ${latest.temperature.toFixed(1)}°C. `;
-    
-    analysis += `A umidade relativa está em ${latest.humidity.toFixed(1)}%, `;
-    
-    if (latest.humidity < 40) {
-      analysis += 'indicando ar seco. ';
-    } else if (latest.humidity > 70) {
-      analysis += 'indicando ar úmido. ';
+  private generateDetailedAnalysis(latestLog: WeatherLogDocument): string {
+    const cityName = this.getLocationName(
+      latestLog.latitude,
+      latestLog.longitude,
+    );
+    let analysis = `Análise das condições climáticas atuais em ${cityName}:\n\n`;
+
+    analysis += `A temperatura está em ${latestLog.temperature.toFixed(1)}°C, `;
+
+    if (latestLog.temperature > 30) {
+      analysis += 'indicando condições de calor. ';
+    } else if (latestLog.temperature < 15) {
+      analysis += 'indicando condições de frio. ';
     } else {
       analysis += 'em níveis confortáveis. ';
     }
 
-    if (latest.rainProbability > 50) {
-      analysis += `Há ${latest.rainProbability.toFixed(0)}% de probabilidade de chuva. `;
+    analysis += `A umidade relativa do ar está em ${latestLog.humidity.toFixed(1)}%, `;
+
+    if (latestLog.humidity < 40) {
+      analysis +=
+        'indicando ar seco, o que pode causar desconforto respiratório. ';
+    } else if (latestLog.humidity > 70) {
+      analysis +=
+        'indicando ar úmido, o que pode aumentar a sensação térmica. ';
     } else {
-      analysis += 'Não há previsão significativa de chuva. ';
+      analysis += 'em níveis ideais para o conforto. ';
     }
 
-    analysis += `O vento sopra a ${latest.windSpeed.toFixed(1)} km/h. `;
+    analysis += `O vento está soprando a ${latestLog.windSpeed.toFixed(1)} km/h. `;
 
-    if (latest.visibility) {
-      if (latest.visibility > 10) {
-        analysis += `A visibilidade é excelente, superior a ${latest.visibility.toFixed(1)} km. `;
-      } else if (latest.visibility > 5) {
-        analysis += `A visibilidade é boa, em torno de ${latest.visibility.toFixed(1)} km. `;
+    if (latestLog.windSpeed > 20) {
+      analysis += 'Vento forte pode afetar atividades ao ar livre. ';
+    } else if (latestLog.windSpeed < 5) {
+      analysis += 'Vento calmo, ideal para atividades ao ar livre. ';
+    }
+
+    if (latestLog.rainProbability > 50) {
+      analysis += `Há ${latestLog.rainProbability.toFixed(0)}% de probabilidade de chuva, recomenda-se estar preparado. `;
+    } else {
+      analysis += 'Baixa probabilidade de chuva, condições favoráveis. ';
+    }
+
+    if (latestLog.visibility) {
+      if (latestLog.visibility < 5) {
+        analysis += `A visibilidade está reduzida (${latestLog.visibility.toFixed(1)} km), cuidado ao dirigir. `;
       } else {
-        analysis += `A visibilidade está reduzida, cerca de ${latest.visibility.toFixed(1)} km. `;
+        analysis += `A visibilidade está boa (${latestLog.visibility.toFixed(1)} km). `;
       }
     }
 
-    if (latest.solarRadiation) {
-      if (latest.solarRadiation > 800) {
-        analysis += `A radiação solar está muito alta (${latest.solarRadiation.toFixed(0)} W/m²), indicando necessidade de proteção solar intensa. `;
-      } else if (latest.solarRadiation > 400) {
-        analysis += `A radiação solar está moderada (${latest.solarRadiation.toFixed(0)} W/m²). `;
-      } else {
-        analysis += `A radiação solar está baixa (${latest.solarRadiation.toFixed(0)} W/m²). `;
+    if (latestLog.solarRadiation) {
+      if (latestLog.solarRadiation > 800) {
+        analysis += `Radiação solar muito alta (${latestLog.solarRadiation.toFixed(0)} W/m²), proteção solar essencial. `;
+      } else if (latestLog.solarRadiation > 400) {
+        analysis += `Radiação solar moderada (${latestLog.solarRadiation.toFixed(0)} W/m²). `;
       }
     }
 
-    if (latest.pressure) {
-      analysis += `A pressão atmosférica está em ${latest.pressure.toFixed(1)} hPa. `;
+    if (latestLog.pressure) {
+      analysis += `A pressão atmosférica está em ${latestLog.pressure.toFixed(1)} hPa. `;
     }
+
+    analysis += `\nCondição geral: ${latestLog.description || latestLog.condition}.`;
 
     return analysis.trim();
   }
 
-  private generateActivitySuggestions(
-    latest: WeatherLogDocument,
-    avgTemp: number,
-    avgRainProb: number,
-  ): string[] {
+  private generateActivitySuggestions(latestLog: WeatherLogDocument): string[] {
     const suggestions: string[] = [];
 
     // Sugestões baseadas em temperatura
-    if (latest.temperature > 25 && latest.temperature < 30) {
-      suggestions.push('Ideal para atividades ao ar livre');
-      suggestions.push('Perfeito para caminhadas e exercícios');
-    } else if (latest.temperature > 30) {
-      suggestions.push('Use protetor solar e evite exposição prolongada');
-      suggestions.push('Prefira atividades em horários mais frescos');
-      if (latest.solarRadiation && latest.solarRadiation > 800) {
+    if (latestLog.temperature > 25 && latestLog.temperature < 30) {
+      suggestions.push('Ideal para atividades ao ar livre e exercícios');
+      suggestions.push('Perfeito para caminhadas, corridas e esportes');
+    } else if (latestLog.temperature > 30) {
+      suggestions.push(
+        'Use protetor solar e evite exposição prolongada ao sol',
+      );
+      suggestions.push(
+        'Prefira atividades em horários mais frescos (manhã ou fim da tarde)',
+      );
+      if (latestLog.solarRadiation && latestLog.solarRadiation > 800) {
         suggestions.push('Radiação UV muito alta - proteção solar obrigatória');
+      } else {
+        suggestions.push(
+          'Hidrate-se frequentemente durante atividades ao ar livre',
+        );
       }
-    } else if (latest.temperature < 15) {
+    } else if (latestLog.temperature < 15) {
       suggestions.push('Use roupas adequadas para o frio');
       suggestions.push('Atividades indoor são mais confortáveis');
+      suggestions.push('Se for sair, use camadas de roupa para manter o calor');
+    } else {
+      suggestions.push(
+        'Condições climáticas adequadas para a maioria das atividades',
+      );
     }
 
-    // Sugestões baseadas em chuva
-    if (latest.rainProbability > 70) {
-      suggestions.push('Alta probabilidade de chuva - prefira atividades indoor');
-      suggestions.push('Leve guarda-chuva se precisar sair');
-    } else if (latest.rainProbability < 30) {
-      suggestions.push('Condições ideais para atividades ao ar livre');
+    // Ajustar baseado em chuva
+    if (latestLog.rainProbability > 70) {
+      suggestions[0] =
+        'Alta probabilidade de chuva - prefira atividades indoor';
+      if (suggestions.length > 1) {
+        suggestions[1] = 'Leve guarda-chuva se precisar sair';
+      }
+    } else if (
+      latestLog.rainProbability < 30 &&
+      latestLog.temperature >= 20 &&
+      latestLog.temperature <= 28
+    ) {
+      if (suggestions.length > 0) {
+        suggestions[0] = 'Condições ideais para atividades ao ar livre';
+      }
     }
 
-    // Sugestões baseadas em vento
-    if (latest.windSpeed > 20) {
-      suggestions.push('Vento forte - cuidado com atividades ao ar livre');
-    } else if (latest.windSpeed < 10) {
-      suggestions.push('Vento suave - ótimo para atividades ao ar livre');
+    // Ajustar baseado em vento
+    if (latestLog.windSpeed > 20) {
+      if (suggestions.length > 1) {
+        suggestions[1] = 'Vento forte - cuidado com atividades ao ar livre';
+      }
     }
 
-    // Sugestões baseadas em visibilidade
-    if (latest.visibility && latest.visibility < 5) {
-      suggestions.push('Visibilidade reduzida - evite dirigir se possível');
+    // Garantir exatamente 3 sugestões
+    while (suggestions.length < 3) {
+      suggestions.push('Condições adequadas para atividades ao ar livre');
     }
 
-    // Sugestões baseadas em umidade
-    if (latest.humidity > 80) {
-      suggestions.push('Alta umidade - pode ser desconfortável para exercícios intensos');
-    } else if (latest.humidity < 30) {
-      suggestions.push('Ar seco - mantenha-se hidratado');
+    return suggestions.slice(0, 3);
+  }
+
+  private determineClassification(latestLog: WeatherLogDocument): string {
+    const temp = latestLog.temperature;
+    const rainProb = latestLog.rainProbability;
+
+    // Classificação baseada em temperatura e chuva
+    if (temp > 35 || temp < 0) {
+      return 'extremo';
     }
 
-    // Se não houver sugestões específicas, adicionar genéricas
-    if (suggestions.length === 0) {
-      suggestions.push('Condições climáticas adequadas para a maioria das atividades');
+    if (rainProb > 70) {
+      return 'chuvoso';
     }
 
-    return suggestions.slice(0, 5); // Limitar a 5 sugestões
+    if (temp > 30) {
+      return 'quente';
+    }
+
+    if (temp < 15) {
+      return 'frio';
+    }
+
+    return 'agradável';
+  }
+
+  private getDefaultInsights(): WeatherInsightsDto {
+    return {
+      analysis: 'Aguardando coleta de dados climáticos para análise.',
+      activitySuggestions: [
+        'Aguardando dados para sugestões de atividades',
+        'Verifique novamente em alguns minutos',
+        'Os dados serão atualizados automaticamente',
+      ],
+      classification: 'agradável',
+    };
   }
 }
-

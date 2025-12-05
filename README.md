@@ -614,18 +614,6 @@ Para garantir que os dados sejam coletados automaticamente a cada hora, mesmo qu
    .\scripts\start-docker-containers.ps1
    ```
 
-### O que foi configurado?
-
-- ✅ Tarefa agendada que verifica containers a cada 5 minutos
-- ✅ Reinicia containers automaticamente se pararem
-- ✅ Inicia containers ao fazer logon no Windows
-- ✅ Scripts para gerenciar containers facilmente
-
-### Documentação Completa
-
-Para instruções detalhadas, consulte: [`scripts/README-WINDOWS-AUTOSTART.md`](scripts/README-WINDOWS-AUTOSTART.md)
-
-## 🐛 Troubleshooting
 
 ### Serviços não iniciam
 - Verifique se as portas estão disponíveis

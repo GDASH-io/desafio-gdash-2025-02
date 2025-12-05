@@ -9,7 +9,8 @@ export class SeedService {
 
   async seedDefaultUser() {
     try {
-      const existingUser = await this.usersService.findByEmail('admin@example.com');
+      const existingUser =
+        await this.usersService.findByEmail('admin@example.com');
       if (existingUser) {
         this.logger.log('Usuário padrão já existe');
         return;
@@ -28,4 +29,3 @@ export class SeedService {
     }
   }
 }
-

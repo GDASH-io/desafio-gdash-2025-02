@@ -78,3 +78,4 @@ if ($needsRestart) {
     # Write-Host "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') - Todos os containers estão rodando" -ForegroundColor Green
 }
 
+

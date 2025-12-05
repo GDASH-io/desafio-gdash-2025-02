@@ -55,6 +55,9 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      LATITUDE: ${LATITUDE:-52.52}
+      LONGITUDE: ${LONGITUDE:-13.41}
+      OPEN_METEO_URL: ${OPEN_METEO_URL:-https://api.open-meteo.com/v1/forecast}
     depends_on:
       mongodb:
         condition: service_healthy

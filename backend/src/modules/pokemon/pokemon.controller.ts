@@ -23,4 +23,3 @@ export class PokemonController {
     return this.pokemonService.findOne(id);
   }
 }
-

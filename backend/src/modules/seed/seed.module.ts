@@ -13,4 +13,3 @@ export class SeedModule implements OnModuleInit {
     await this.seedService.seedDefaultUser();
   }
 }
-

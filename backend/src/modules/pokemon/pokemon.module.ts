@@ -7,4 +7,3 @@ import { PokemonService } from './pokemon.service';
   providers: [PokemonService],
 })
 export class PokemonModule {}
-

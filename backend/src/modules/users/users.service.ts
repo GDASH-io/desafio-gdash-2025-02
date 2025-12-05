@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -13,7 +17,9 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const existingUser = await this.userModel.findOne({ email: createUserDto.email }).exec();
+    const existingUser = await this.userModel
+      .findOne({ email: createUserDto.email })
+      .exec();
     if (existingUser) {
       throw new ConflictException('Email já está em uso');
     }
@@ -45,14 +51,19 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
 
     if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingUser = await this.userModel.findOne({ email: updateUserDto.email }).exec();
+      const existingUser = await this.userModel
+        .findOne({ email: updateUserDto.email })
+        .exec();
       if (existingUser) {
         throw new ConflictException('Email já está em uso');
       }
@@ -85,4 +96,3 @@ export class UsersService {
     };
   }
 }
-

@@ -28,13 +28,9 @@ export interface WeatherLogsResponse {
 }
 
 export interface WeatherInsights {
-  summary: string;
-  trends: string;
-  alerts: string[];
-  comfortScore: number;
+  analysis: string;
+  activitySuggestions: string[];
   classification: string;
-  detailedAnalysis?: string;
-  activitySuggestions?: string[];
 }
 
 export const weatherService = {
@@ -49,8 +45,8 @@ export const weatherService = {
     return response.data;
   },
 
-  async getInsights(days = 7): Promise<WeatherInsights> {
-    const response = await api.get<WeatherInsights>(`/api/weather/insights?days=${days}`);
+  async getInsights(): Promise<WeatherInsights> {
+    const response = await api.get<WeatherInsights>('/api/weather/insights');
     return response.data;
   },
 
@@ -65,6 +61,11 @@ export const weatherService = {
     const response = await api.get('/api/weather/export.xlsx', {
       responseType: 'blob',
     });
+    return response.data;
+  },
+
+  async collectWeatherData(): Promise<{ success: boolean; message: string; data?: any }> {
+    const response = await api.post<{ success: boolean; message: string; data?: any }>('/api/weather/collect');
     return response.data;
   },
 };

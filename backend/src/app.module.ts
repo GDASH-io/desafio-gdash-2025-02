@@ -17,7 +17,9 @@ import { AppController } from './app.controller';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI') || 'mongodb://admin:admin123@mongodb:27017/gdash?authSource=admin',
+        uri:
+          configService.get<string>('MONGODB_URI') ||
+          'mongodb://admin:admin123@mongodb:27017/gdash?authSource=admin',
       }),
       inject: [ConfigService],
     }),
@@ -30,4 +32,3 @@ import { AppController } from './app.controller';
   controllers: [AppController],
 })
 export class AppModule {}
-

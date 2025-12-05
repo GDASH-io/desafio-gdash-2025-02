@@ -13,7 +13,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { Sun, Cloud, CloudRain, CloudSnow, Wind, CloudDrizzle, CloudLightning, Calendar, Home, BarChart3, Info, FileSpreadsheet, FileText } from 'lucide-react';
+import { Sun, Cloud, CloudRain, CloudSnow, Wind, CloudDrizzle, CloudLightning, Calendar, Home, BarChart3, Info, FileSpreadsheet, FileText, RefreshCw } from 'lucide-react';
 
 const getWeatherIcon = (condition: string) => {
   const conditionLower = condition.toLowerCase();
@@ -51,6 +51,7 @@ export const Dashboard = () => {
   const [insights, setInsights] = useState<WeatherInsights | null>(null);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [collecting, setCollecting] = useState(false);
   // Inicializar com a data de hoje, mas se não houver dados, usar a data do último registro
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [granularity, setGranularity] = useState<'hour' | 'day'>('hour');
@@ -82,7 +83,7 @@ export const Dashboard = () => {
     try {
       const [logsData, insightsData] = await Promise.all([
         weatherService.getLogs(1, 1000),
-        weatherService.getInsights(1),
+        weatherService.getInsights(),
       ]);
       setLogs(logsData.data);
       setInsights(insightsData);
@@ -151,6 +152,26 @@ export const Dashboard = () => {
     }
   };
 
+  const handleCollectData = async () => {
+    setCollecting(true);
+    try {
+      const result = await weatherService.collectWeatherData();
+      if (result.success) {
+        // Recarregar dados após coleta bem-sucedida
+        await loadData();
+        // Mostrar mensagem de sucesso (pode usar um toast se tiver)
+        alert('Dados climáticos coletados com sucesso!');
+      } else {
+        alert(`Erro ao coletar dados: ${result.message}`);
+      }
+    } catch (error: any) {
+      console.error('Erro ao coletar dados:', error);
+      alert(error.response?.data?.message || 'Erro ao coletar dados climáticos');
+    } finally {
+      setCollecting(false);
+    }
+  };
+
   const filterDataByDate = (data: WeatherLog[]) => {
     if (!selectedDate) return data;
 
@@ -175,16 +196,14 @@ export const Dashboard = () => {
 
   // Função para remover duplicatas baseado no timestamp exato
   // Mantém todos os registros únicos, agrupando apenas duplicatas exatas (mesmo timestamp)
+  // Preserva a ordem original (mais recente primeiro)
   const removeDuplicates = (data: WeatherLog[]): WeatherLog[] => {
     const seen = new Set<string>();
     const unique: WeatherLog[] = [];
     
-    // Ordenar por timestamp (mais antigo primeiro)
-    const sorted = [...data].sort((a, b) => 
-      new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    );
-    
-    for (const log of sorted) {
+    // Manter a ordem original (mais recente primeiro) - não ordenar novamente
+    // O backend já retorna ordenado do mais recente para o mais antigo
+    for (const log of data) {
       // Usar timestamp completo como chave única
       const timestampKey = new Date(log.timestamp).toISOString();
       
@@ -265,9 +284,10 @@ export const Dashboard = () => {
     }
   };
 
-  // Remover duplicatas dos logs antes de usar e garantir ordenação correta
+  // Remover duplicatas dos logs antes de usar
+  // A ordem original (mais recente primeiro) é preservada pela função removeDuplicates
   const uniqueLogs = removeDuplicates(logs);
-  // Garantir que o latestLog seja o mais recente (primeiro após ordenação)
+  // O primeiro item é sempre o mais recente, pois o backend retorna ordenado e removeDuplicates preserva a ordem
   const latestLog = uniqueLogs.length > 0 ? uniqueLogs[0] : null;
   const chartData = processChartData(uniqueLogs);
 
@@ -282,12 +302,22 @@ export const Dashboard = () => {
   const renderHome = () => (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-emerald-50 rounded-xl p-6 border border-blue-100/50 shadow-sm">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-1 h-8 bg-gradient-to-b from-emerald-500 to-blue-500 rounded-full"></div>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Resumo Climático</h1>
-            <p className="text-gray-600 mt-1">Visão geral das condições climáticas atuais</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-1 h-8 bg-gradient-to-b from-emerald-500 to-blue-500 rounded-full"></div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Resumo Climático</h1>
+              <p className="text-gray-600 mt-1">Visão geral das condições climáticas atuais</p>
+            </div>
           </div>
+          <Button
+            onClick={handleCollectData}
+            disabled={collecting}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 px-6"
+          >
+            <RefreshCw className={`w-4 h-4 ${collecting ? 'animate-spin' : ''}`} />
+            {collecting ? 'Coletando...' : 'Coletar Dados Agora'}
+          </Button>
         </div>
       </div>
 
@@ -345,6 +375,108 @@ export const Dashboard = () => {
           </Card>
         </div>
       )}
+
+      {/* Insights de IA na Home */}
+      {insights && (
+        <div className="space-y-6 mt-6">
+          {/* Card de Análise Completa */}
+          <Card className="border-l-4 border-l-blue-500 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Info className="w-6 h-6 text-blue-600" />
+                Análise Completa do Clima
+              </CardTitle>
+              <CardDescription>Análise detalhada baseada na última coleta de dados</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="prose prose-sm max-w-none">
+                <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
+                  {insights.analysis}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Grid com Sugestões e Classificação */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Card de Sugestões de Atividades */}
+            <Card className="border-l-4 border-l-emerald-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Sun className="w-5 h-5 text-emerald-600" />
+                  Sugestões de Atividades
+                </CardTitle>
+                <CardDescription>Recomendações baseadas nas condições climáticas atuais</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {insights.activitySuggestions && insights.activitySuggestions.length > 0 ? (
+                  <ul className="space-y-3">
+                    {insights.activitySuggestions.map((suggestion, index) => (
+                      <li key={index} className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50/50 hover:bg-emerald-50 transition-colors">
+                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
+                          {index + 1}
+                        </span>
+                        <span className="text-sm text-gray-700 flex-1 leading-relaxed">{suggestion}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Nenhuma sugestão disponível no momento.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Card de Classificação do Clima */}
+            <Card className="border-l-4 border-l-purple-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                  Classificação do Clima
+                </CardTitle>
+                <CardDescription>Classificação atual das condições climáticas</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center justify-center min-h-[120px]">
+                  <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-xl shadow-md transition-all duration-300 ${
+                    insights.classification === 'agradável' 
+                      ? 'bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300' :
+                    insights.classification === 'quente' 
+                      ? 'bg-gradient-to-r from-orange-100 to-red-100 border-2 border-orange-300' :
+                    insights.classification === 'frio' 
+                      ? 'bg-gradient-to-r from-blue-100 to-cyan-100 border-2 border-blue-300' :
+                    insights.classification === 'chuvoso' 
+                      ? 'bg-gradient-to-r from-cyan-100 to-blue-100 border-2 border-cyan-300' :
+                      'bg-gradient-to-r from-red-100 to-orange-100 border-2 border-red-300'
+                  }`}>
+                    <span className="text-sm font-medium text-gray-700">Clima:</span>
+                    <span className={`text-2xl font-bold capitalize ${
+                      insights.classification === 'agradável' ? 'text-emerald-700' :
+                      insights.classification === 'quente' ? 'text-orange-700' :
+                      insights.classification === 'frio' ? 'text-blue-700' :
+                      insights.classification === 'chuvoso' ? 'text-cyan-700' :
+                      'text-red-700'
+                    }`}>
+                      {insights.classification}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Mensagem quando não há insights */}
+      {!insights && !loading && (
+        <Card className="mt-6">
+          <CardContent className="py-8">
+            <div className="text-center text-muted-foreground">
+              <p className="text-lg font-medium">Aguardando análise de IA...</p>
+              <p className="text-sm mt-2">Os insights serão exibidos assim que os dados estiverem disponíveis.</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 
@@ -363,7 +495,7 @@ export const Dashboard = () => {
           <Button 
             onClick={handleExportCsv} 
             disabled={exporting} 
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 px-6"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 px-6"
           >
             <FileText className="w-4 h-4" />
             {exporting ? 'Exportando...' : 'Exportar CSV'}
@@ -371,7 +503,7 @@ export const Dashboard = () => {
           <Button 
             onClick={handleExportXlsx} 
             disabled={exporting}
-            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 px-6"
+            className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 px-6"
           >
             <FileSpreadsheet className="w-4 h-4" />
             {exporting ? 'Exportando...' : 'Exportar XLSX'}
@@ -380,52 +512,104 @@ export const Dashboard = () => {
         </div>
       </div>
 
+      {/* Seção de Insights de IA */}
       {insights && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Análise Detalhada de IA</CardTitle>
-            <CardDescription>Insights baseados nas condições climáticas atuais</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {insights.detailedAnalysis && (
-              <div>
-                <h3 className="font-semibold mb-2">Análise Completa</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {insights.detailedAnalysis}
+        <div className="space-y-6">
+          {/* Card de Análise Completa */}
+          <Card className="border-l-4 border-l-blue-500 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Info className="w-6 h-6 text-blue-600" />
+                Análise Completa do Clima
+              </CardTitle>
+              <CardDescription>Análise detalhada baseada na última coleta de dados</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="prose prose-sm max-w-none">
+                <p className="text-base text-gray-700 leading-relaxed whitespace-pre-line">
+                  {insights.analysis}
                 </p>
               </div>
-            )}
+            </CardContent>
+          </Card>
 
-            {insights.activitySuggestions && insights.activitySuggestions.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2">Sugestões de Atividades</h3>
-                <ul className="list-disc list-inside space-y-1">
-                  {insights.activitySuggestions.map((suggestion, index) => (
-                    <li key={index} className="text-sm text-muted-foreground">
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {/* Grid com Sugestões e Classificação */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Card de Sugestões de Atividades */}
+            <Card className="border-l-4 border-l-emerald-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Sun className="w-5 h-5 text-emerald-600" />
+                  Sugestões de Atividades
+                </CardTitle>
+                <CardDescription>Recomendações baseadas nas condições climáticas atuais</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {insights.activitySuggestions && insights.activitySuggestions.length > 0 ? (
+                  <ul className="space-y-3">
+                    {insights.activitySuggestions.map((suggestion, index) => (
+                      <li key={index} className="flex items-start gap-3 p-3 rounded-lg bg-emerald-50/50 hover:bg-emerald-50 transition-colors">
+                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold mt-0.5">
+                          {index + 1}
+                        </span>
+                        <span className="text-sm text-gray-700 flex-1 leading-relaxed">{suggestion}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Nenhuma sugestão disponível no momento.</p>
+                )}
+              </CardContent>
+            </Card>
 
-            <div>
-              <h3 className="font-semibold mb-2">Tendências</h3>
-              <p className="text-sm text-muted-foreground">{insights.trends}</p>
+            {/* Card de Classificação do Clima */}
+            <Card className="border-l-4 border-l-purple-500 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                  Classificação do Clima
+                </CardTitle>
+                <CardDescription>Classificação atual das condições climáticas</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center justify-center min-h-[120px]">
+                  <div className={`inline-flex items-center gap-3 px-6 py-4 rounded-xl shadow-md transition-all duration-300 ${
+                    insights.classification === 'agradável' 
+                      ? 'bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300' :
+                    insights.classification === 'quente' 
+                      ? 'bg-gradient-to-r from-orange-100 to-red-100 border-2 border-orange-300' :
+                    insights.classification === 'frio' 
+                      ? 'bg-gradient-to-r from-blue-100 to-cyan-100 border-2 border-blue-300' :
+                    insights.classification === 'chuvoso' 
+                      ? 'bg-gradient-to-r from-cyan-100 to-blue-100 border-2 border-cyan-300' :
+                      'bg-gradient-to-r from-red-100 to-orange-100 border-2 border-red-300'
+                  }`}>
+                    <span className="text-sm font-medium text-gray-700">Clima:</span>
+                    <span className={`text-2xl font-bold capitalize ${
+                      insights.classification === 'agradável' ? 'text-emerald-700' :
+                      insights.classification === 'quente' ? 'text-orange-700' :
+                      insights.classification === 'frio' ? 'text-blue-700' :
+                      insights.classification === 'chuvoso' ? 'text-cyan-700' :
+                      'text-red-700'
+                    }`}>
+                      {insights.classification}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Mensagem quando não há insights */}
+      {!insights && !loading && (
+        <Card>
+          <CardContent className="py-8">
+            <div className="text-center text-muted-foreground">
+              <p className="text-lg font-medium">Aguardando análise de IA...</p>
+              <p className="text-sm mt-2">Os insights serão exibidos assim que os dados estiverem disponíveis.</p>
             </div>
-
-            {insights.alerts && insights.alerts.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2 text-orange-600">Alertas</h3>
-                <ul className="list-disc list-inside space-y-1">
-                  {insights.alerts.map((alert, index) => (
-                    <li key={index} className="text-sm text-orange-600">
-                      {alert}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
@@ -536,14 +720,22 @@ export const Dashboard = () => {
                 <Button
                   variant={granularity === 'hour' ? 'default' : 'outline'}
                   onClick={() => setGranularity('hour')}
-                  className="flex-1"
+                  className={`flex-1 ${
+                    granularity === 'hour'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                      : ''
+                  }`}
                 >
                   Por Hora
                 </Button>
                 <Button
                   variant={granularity === 'day' ? 'default' : 'outline'}
                   onClick={() => setGranularity('day')}
-                  className="flex-1"
+                  className={`flex-1 ${
+                    granularity === 'day'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                      : ''
+                  }`}
                 >
                   Por Dia
                 </Button>
@@ -717,7 +909,7 @@ export const Dashboard = () => {
                 onClick={() => setView(tab.id)}
                 className={`flex-1 gap-2 transition-all duration-200 ${
                   isActive
-                    ? 'bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md'
                     : 'hover:bg-gray-100 text-gray-600'
                 }`}
               >

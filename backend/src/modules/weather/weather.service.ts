@@ -11,42 +11,14 @@ export class WeatherService {
     private weatherLogModel: Model<WeatherLogDocument>,
   ) {}
 
-  async create(createWeatherLogDto: CreateWeatherLogDto): Promise<WeatherLogDocument> {
+  async create(
+    createWeatherLogDto: CreateWeatherLogDto,
+  ): Promise<WeatherLogDocument> {
     // Converter timestamp string para Date
     const timestamp = new Date(createWeatherLogDto.timestamp);
-    
-    // Arredondar timestamp para o início da hora para verificar duplicatas
-    const hourStart = new Date(timestamp);
-    hourStart.setMinutes(0, 0, 0);
-    const hourEnd = new Date(hourStart);
-    hourEnd.setHours(hourEnd.getHours() + 1);
-    
-    // Verificar se já existe um registro para esta hora
-    const existingLog = await this.weatherLogModel.findOne({
-      timestamp: {
-        $gte: hourStart,
-        $lt: hourEnd,
-      },
-      location: createWeatherLogDto.location,
-    });
-    
-    if (existingLog) {
-      // Se já existe, atualizar o registro existente em vez de criar um novo
-      existingLog.temperature = createWeatherLogDto.temperature;
-      existingLog.humidity = createWeatherLogDto.humidity;
-      existingLog.windSpeed = createWeatherLogDto.windSpeed;
-      existingLog.condition = createWeatherLogDto.condition;
-      existingLog.rainProbability = createWeatherLogDto.rainProbability;
-      existingLog.description = createWeatherLogDto.description;
-      existingLog.visibility = createWeatherLogDto.visibility;
-      existingLog.solarRadiation = createWeatherLogDto.solarRadiation;
-      existingLog.windDirection = createWeatherLogDto.windDirection;
-      existingLog.pressure = createWeatherLogDto.pressure;
-      existingLog.timestamp = timestamp; // Atualizar timestamp para o valor mais recente
-      return existingLog.save();
-    }
-    
-    // Se não existe, criar novo registro
+
+    // Sempre criar um novo registro para permitir múltiplas coletas
+    // Isso garante que coletas manuais e automáticas sejam todas registradas
     const logData = {
       ...createWeatherLogDto,
       timestamp,
@@ -59,12 +31,22 @@ export class WeatherService {
     page: number = 1,
     limit: number = 50,
     location?: string,
-  ): Promise<{ data: WeatherLogResponseDto[]; total: number; page: number; limit: number }> {
+  ): Promise<{
+    data: WeatherLogResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const skip = (page - 1) * limit;
     const query = location ? { location: new RegExp(location, 'i') } : {};
 
     const [data, total] = await Promise.all([
-      this.weatherLogModel.find(query).sort({ timestamp: -1 }).skip(skip).limit(limit).exec(),
+      this.weatherLogModel
+        .find(query)
+        .sort({ timestamp: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
       this.weatherLogModel.countDocuments(query).exec(),
     ]);
 
@@ -124,4 +106,3 @@ export class WeatherService {
     };
   }
 }
-

@@ -127,25 +127,20 @@ export class WeatherLogResponseDto {
 }
 
 export class WeatherInsightsDto {
-  @ApiProperty()
-  summary: string;
+  @ApiProperty({
+    description: 'Análise completa das condições climáticas atuais',
+  })
+  analysis: string;
 
-  @ApiProperty()
-  trends: string;
+  @ApiProperty({
+    description: 'Sugestões de atividades baseadas no clima atual',
+    type: [String],
+  })
+  activitySuggestions: string[];
 
-  @ApiProperty()
-  alerts: string[];
-
-  @ApiProperty()
-  comfortScore: number;
-
-  @ApiProperty()
+  @ApiProperty({
+    description:
+      'Classificação do clima: agradável|quente|frio|chuvoso|extremo',
+  })
   classification: string;
-
-  @ApiProperty()
-  detailedAnalysis?: string;
-
-  @ApiProperty()
-  activitySuggestions?: string[];
 }
-

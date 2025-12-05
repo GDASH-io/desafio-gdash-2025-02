@@ -40,7 +40,10 @@ export class UsersController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Atualizar usuário' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     return this.usersService.update(id, updateUserDto);
   }
 
@@ -50,4 +53,3 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 }
-

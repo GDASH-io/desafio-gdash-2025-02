@@ -1,8 +1,17 @@
-import { IsString, IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LoginDto {
-  @ApiProperty({ description: 'Email do usuário', example: 'admin@example.com' })
+  @ApiProperty({
+    description: 'Email do usuário',
+    example: 'admin@example.com',
+  })
   @IsEmail({}, { message: 'Email inválido' })
   @IsNotEmpty({ message: 'Email é obrigatório' })
   email: string;
@@ -26,13 +35,21 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Email é obrigatório' })
   email: string;
 
-  @ApiProperty({ description: 'Senha do usuário', minLength: 6, example: '123456' })
+  @ApiProperty({
+    description: 'Senha do usuário',
+    minLength: 6,
+    example: '123456',
+  })
   @IsString({ message: 'Senha deve ser uma string' })
   @IsNotEmpty({ message: 'Senha é obrigatória' })
   @MinLength(6, { message: 'Senha deve ter no mínimo 6 caracteres' })
   password: string;
 
-  @ApiPropertyOptional({ description: 'Role do usuário', enum: ['user', 'admin'], default: 'user' })
+  @ApiPropertyOptional({
+    description: 'Role do usuário',
+    enum: ['user', 'admin'],
+    default: 'user',
+  })
   @IsString({ message: 'Role deve ser uma string' })
   @IsOptional()
   role?: string;
@@ -50,4 +67,3 @@ export class LoginResponseDto {
     role: string;
   };
 }
-
