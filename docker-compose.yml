@@ -1,0 +1,157 @@
+services:
+  # ========================================
+  # MongoDB - Banco de dados
+  # ========================================
+  mongodb:
+    image: mongo:7.0
+    container_name: gdash-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: gdash_weather
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  # ========================================
+  # RabbitMQ - Message Broker
+  # ========================================
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: gdash-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"      # AMQP
+      - "15672:15672"    # Management UI
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  # ========================================
+  # Backend - NestJS
+  # ========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gdash-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: ${MONGO_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
+      DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+
+
+  # ========================================
+  # Frontend - React + Nginx
+  # ========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gdash-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - gdash-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
+  # ========================================
+  # Python Collector - Coleta dados da API
+  # ========================================
+  python-collector:
+    build:
+      context: ./collector-python
+      dockerfile: Dockerfile
+    container_name: gdash-python-collector
+    restart: unless-stopped
+    environment:
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+      WEATHER_CITY: ${WEATHER_CITY}
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      COLLECT_INTERVAL_SECONDS: ${COLLECT_INTERVAL_SECONDS}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - gdash-network
+
+
+  # ========================================
+  # Worker Go - Consome fila e envia ao backend
+  # ========================================
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: gdash-worker-go
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      BACKEND_WEATHER_ENDPOINT: http://backend:3000/api/weather/logs
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - gdash-network
+
+
+networks:
+  gdash-network:
+    driver: bridge
+
+
+volumes:
+  mongodb_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
