@@ -1,7 +1,6 @@
 # GDASH Weather + IA
 
 Esse projeto começou como um teste de um processo seletivo. A ideia inicial era bem simples, mas eu acabei levando além: quis deixar mais autoral, criativo e ainda assim totalmente dentro do escopo pedido. 
-
 Monitorei clima, gerei alertas, indiquei filmes e até inventei uma área de saúde bem-estar – tudo em um app só. No começo era “apenas um teste”, mas acabou virando uma plataforma completa para brincar com dados meteorológicos.
 
 ---
