@@ -1,0 +1,63 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  collector-py:
+    build:
+      context: ./collector-py
+      dockerfile: Dockerfile
+    container_name: collector-py
+    depends_on:
+      - rabbitmq
+    environment:
+      WEATHER_API_URL: https://api.open-meteo.com/v1/forecast
+      CITY_LATITUDE: -22.9068
+      CITY_LONGITUDE: -43.1729
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672/
+      COLLECT_INTERVAL_SECONDS: 30
+
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: worker-go
+    depends_on:
+      - rabbitmq
+      - api
+    environment:
+      AMQP_URL: amqp://guest:guest@rabbitmq:5672/
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    env_file:
+      - ./api/.env
+    environment:
+      NODE_ENV: development
+
+volumes:
+  mongo-data:
