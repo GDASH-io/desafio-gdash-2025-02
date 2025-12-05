@@ -31,6 +31,9 @@ O sistema coleta dados meteorológicos em tempo real, processa-os através de um
 4. **Backend (NestJS)**: Recebe os dados, armazena no MongoDB e gerencia a lógica de negócios e autenticação.
 5. **Frontend (React/Vite)**: Exibe os dados em tempo real e insights de IA para o usuário.
 
+### Vídeo do Desafio
+Confira o vídeo do desafio: https://www.youtube.com/watch?v=WTUKTWGx2_g
+
 ---
 
 ## Arquitetura
