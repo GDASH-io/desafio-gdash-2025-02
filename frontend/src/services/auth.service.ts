@@ -5,6 +5,13 @@ export interface LoginDto {
   password: string;
 }
 
+export interface RegisterDto {
+  name: string;
+  email: string;
+  password: string;
+  role?: string;
+}
+
 export interface LoginResponse {
   access_token: string;
   user: {
@@ -18,6 +25,11 @@ export interface LoginResponse {
 export const authService = {
   async login(credentials: LoginDto): Promise<LoginResponse> {
     const response = await api.post<LoginResponse>('/api/auth/login', credentials);
+    return response.data;
+  },
+
+  async register(credentials: RegisterDto): Promise<LoginResponse> {
+    const response = await api.post<LoginResponse>('/api/auth/register', credentials);
     return response.data;
   },
 

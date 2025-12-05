@@ -591,11 +591,52 @@ docker-compose logs -f backend
 - As APIs de IA (OpenAI/Gemini) são opcionais - o sistema funciona sem elas usando fallback
 - Todos os serviços têm retry logic implementado para maior resiliência
 
+## 🔄 Autostart no Windows (Coleta Automática)
+
+Para garantir que os dados sejam coletados automaticamente a cada hora, mesmo quando você não estiver usando o computador:
+
+### Configuração Rápida
+
+1. **Execute o script de configuração** (como Administrador):
+   ```powershell
+   # Abra PowerShell como Administrador
+   cd C:\Users\caiod\desafio-GDASH
+   .\scripts\setup-autostart.ps1
+   ```
+
+2. **Configure Docker Desktop para iniciar automaticamente**:
+   - Abra Docker Desktop
+   - Settings → General
+   - Marque "Start Docker Desktop when you log in"
+
+3. **Inicie os containers uma vez**:
+   ```powershell
+   .\scripts\start-docker-containers.ps1
+   ```
+
+### O que foi configurado?
+
+- ✅ Tarefa agendada que verifica containers a cada 5 minutos
+- ✅ Reinicia containers automaticamente se pararem
+- ✅ Inicia containers ao fazer logon no Windows
+- ✅ Scripts para gerenciar containers facilmente
+
+### Documentação Completa
+
+Para instruções detalhadas, consulte: [`scripts/README-WINDOWS-AUTOSTART.md`](scripts/README-WINDOWS-AUTOSTART.md)
+
 ## 🐛 Troubleshooting
 
 ### Serviços não iniciam
 - Verifique se as portas estão disponíveis
 - Verifique os logs: `docker-compose logs <service-name>`
+- No Windows: Execute `.\scripts\start-docker-containers.ps1`
+
+### Dados não são coletados automaticamente
+- Verifique se o Docker Desktop está rodando
+- Verifique se os containers estão rodando: `docker-compose ps`
+- No Windows: Verifique se a tarefa agendada está configurada (veja seção Autostart acima)
+- Verifique os logs do producer: `docker-compose logs -f producer`
 
 ### Erro de conexão com MongoDB
 - Aguarde o MongoDB estar completamente inicializado

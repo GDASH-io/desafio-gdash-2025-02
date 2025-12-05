@@ -33,6 +33,18 @@ export class WeatherLog {
   @Prop()
   description?: string;
 
+  @Prop()
+  visibility?: number;
+
+  @Prop()
+  solarRadiation?: number;
+
+  @Prop()
+  windDirection?: number;
+
+  @Prop()
+  pressure?: number;
+
   createdAt?: Date;
   updatedAt?: Date;
 }

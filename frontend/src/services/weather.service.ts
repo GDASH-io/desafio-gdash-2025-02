@@ -12,6 +12,10 @@ export interface WeatherLog {
   condition: string;
   rainProbability: number;
   description?: string;
+  visibility?: number;
+  solarRadiation?: number;
+  windDirection?: number;
+  pressure?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,6 +33,8 @@ export interface WeatherInsights {
   alerts: string[];
   comfortScore: number;
   classification: string;
+  detailedAnalysis?: string;
+  activitySuggestions?: string[];
 }
 
 export const weatherService = {

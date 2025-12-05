@@ -51,6 +51,26 @@ export class CreateWeatherLogDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({ description: 'Visibilidade em km' })
+  @IsNumber()
+  @IsOptional()
+  visibility?: number;
+
+  @ApiPropertyOptional({ description: 'Radiação solar em W/m²' })
+  @IsNumber()
+  @IsOptional()
+  solarRadiation?: number;
+
+  @ApiPropertyOptional({ description: 'Direção do vento em graus' })
+  @IsNumber()
+  @IsOptional()
+  windDirection?: number;
+
+  @ApiPropertyOptional({ description: 'Pressão atmosférica em hPa' })
+  @IsNumber()
+  @IsOptional()
+  pressure?: number;
 }
 
 export class WeatherLogResponseDto {
@@ -87,6 +107,18 @@ export class WeatherLogResponseDto {
   @ApiPropertyOptional()
   description?: string;
 
+  @ApiPropertyOptional()
+  visibility?: number;
+
+  @ApiPropertyOptional()
+  solarRadiation?: number;
+
+  @ApiPropertyOptional()
+  windDirection?: number;
+
+  @ApiPropertyOptional()
+  pressure?: number;
+
   @ApiProperty()
   createdAt: Date;
 
@@ -109,5 +141,11 @@ export class WeatherInsightsDto {
 
   @ApiProperty()
   classification: string;
+
+  @ApiProperty()
+  detailedAnalysis?: string;
+
+  @ApiProperty()
+  activitySuggestions?: string[];
 }
 

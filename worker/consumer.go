@@ -103,32 +103,58 @@ func (c *Consumer) processMessage(d amqp.Delivery) error {
 		// Tentar diferentes formatos de data
 		formats := []string{
 			time.RFC3339,
+			"2006-01-02T15:04:05Z07:00",
 			"2006-01-02T15:04:05",
 			"2006-01-02T15:04:05Z",
 			"2006-01-02 15:04:05",
 		}
 		
 		var timestamp time.Time
-		var err error
 		parsed := false
 		
-		for _, format := range formats {
-			timestamp, err = time.Parse(format, timestampStr)
-			if err == nil {
-				parsed = true
-				break
+		// Carregar timezone do Brasil
+		brazilLocation, locErr := time.LoadLocation("America/Sao_Paulo")
+		if locErr != nil {
+			brazilLocation = time.UTC
+		}
+		
+		// Tentar parsear primeiro assumindo que está no horário do Brasil (formato mais comum do producer)
+		// O producer envia timestamps no formato "2025-12-04T01:45:24" que devem ser interpretados como horário do Brasil
+		if brazilTime, parseErr := time.ParseInLocation("2006-01-02T15:04:05", timestampStr, brazilLocation); parseErr == nil {
+			// Parseado com sucesso no horário do Brasil
+			timestamp = brazilTime
+			parsed = true
+		} else {
+			// Se falhar, tentar outros formatos
+			for _, format := range formats {
+				if parsedTime, parseErr := time.Parse(format, timestampStr); parseErr == nil {
+					timestamp = parsedTime
+					parsed = true
+					// Se foi parseado como UTC, converter para Brasil
+					if timestamp.Location() == time.UTC {
+						timestamp = timestamp.In(brazilLocation)
+					}
+					break
+				}
 			}
 		}
 		
 		if !parsed {
-			// Usar timestamp atual se não conseguir parsear
-			timestamp = time.Now()
+			// Usar timestamp atual no horário do Brasil se não conseguir parsear
+			timestamp = time.Now().In(brazilLocation)
 		}
 		
-		weatherData["timestamp"] = timestamp.Format(time.RFC3339)
+		// O timestamp agora está no horário do Brasil
+		// Converter para UTC para salvar no MongoDB (ex: 01:45 BRT = 04:45 UTC)
+		utcTimestamp := timestamp.UTC()
+		weatherData["timestamp"] = utcTimestamp.Format(time.RFC3339)
 	} else {
-		// Se não houver timestamp, usar o atual
-		weatherData["timestamp"] = time.Now().Format(time.RFC3339)
+		// Se não houver timestamp, usar o atual no horário do Brasil
+		brazilLocation, locErr := time.LoadLocation("America/Sao_Paulo")
+		if locErr != nil {
+			brazilLocation = time.UTC
+		}
+		weatherData["timestamp"] = time.Now().In(brazilLocation).Format(time.RFC3339)
 	}
 
 	// Enviar para API NestJS

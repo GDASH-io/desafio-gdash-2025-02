@@ -45,9 +45,17 @@ class QueuePublisher:
         """
         Publica mensagem na fila
         """
-        if not self.channel or self.connection.is_closed:
-            logger.error('Canal não está disponível. Tentando reconectar...')
+        # Verificar e reconectar se necessário
+        if not self.connection or self.connection.is_closed:
+            logger.warning('Conexão perdida. Tentando reconectar...')
             if not self.connect():
+                logger.error('Não foi possível reconectar ao RabbitMQ')
+                return False
+
+        if not self.channel or self.channel.is_closed:
+            logger.warning('Canal perdido. Tentando reconectar...')
+            if not self.connect():
+                logger.error('Não foi possível reconectar o canal ao RabbitMQ')
                 return False
 
         try:
@@ -66,10 +74,24 @@ class QueuePublisher:
 
         except Exception as e:
             logger.error(f'Erro ao publicar mensagem: {e}')
-            # Tenta reconectar
-            if self.connection and self.connection.is_closed:
-                if self.connect():
-                    return self.publish(data)
+            # Tenta reconectar e republicar
+            logger.info('Tentando reconectar e republicar...')
+            if self.connect():
+                try:
+                    message = json.dumps(data)
+                    self.channel.basic_publish(
+                        exchange='',
+                        routing_key=self.queue_name,
+                        body=message,
+                        properties=pika.BasicProperties(
+                            delivery_mode=2,
+                        ),
+                    )
+                    logger.info(f'Mensagem republicada com sucesso na fila {self.queue_name}')
+                    return True
+                except Exception as retry_error:
+                    logger.error(f'Erro ao republicar mensagem após reconexão: {retry_error}')
+                    return False
             return False
 
     def close(self):
