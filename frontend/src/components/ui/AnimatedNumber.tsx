@@ -8,7 +8,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ value }) => {
     const [display, setDisplay] = React.useState(value);
     React.useEffect(() => {
         let start = display;
-        let raf: number;
+        let raf: number | undefined;
         const step = () => {
             if (start === value) return;
             const diff = value - start;
@@ -21,7 +21,7 @@ export const AnimatedNumber: React.FC<AnimatedNumberProps> = ({ value }) => {
             }
         };
         step();
-        return () => raf && cancelAnimationFrame(raf);
+        return () => { if (raf) cancelAnimationFrame(raf); };
         // eslint-disable-next-line
     }, [value]);
     return <span>{Math.round(display)}</span>;

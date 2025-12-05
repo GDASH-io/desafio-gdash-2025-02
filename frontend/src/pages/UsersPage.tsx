@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Edit, Trash2 } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -31,23 +31,24 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useUsers, useCreateUser, useUpdateUser, useDeleteUser } from '@/hooks/useUsers'
+import { useUsers, useUpdateUser, useDeleteUser } from '@/hooks/useUsers'
 import { useToast } from '@/components/ui/use-toast'
 import { User } from '@/core/api'
 
 export const UsersPage = () => {
-    const [isCreateOpen, setIsCreateOpen] = useState(false)
+    // const [isCreateOpen, setIsCreateOpen] = useState(false) // Funcionalidade removida temporariamente
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
     const [formData, setFormData] = useState({ nome: '', email: '', funcao: '' })
 
     const { data: users, isLoading } = useUsers()
-    const createUser = useCreateUser()
+    // const createUser = useCreateUser() // Funcionalidade removida temporariamente
     const updateUser = useUpdateUser()
     const deleteUser = useDeleteUser()
     const { toast } = useToast()
 
+    /* Funcionalidade de criação temporariamente desabilitada
     const handleCreate = async () => {
         try {
             await createUser.mutateAsync(formData)
@@ -66,6 +67,7 @@ export const UsersPage = () => {
             })
         }
     }
+    */
 
     const handleEdit = async () => {
         if (!selectedUser || !selectedUser.id) {
