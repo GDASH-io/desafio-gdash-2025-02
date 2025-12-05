@@ -125,7 +125,7 @@ Alguns insights implementados:
 ### ✔ Usuário padrão criado automaticamente
 ```
 Email: admin@gdash.com
-Senha: 123456
+Senha: admin123
 ```
 
 ---
