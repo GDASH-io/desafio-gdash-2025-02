@@ -1,0 +1,53 @@
+# --- ARQUIVOS DE SISTEMA E IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- SEGURANÇA ---
+.env
+
+# NÃO IGNORE O .env.example 
+!.env.example
+
+# Dependências 
+node_modules/
+**/node_modules/
+
+
+# Logs de erro do NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pastas de Build 
+dist/
+**/dist/
+build/
+**/build/
+coverage/
+
+# --- PYTHON (Coletor) ---
+__pycache__/
+*.pyc
+
+# Ambientes virtuais (caso você tenha criado localmente)
+venv/
+env/
+.venv/
+.env/
+
+# --- GO (Worker) ---
+/queue-worker-go/worker
+/queue-worker-go/main
+*.exe
+*.test
+
+# --- DOCKER ---
+mongo_data/
+postgres_data/
+mysql_data/
+data/
+```
