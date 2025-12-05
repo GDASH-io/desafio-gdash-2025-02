@@ -1,0 +1,63 @@
+# ============================
+# GERAL
+# ============================
+node_modules/
+.env
+.env.local
+.env.*.local
+dist/
+build/
+coverage/
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================
+# FRONTEND (Vite + React)
+# ============================
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.DS_Store
+
+# ============================
+# BACKEND (Node + TS / Nest)
+# ============================
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/.env
+backend/.DS_Store
+
+# Arquivos compilados TypeScript
+*.tsbuildinfo
+
+# ============================
+# PYTHON WORKER
+# ============================
+worker/__pycache__/
+worker/*.pyc
+worker/*.pyo
+worker/.env
+worker/.python-version
+
+# ============================
+# DOCKER
+# ============================
+docker-data/
+docker-volume/
+mongo_data/
+**/mongo_data/
+
+# ============================
+# SYSTEM / EDITORS
+# ============================
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db
