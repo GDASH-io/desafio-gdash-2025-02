@@ -12,7 +12,7 @@ Monitorei clima, gerei alertas, indiquei filmes e até inventei uma área de sa�
 - Recomenda atividades, roupas, filmes e faz análise rápida de humor.
 - Guarda logs em MongoDB e deixa exportar em CSV/XLSX.
 - Traz uma página só para filmes (TMDB) com busca e paginação.
-- Tem login, cadastro e uma área de gerenciamento de usuários.
+- Tem login, cadastro. (Todo o gerenciamento de usuários foi implementado na API NestJS)
 
 ---
 
