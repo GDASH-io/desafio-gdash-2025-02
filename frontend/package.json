@@ -1,0 +1,25 @@
+{
+  "name": "weather-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "lucide-react": "0.298.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "recharts": "2.12.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.3.1",
+    "autoprefixer": "10.4.17",
+    "postcss": "8.4.31",
+    "tailwindcss": "3.4.4",
+    "vite": "5.0.12"
+  }
+}

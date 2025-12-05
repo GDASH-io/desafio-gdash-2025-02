@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Basic dark styling tweaks */
+html { color-scheme: dark; }
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }

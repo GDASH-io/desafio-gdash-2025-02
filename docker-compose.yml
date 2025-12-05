@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:6.0
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  nestjs:
+    build: ./nestjs
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URI: mongodb://mongo:27017/weatherdb
+      JWT_SECRET: 123456
+    depends_on:
+      - mongo
+
+  python-producer:
+    build: ./python
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      INTERVAL: "10"
+
+  go-worker:
+    build: ./go
+    restart: always
+    depends_on:
+      - rabbitmq
+      - nestjs
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      API_URL: http://nestjs:3000/api/weather/logs
+  frontend:
+    build: ./frontend
+    container_name: weather-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: "http://nestjs:3000"
+    depends_on:
+      - nestjs
+
+
+volumes:
+  mongo-data:
