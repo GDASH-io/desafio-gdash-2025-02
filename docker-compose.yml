@@ -1,0 +1,78 @@
+services:
+  mongo:
+    image: mongo:6
+    container_name: gdash-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash-rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
+  api:
+    build: ./backend/api
+    container_name: gdash-api
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_NAME=${ADMIN_NAME}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./frontend
+    container_name: gdash-frontend
+    env_file:
+      - .env
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+  collector-python:
+    build: ./collector-python
+    container_name: gdash-collector
+    env_file:
+      - .env
+    environment:
+      - WEATHER_CITY=${WEATHER_CITY}
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - WEATHER_INTERVAL_SECONDS=${WEATHER_INTERVAL_SECONDS}
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+    depends_on:
+      - rabbitmq
+
+  worker-go:
+    build: ./worker-go
+    container_name: gdash-worker
+    env_file:
+      - .env
+    environment:
+      - WORKER_RABBITMQ_URL=${WORKER_RABBITMQ_URL}
+      - WORKER_QUEUE=${WORKER_QUEUE}
+      - WORKER_API_URL=${WORKER_API_URL}
+      # - WORKER_API_TOKEN=${WORKER_API_TOKEN} # se for usar JWT de serviço
+    depends_on:
+      - rabbitmq
+      - api
+
+volumes:
+  mongo_data:
