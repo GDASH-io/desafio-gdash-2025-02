@@ -210,17 +210,6 @@ O vídeo demonstra:
 # 📦 Variáveis de Ambiente (.env.example)
 ```
 
-WEATHER_API_KEY=SUA_CHAVE
-WEATHER_CITY=SUA_CIDADE,BR
-OPENWEATHER_API_KEY=SUA_CHAVE
-RABBIT_URL=amqp://guest:guest@rabbitmq:5672/
-FRONTEND_URL=http://localhost:80
-
-# ===========================
-# GROQ AI
-# ===========================
-GROQ_API_KEY=SUA_CHAVE
-
 # ===========================
 # MONGODB (Docker)
 # ===========================
@@ -229,9 +218,33 @@ MONGO_URI=mongodb://admin:admin123@mongodb:27017/gdash_weather?authSource=admin
 # ===========================
 # JWT AUTH
 # ===========================
-JWT_SECRET=super-secret-change-in-production
+JWT_SECRET=your_super_secret_jwt_key_here_change_in_production
 DEFAULT_ADMIN_EMAIL=admin@gdash.com
 DEFAULT_ADMIN_PASSWORD=admin123
+
+# ===========================
+# GROQ AI
+# ===========================
+GROQ_API_KEY=your_groq_api_key_here
+
+# ===========================
+# WEATHER API
+# ===========================
+OPENWEATHER_API_KEY=your_openweather_api_key_here
+WEATHER_API_KEY=your_weather_api_key_here
+WEATHER_CITY=Itajaí,BR
+COLLECT_INTERVAL_SECONDS=60
+
+# ===========================
+# WORKER GO → BACKEND
+# ===========================
+BACKEND_WEATHER_ENDPOINT=http://backend:3000/api/weather/logs
+
+# ===========================
+# FRONTEND
+# ===========================
+VITE_API_BASE_URL=http://localhost:3000
+
 ```
 
 ---
