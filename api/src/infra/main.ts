@@ -31,7 +31,7 @@ async function bootstrap() {
   }
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
-  logger.log(`📊 Weather API: http://localhost:${port}/api/weather/logs`);
+  logger.log(`📊 Weather API: http://localhost:${port}/weather/logs`);
 }
 
 bootstrap();

@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { weatherService } from "@/services/weather.service";
-import { WeatherDashboard } from "@/types/weather";
+import { WeatherDashboard, WeatherInsight } from "@/types/weather";
 import {
   Download,
   RefreshCw,
@@ -17,19 +17,40 @@ import {
   Droplets,
   Wind,
   CloudRain,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Sparkles,
+  AlertTriangle,
+  Info,
+  AlertCircle,
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<WeatherDashboard | null>(null);
+  const [insights, setInsights] = useState<WeatherInsight | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isLoadingInsights, setIsLoadingInsights] = useState(false);
   const { toast } = useToast();
 
   const loadDashboard = async () => {
     try {
       setIsRefreshing(true);
-      const data = await weatherService.getDashboard({ recentLogsLimit: 10 });
+      const data = await weatherService.getDashboard({ recentLogsLimit: 20 });
       setDashboard(data);
     } catch (error: any) {
       console.error("Erro ao carregar dashboard:", error);
@@ -42,6 +63,45 @@ export function DashboardPage() {
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
+    }
+  };
+
+  const loadInsights = async () => {
+    try {
+      setIsLoadingInsights(true);
+      const data = await weatherService.getInsights();
+      console.log("Insights recebidos:", data);
+      console.log("Trends:", data.trends);
+      setInsights(data);
+    } catch (error: any) {
+      console.error("Erro ao carregar insights:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar insights",
+        description: error.response?.data?.message || "Tente novamente",
+      });
+    } finally {
+      setIsLoadingInsights(false);
+    }
+  };
+
+  const regenerateInsights = async () => {
+    try {
+      setIsLoadingInsights(true);
+      const data = await weatherService.generateInsights();
+      setInsights(data);
+      toast({
+        title: "Insights atualizados",
+        description: "Análise de IA regenerada com sucesso",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao gerar insights",
+        description: error.response?.data?.message || "Tente novamente",
+      });
+    } finally {
+      setIsLoadingInsights(false);
     }
   };
 
@@ -93,7 +153,37 @@ export function DashboardPage() {
 
   useEffect(() => {
     loadDashboard();
+    loadInsights();
   }, []);
+
+  // Preparar dados para gráficos
+  const chartData = dashboard?.recentLogs?.data
+    ?.slice()
+    .reverse()
+    .map((log) => ({
+      time: new Date(log.collectedAt).toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      temperatura: log.temperature,
+      umidade: log.humidity,
+      vento: log.windSpeed,
+      chuva: log.rainProbability,
+    }));
+
+  const getTrendIcon = (direction: string) => {
+    if (direction === "rising") return <TrendingUp className="h-4 w-4" />;
+    if (direction === "falling") return <TrendingDown className="h-4 w-4" />;
+    return <Minus className="h-4 w-4" />;
+  };
+
+  const getAlertIcon = (type: string) => {
+    if (type === "danger") return <AlertCircle className="h-5 w-5" />;
+    if (type === "warning") return <AlertTriangle className="h-5 w-5" />;
+    return <Info className="h-5 w-5" />;
+  };
 
   if (isLoading) {
     return (
@@ -222,6 +312,167 @@ export function DashboardPage() {
             </p>
           </CardContent>
         </Card>
+      )}
+
+      {/* AI Insights Section */}
+      {insights && (
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-blue-600" />
+                <CardTitle>Insights de IA</CardTitle>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={regenerateInsights}
+                disabled={isLoadingInsights}
+              >
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${
+                    isLoadingInsights ? "animate-spin" : ""
+                  }`}
+                />
+                Regenerar
+              </Button>
+            </div>
+            <CardDescription>{insights.summary}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Trends */}
+            {insights.trends && insights.trends.length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-2 text-sm">Tendências</h4>
+                <div className="grid gap-2 md:grid-cols-2">
+                  {insights.trends
+                    .filter((trend) => trend.metric && trend.description)
+                    .map((trend, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start gap-2 p-3 rounded-lg bg-white border"
+                      >
+                        <div className="mt-0.5">
+                          {getTrendIcon(trend.direction)}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium capitalize">
+                            {trend.metric.replace(/([A-Z])/g, " $1")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {trend.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+
+            {/* Alerts */}
+            {insights.alerts && insights.alerts.length > 0 && (
+              <div>
+                <h4 className="font-semibold mb-2 text-sm">Alertas</h4>
+                <div className="space-y-2">
+                  {insights.alerts.map((alert, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex items-start gap-3 p-3 rounded-lg border ${
+                        alert.type === "danger"
+                          ? "bg-red-50 border-red-200"
+                          : alert.type === "warning"
+                          ? "bg-yellow-50 border-yellow-200"
+                          : "bg-blue-50 border-blue-200"
+                      }`}
+                    >
+                      <div className="mt-0.5">{getAlertIcon(alert.type)}</div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{alert.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {alert.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recommendations */}
+            {insights.recommendations &&
+              insights.recommendations.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2 text-sm">Recomendações</h4>
+                  <ul className="space-y-1">
+                    {insights.recommendations.map((rec, idx) => (
+                      <li key={idx} className="text-sm text-muted-foreground">
+                        • {rec}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+            <p className="text-xs text-muted-foreground text-right">
+              Gerado em:{" "}
+              {new Date(insights.generatedAt).toLocaleString("pt-BR")}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Charts */}
+      {chartData && chartData.length > 0 && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Temperatura ao Longo do Tempo</CardTitle>
+              <CardDescription>
+                Últimos {chartData.length} registros
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="temperatura"
+                    stroke="#ef4444"
+                    name="Temperatura (°C)"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Probabilidade de Chuva e Umidade</CardTitle>
+              <CardDescription>
+                Últimos {chartData.length} registros
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="chuva" fill="#3b82f6" name="Chuva (%)" />
+                  <Bar dataKey="umidade" fill="#10b981" name="Umidade (%)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </>
       )}
 
       {/* Statistics */}

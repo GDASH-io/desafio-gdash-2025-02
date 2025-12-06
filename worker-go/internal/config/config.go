@@ -29,7 +29,7 @@ func Load() (*Config, error) {
 		RabbitMQPass:  getEnv("RABBITMQ_PASS", "guest"),
 		RabbitMQQueue: getEnv("RABBITMQ_QUEUE", "weather_data"),
 		
-		APIURL:     getEnv("API_URL", "http://localhost:3000/api/weather/logs"),
+		APIURL:     getEnv("API_URL", "http://localhost:3000/weather/logs"),
 		APITimeout: time.Duration(getEnvAsInt("API_TIMEOUT", 30)) * time.Second,
 		
 		MaxRetries: getEnvAsInt("MAX_RETRIES", 3),

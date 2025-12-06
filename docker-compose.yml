@@ -99,7 +99,7 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_QUEUE: weather_data
-      API_URL: http://api:3000/api/weather/logs
+      API_URL: http://api:3000/weather/logs
       API_TIMEOUT: 30
       MAX_RETRIES: 3
       RETRY_DELAY_SECONDS: 2
