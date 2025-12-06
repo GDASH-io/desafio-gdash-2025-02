@@ -24,8 +24,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       try {
         const decoded = JSON.parse(atob(token.split('.')[1]));
-        setUser({ email: decoded.email, roles: decoded.roles });
+        console.log('Token decodificado:', decoded);
+        console.log('Roles do token:', decoded.roles);
+        setUser({ email: decoded.email, roles: decoded.roles || 'user' });
       } catch (e) {
+        console.error('Erro ao decodificar token:', e);
         setToken(null);
         setUser(null);
         localStorage.removeItem('jwt_token');
@@ -44,7 +47,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(newToken);
       localStorage.setItem('jwt_token', newToken);
       const decoded = JSON.parse(atob(newToken.split('.')[1]));
-      setUser({ email: decoded.email, roles: decoded.roles });
+      console.log('Token decodificado no login:', decoded);
+      console.log('Roles do token no login:', decoded.roles);
+      setUser({ email: decoded.email, roles: decoded.roles || 'user' });
     } finally {
       setLoading(false);
     }
@@ -58,7 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(newToken);
       localStorage.setItem('jwt_token', newToken);
       const decoded = JSON.parse(atob(newToken.split('.')[1]));
-      setUser({ email: decoded.email, roles: decoded.roles });
+      console.log('Token decodificado no register:', decoded);
+      console.log('Roles do token no register:', decoded.roles);
+      setUser({ email: decoded.email, roles: decoded.roles || 'user' });
     } finally {
       setLoading(false);
     }

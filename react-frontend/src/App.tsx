@@ -36,7 +36,14 @@ function App() {
             <Route path="/movies" element={<MovieList />} />
             <Route path="/movies/:id" element={<MovieDetail />} />
             <Route path="/logs" element={<WeatherLogsPage />} />
-            <Route path="/users" element={<UserManagement />} />
+            <Route 
+              path="/users" 
+              element={
+                <PrivateRoute roles={['admin']}>
+                  <UserManagement />
+                </PrivateRoute>
+              } 
+            />
           </Route>
         </Routes>
         <Toaster />

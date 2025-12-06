@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { parseISO, format } from 'date-fns';
-import { Download, RefreshCw, Trash2, Sun, Moon, HelpCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { Download, RefreshCw, Trash2, Sun, Moon, HelpCircle, ChevronUp, ChevronDown, MapPin } from 'lucide-react';
 import CitySelector from '@/components/weather/CitySelector';
 
 interface WeatherLog {
@@ -64,6 +64,7 @@ export function WeatherLogsPage() {
   const [error, setError] = useState<string | null>(null);
   
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [updating, setUpdating] = useState<boolean>(false);
   const [clearing, setClearing] = useState<boolean>(false);
   
@@ -79,6 +80,10 @@ export function WeatherLogsPage() {
         const location = JSON.parse(savedLocation);
         if (location.city) {
           setSelectedCity(location.city);
+          setUserLocation(null);
+        } else if (location.latitude && location.longitude) {
+          setUserLocation({ latitude: location.latitude, longitude: location.longitude });
+          setSelectedCity(null);
         }
       } catch (err) {
         console.error('Erro ao carregar localização do localStorage:', err);
@@ -87,20 +92,30 @@ export function WeatherLogsPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedCity) {
+    if (selectedCity || userLocation) {
       fetchWeatherLogs();
     }
-  }, [selectedCity]);
+  }, [selectedCity, userLocation]);
 
   useEffect(() => {
     let filtered = [...weatherLogs];
 
     if (selectedCity) {
+      // Filtrar por cidade quando uma cidade está selecionada
       filtered = filtered.filter(log => log.city === selectedCity);
+    } else if (userLocation) {
+      // Filtrar por coordenadas quando usa localização do navegador
+      // Tolerância de 0.5 grau (aproximadamente 55km) para capturar logs próximos
+      const tolerance = 0.5;
+      filtered = filtered.filter(log => {
+        const latDiff = Math.abs(log.latitude - userLocation.latitude);
+        const lonDiff = Math.abs(log.longitude - userLocation.longitude);
+        return latDiff <= tolerance && lonDiff <= tolerance;
+      });
     }
 
     applySortAndSet(filtered);
-  }, [weatherLogs, selectedCity, sortField, sortDirection]);
+  }, [weatherLogs, selectedCity, userLocation, sortField, sortDirection]);
 
   const applySortAndSet = (logs: WeatherLog[]) => {
     const sorted = [...logs].sort((a, b) => {
@@ -135,7 +150,7 @@ export function WeatherLogsPage() {
   };
 
   const fetchWeatherLogs = async () => {
-    if (!selectedCity) {
+    if (!selectedCity && !userLocation) {
       setWeatherLogs([]);
       setFilteredLogs([]);
       setLoading(false);
@@ -145,7 +160,11 @@ export function WeatherLogsPage() {
     setLoading(true);
     setError(null);
     try {
-      const logsResponse = await axios.get(`${API_BASE_URL}/api/weather/logs?city=${encodeURIComponent(selectedCity)}`);
+      // Se tem cidade, busca por cidade. Caso contrário, busca todos e filtra por coordenadas no frontend
+      const url = selectedCity 
+        ? `${API_BASE_URL}/api/weather/logs?city=${encodeURIComponent(selectedCity)}`
+        : `${API_BASE_URL}/api/weather/logs`;
+      const logsResponse = await axios.get(url);
       setWeatherLogs(logsResponse.data);
     } catch (err) {
       setError('Falha ao buscar dados de clima.');
@@ -156,16 +175,21 @@ export function WeatherLogsPage() {
   };
 
   const handleUpdate = async () => {
-    if (!selectedCity) {
-      alert('Selecione uma cidade primeiro');
+    if (!selectedCity && !userLocation) {
+      alert('Selecione uma cidade ou use a localização do navegador');
       return;
     }
 
     setUpdating(true);
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/weather/logs/update?city=${encodeURIComponent(selectedCity)}`
-      );
+      let url = `${API_BASE_URL}/api/weather/logs/update`;
+      if (selectedCity) {
+        url += `?city=${encodeURIComponent(selectedCity)}`;
+      } else if (userLocation) {
+        url += `?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`;
+      }
+
+      const response = await axios.post(url);
       await fetchWeatherLogs();
       const message = response.data.count 
         ? `${response.data.count} log(s) criado(s) com sucesso!`
@@ -180,18 +204,29 @@ export function WeatherLogsPage() {
   };
 
   const handleClear = async () => {
-    if (!selectedCity) {
-      alert('Selecione uma cidade primeiro');
+    if (!selectedCity && !userLocation) {
+      alert('Selecione uma cidade ou use a localização do navegador');
       return;
     }
 
-    if (!confirm(`Tem certeza que deseja limpar todos os logs de ${selectedCity}? Esta ação não pode ser desfeita.`)) {
+    const locationText = selectedCity 
+      ? `de ${selectedCity}`
+      : `das coordenadas ${userLocation!.latitude.toFixed(4)}, ${userLocation!.longitude.toFixed(4)}`;
+
+    if (!confirm(`Tem certeza que deseja limpar todos os logs ${locationText}? Esta ação não pode ser desfeita.`)) {
       return;
     }
 
     setClearing(true);
     try {
-      await axios.delete(`${API_BASE_URL}/api/weather/logs?city=${encodeURIComponent(selectedCity)}`);
+      let url = `${API_BASE_URL}/api/weather/logs`;
+      if (selectedCity) {
+        url += `?city=${encodeURIComponent(selectedCity)}`;
+      } else if (userLocation) {
+        url += `?latitude=${userLocation.latitude}&longitude=${userLocation.longitude}`;
+      }
+
+      await axios.delete(url);
       await fetchWeatherLogs();
       alert('Logs limpos com sucesso!');
     } catch (err: any) {
@@ -247,16 +282,28 @@ export function WeatherLogsPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between p-4 bg-[#161B22] border border-[#1F2937] rounded-lg">
-        <div className="flex flex-wrap gap-3 flex-1">
-          <div className="flex items-center gap-2 min-w-[200px]">
+        <div className="flex flex-wrap items-center gap-3 flex-1">
+          <div className="w-full md:w-auto min-w-[200px]">
             <CitySelector
               selectedCity={selectedCity}
               onCityChange={(city) => {
                 setSelectedCity(city);
+                setUserLocation(null);
                 localStorage.setItem('current_location', JSON.stringify({ city }));
               }}
             />
           </div>
+          {userLocation && !selectedCity && (
+            <div className="flex items-center gap-2 px-3 py-2 h-11 rounded-lg bg-[#0D1117] border border-[#1F2937] text-sm">
+              <MapPin className="h-4 w-4 text-[#3B82F6] flex-shrink-0" />
+              <div className="flex flex-col">
+                <span className="text-xs text-[#9CA3AF] leading-tight">Localização</span>
+                <span className="text-xs font-mono text-[#E5E7EB] leading-tight">
+                  {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-2 flex-wrap">
@@ -282,7 +329,7 @@ export function WeatherLogsPage() {
             onClick={handleClear}
             variant="outline"
             size="sm"
-            disabled={clearing || !selectedCity}
+            disabled={clearing || (!selectedCity && !userLocation)}
             className="h-9 bg-[#0D1117] border-[#1F2937] text-[#E5E7EB] hover:bg-[#161B22] disabled:opacity-50"
           >
             <Trash2 className="h-4 w-4 mr-2" />
@@ -292,7 +339,7 @@ export function WeatherLogsPage() {
             onClick={handleUpdate}
             variant="outline"
             size="sm"
-            disabled={updating || !selectedCity}
+            disabled={updating || (!selectedCity && !userLocation)}
             className="h-9 bg-[#0D1117] border-[#1F2937] text-[#E5E7EB] hover:bg-[#161B22] disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${updating ? 'animate-spin' : ''}`} />
@@ -391,7 +438,7 @@ export function WeatherLogsPage() {
                       {format(parseISO(log.timestamp), 'dd/MM/yyyy HH:mm')}
                     </TableCell>
                     <TableCell className="text-[#E5E7EB] text-xs font-medium">
-                      {log.city || 'N/A'}
+                      {log.city || `${log.latitude.toFixed(4)}, ${log.longitude.toFixed(4)}`}
                     </TableCell>
                     <TableCell className="text-[#E5E7EB] text-xs">{log.temperature.toFixed(1)}</TableCell>
                     <TableCell className="text-[#E5E7EB] text-xs">{log.humidity ?? 'N/A'}</TableCell>

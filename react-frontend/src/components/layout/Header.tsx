@@ -4,10 +4,17 @@ import { Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/auth/AuthProvider';
 
-const navItems = [
+interface NavItem {
+  label: string;
+  path: string;
+  adminOnly?: boolean;
+}
+
+const navItems: NavItem[] = [
   { label: 'Painel', path: '/dashboard' },
   { label: 'Filmes', path: '/movies' },
   { label: 'Logs', path: '/logs' },
+  { label: 'Usuários', path: '/users', adminOnly: true },
 ];
 
 export function Header() {
@@ -31,16 +38,21 @@ export function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-4">
-          {navItems.map((item) => (
-            <Link to={item.path} key={item.path} onClick={closeMenu}>
-              <Button variant="ghost" className="text-sm text-foreground hover:text-primary/90">
-                {item.label}
-              </Button>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            if (item.adminOnly) {
+              const isAdmin = user?.roles === 'admin' || user?.roles === 'administrator';
+              if (!isAdmin) return null;
+            }
+            return (
+              <Link to={item.path} key={item.path} onClick={closeMenu}>
+                <Button variant="ghost" className="text-sm text-foreground hover:text-primary/90">
+                  {item.label}
+                </Button>
+              </Link>
+            );
+          })}
           {user && (
             <div className="flex items-center gap-2 ml-2 pl-2 border-l border-white/10">
-              <span className="text-xs text-[#9CA3AF] hidden lg:inline">{user.email}</span>
               <Button
                 variant="ghost"
                 size="sm"
@@ -67,30 +79,31 @@ export function Header() {
       {isMenuOpen && (
         <div className="md:hidden border-t border-white/5 bg-background">
           <nav className="flex flex-col gap-2 px-4 py-3">
-            {navItems.map((item) => (
-              <Link key={item.path} to={item.path} onClick={closeMenu} className="w-full">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-base text-foreground hover:text-primary/90 hover:bg-primary/10"
-                >
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              if (item.adminOnly) {
+                const isAdmin = user?.roles === 'admin' || user?.roles === 'administrator';
+                if (!isAdmin) return null;
+              }
+              return (
+                <Link key={item.path} to={item.path} onClick={closeMenu} className="w-full">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-base text-foreground hover:text-primary/90 hover:bg-primary/10"
+                  >
+                    {item.label}
+                  </Button>
+                </Link>
+              );
+            })}
             {user && (
-              <>
-                <div className="px-3 py-2 text-xs text-[#9CA3AF] border-t border-white/5 mt-2 pt-2">
-                  {user.email}
-                </div>
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="w-full justify-start text-base text-foreground hover:text-red-400 hover:bg-red-400/10"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sair
-                </Button>
-              </>
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="w-full justify-start text-base text-foreground hover:text-red-400 hover:bg-red-400/10"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
             )}
           </nav>
         </div>
