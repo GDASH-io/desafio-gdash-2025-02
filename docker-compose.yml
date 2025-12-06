@@ -1,0 +1,121 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: weather_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin123}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weather_network
+
+  weather-collector:
+    build:
+      context: ./weather-collector
+      dockerfile: Dockerfile
+    container_name: weather_collector
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_PASS=${RABBITMQ_PASS:-admin123}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE:-weather_data}
+      - COLLECTION_INTERVAL=${COLLECTION_INTERVAL:-3600}
+      - LATITUDE=${LATITUDE:--23.5505}
+      - LONGITUDE=${LONGITUDE:--46.6333}
+      - CITY_NAME=${CITY_NAME:-São Paulo}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - weather_network
+    restart: unless-stopped
+
+  weather-worker:
+    build:
+      context: ./weather-worker
+      dockerfile: Dockerfile
+    container_name: weather_worker
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=${RABBITMQ_USER:-admin}
+      - RABBITMQ_PASS=${RABBITMQ_PASS:-admin123}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE:-weather_data}
+      - API_URL=http://api:3000
+    depends_on:
+      - rabbitmq
+      - api
+    networks:
+      - weather_network
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    container_name: weather_mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=weather_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - weather_network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: weather_api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - PORT=${PORT:-3000}
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/weather_db}
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      - DEFAULT_USER_EMAIL=${DEFAULT_USER_EMAIL:-admin@example.com}
+      - DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-123456}
+      - DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-Administrador}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - weather_network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: weather_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - weather_network
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
+  mongodb_data:
+
+networks:
+  weather_network:
+    driver: bridge
