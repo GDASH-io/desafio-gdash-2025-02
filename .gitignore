@@ -44,3 +44,8 @@ main
 tmp/
 temp/
 .git copy/
+
+# Documentation Artifacts
+implementation_plan.md
+PR_DESCRIPTION.md
+walkthrough.md
