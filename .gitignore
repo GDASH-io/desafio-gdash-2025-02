@@ -43,3 +43,4 @@ main
 # Misc
 tmp/
 temp/
+.git copy/
