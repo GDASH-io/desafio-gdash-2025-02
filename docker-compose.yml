@@ -1,0 +1,118 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weather-network
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: weather
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weather-network
+    volumes:
+      - mongodb_data:/data/db
+
+  weather-collector:
+    build:
+      context: ./weather-collector
+      dockerfile: Dockerfile
+    container_name: weather-collector
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      LATITUDE: "-5.795"
+      LONGITUDE: "-35.209"
+      CITY_NAME: "Natal"
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_QUEUE: weather_data
+      COLLECTION_INTERVAL: 60
+    restart: unless-stopped
+    networks:
+      - weather-network
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: nestjs-api
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://root:example@mongodb:27017/weather?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      JWT_EXPIRES_IN: 7d
+      ADMIN_NAME: Administrator
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-123456}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+    restart: unless-stopped
+    networks:
+      - weather-network
+
+  worker-go:
+    build:
+      context: ./worker-go
+      dockerfile: Dockerfile
+    container_name: worker-go
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_started
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_QUEUE: weather_data
+      API_URL: http://api:3000/api/weather/logs
+      API_TIMEOUT: 30
+      MAX_RETRIES: 3
+      RETRY_DELAY_SECONDS: 2
+    restart: unless-stopped
+    networks:
+      - weather-network
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  mongodb_data:
+    driver: local
+
+networks:
+  weather-network:
+    driver: bridge
