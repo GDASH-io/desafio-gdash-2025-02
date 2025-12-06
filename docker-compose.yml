@@ -1,0 +1,78 @@
+services:
+
+  nestjs-api:
+    build:
+      context: ./nestjs-api
+      dockerfile: Dockerfile
+    container_name: gdash-nestjs-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./nestjs-api/.env
+    depends_on:
+      mongodb:
+        condition: service_started 
+      rabbitmq:
+        condition: service_healthy 
+
+  react-frontend:
+    build:
+      context: ./react-frontend
+      dockerfile: Dockerfile
+    container_name: gdash-react-frontend
+    ports:
+      - "5173:5173" 
+    volumes:
+      - ./react-frontend:/app 
+      - /app/node_modules
+    depends_on:
+      - nestjs-api
+
+  python-collector:
+    build:
+      context: ./python-collector
+      dockerfile: Dockerfile
+    container_name: gdash-python-collector
+    env_file:
+      - ./python-collector/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: gdash-go-worker
+    env_file:
+      - ./go-worker/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      nestjs-api:
+        condition: service_started
+
+  mongodb:
+    image: mongo:latest
+    container_name: gdash-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: gdash-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-data:
