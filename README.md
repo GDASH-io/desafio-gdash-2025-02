@@ -12,7 +12,7 @@ Monitorei clima, gerei alertas, indiquei filmes e até inventei uma área de sa�
 - Recomenda atividades, roupas, filmes e faz análise rápida de humor.
 - Guarda logs em MongoDB e deixa exportar em CSV/XLSX.
 - Traz uma página só para filmes (TMDB) com busca e paginação.
-- Tem login, cadastro. (Todo o gerenciamento de usuários foi implementado na API NestJS)
+- Possui uma tela de gerenciamento de usuários (CRUD), disponível apenas para contas com perfil admin.
 
 ---
 
@@ -202,35 +202,20 @@ Fique à vontade para testar outras APIs de clima, trocar o modelo de IA ou plug
 
 Aqui estão algumas telas reais do sistema em funcionamento, mostrando interface, inteligência ambiental e recursos.
 
-### Dashboard e Indicadores
-<p align="center">
-  <img src="./assets/preview-01.jpg" width="900" alt="Dashboard principal com métricas, cartões de clima e gráficos gerais">
-</p>
+### Dashboard, Resumo e Alertas
+| | | |
+|---|---|---|
+| <img src="./assets/preview-01.jpg" width="400"/> | <img src="./assets/preview-02.jpg" width="400"/> | <img src="./assets/preview-03.jpg" width="400"/> |
 
-### Resumo Inteligente e Alertas
-<p align="center">
-  <img src="./assets/preview-02.jpg" width="900" alt="Resumo climático com alertas automáticos e interpretação do clima">
-</p>
+### Recomendação, Filmes e IA
+| | | |
+|---|---|---|
+| <img src="./assets/preview-04.jpg" width="400"/> | <img src="./assets/preview-05.jpg" width="400"/> | <img src="./assets/preview-06.jpg" width="400"/> 
 
-### Condições de Saúde, Roupas e Índice UV
-<p align="center">
-  <img src="./assets/preview-03.jpg" width="900" alt="Tela exibindo recomendações de saúde, roupas ideais e índice UV">
-</p>
-
-### Atividades Recomendadas e Humor
-<p align="center">
-  <img src="./assets/preview-04.jpg" width="900" alt="Sugestões de atividades com base no clima e análise de humor contextual">
-</p>
-
-### Recomendações de Filmes
-<p align="center">
-  <img src="./assets/preview-05.jpg" width="900" alt="Tela de sugestões de filmes alinhados ao clima e momento do dia">
-</p>
-
-### Insight da IA
-<p align="center">
-  <img src="./assets/preview-06.jpg" width="900" alt="Insight interpretativo da IA com análise comportamental do clima">
-</p>
+### Usuários, LOGS e TMDB
+| | | |
+|---|---|---|
+| <img src="./assets/preview-07.jpg" width="400" alt="CRUD de usuários para contas admin"/> | <img src="./assets/preview-08.jpg" width="400" alt="Tela de logs com filtros e exportação"/> | <img src="./assets/preview-09.jpg" width="300" alt="Integração com TMDB com catálogo paginado"/> |
 
 ---
 
