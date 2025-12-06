@@ -1,0 +1,1 @@
+#O componente **Collect** é responsável por coletar dados brutos da API **Open-Meteo** e enviá-los para uma fila do **RabbitMQ** para processamento posterior.
