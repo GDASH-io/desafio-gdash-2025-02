@@ -15,7 +15,7 @@ import { UsersService } from './users/users.service';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/gdash-weather'),
+    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/weaither-db'),
     UsersModule,
     AuthModule,
     WeatherModule,

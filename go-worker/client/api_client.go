@@ -46,7 +46,7 @@ func (c *APIClient) SendWeatherData(data *models.WeatherData) error {
 
 	// Headers
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "GDASH-Go-Worker/1.0")
+	req.Header.Set("User-Agent", "WeAIther-Go-Worker/1.0")
 
 	// Enviar requisição
 	log.Printf("📤 Enviando dados para API: %s", url)

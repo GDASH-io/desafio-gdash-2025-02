@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { EditUserDialog } from '@/components/users/EditUserDialog';
 import { useState } from 'react';
 
 interface HeaderProps {
@@ -22,6 +23,7 @@ export function Header({ title, icon }: HeaderProps) {
   const { user, logout } = useAuth();
   const [showDialog, setShowDialog] = useState(false);
   const [dialogContent, setDialogContent] = useState({ title: '', description: '' });
+  const [showEditProfile, setShowEditProfile] = useState(false);
 
   const getInitials = (name: string) => {
     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -37,7 +39,7 @@ export function Header({ title, icon }: HeaderProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-6">
+      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-0 pl-4 pr-6">
         <div className="flex items-center gap-3">
           {icon && <div className="text-primary">{icon}</div>}
           <h1 className="text-xl font-semibold">{title}</h1>
@@ -70,7 +72,7 @@ export function Header({ title, icon }: HeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => showDevDialog('Editar Perfil')}>
+              <DropdownMenuItem onClick={() => setShowEditProfile(true)}>
                 Editar Perfil
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -90,6 +92,12 @@ export function Header({ title, icon }: HeaderProps) {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+
+      <EditUserDialog 
+        open={showEditProfile} 
+        onOpenChange={setShowEditProfile}
+        user={user}
+      />
     </>
   );
 }

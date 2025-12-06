@@ -37,7 +37,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Custom GDASH colors */
+  /* Custom WeAIther colors */
   --bg-dark: oklch(0.358 0.022 254.604); /* #3a4a5c */
   --bg-darker: oklch(0.273 0.022 254.604); /* #2c3e50 */
   --primary-hover: oklch(0.814 0.106 166.207); /* #3dd4b0 */
@@ -125,6 +125,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;

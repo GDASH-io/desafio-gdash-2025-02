@@ -3,15 +3,29 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Insight, InsightType, InsightSeverity } from './schemas/insight.schema';
 import { WeatherService } from '../weather/weather.service';
+import { GeminiService } from './ai/gemini.service';
 
 @Injectable()
 export class InsightsService {
   constructor(
     @InjectModel(Insight.name) private insightModel: Model<Insight>,
     private weatherService: WeatherService,
+    private geminiService: GeminiService,
   ) {}
 
   async generateInsights(): Promise<Insight[]> {
+    // Deletar insights antigos de IA (mantém apenas os últimos 3)
+    const oldAiInsights = await this.insightModel
+      .find({ 'metadata.source': 'Google Gemini AI' })
+      .sort({ generatedAt: -1 })
+      .skip(3)
+      .exec();
+
+    if (oldAiInsights.length > 0) {
+      const idsToDelete = oldAiInsights.map(insight => insight._id);
+      await this.insightModel.deleteMany({ _id: { $in: idsToDelete } });
+    }
+
     // Buscar dados dos últimos 7 dias
     const endDate = new Date();
     const startDate = new Date();
@@ -24,6 +38,45 @@ export class InsightsService {
     }
 
     const insights: Insight[] = [];
+
+    // Gerar insights com IA (Google Gemini)
+    try {
+      console.log('🚀 Iniciando geração de insights com IA...');
+      const aiAnalysis = await this.geminiService.generateInsights(weatherLogs);
+
+      const aiInsight = new this.insightModel({
+        type: InsightType.SUMMARY,
+        title: '🤖 Análise Semanal com IA',
+        content: aiAnalysis,
+        severity: InsightSeverity.INFO,
+        metadata: {
+          startDate,
+          endDate,
+          dataPointsAnalyzed: weatherLogs.length,
+          source: 'Google Gemini AI',
+        },
+        generatedAt: new Date(),
+      });
+
+      insights.push(aiInsight);
+      console.log('✅ Insight com IA criado com sucesso!');
+    } catch (error) {
+      console.error('❌ Erro ao gerar insights com IA:', error);
+      console.log('⚠️ Usando análise tradicional como fallback...');
+      // Se falhar, gerar insights com lógica tradicional
+      const fallbackInsights = await this.generateTraditionalInsights(weatherLogs, startDate, endDate);
+      insights.push(...fallbackInsights);
+      console.log(`📊 ${fallbackInsights.length} insights tradicionais gerados`);
+    }
+
+    // Salvar insights gerados
+    const savedInsights = await this.insightModel.insertMany(insights);
+
+    return savedInsights;
+  }
+
+  private async generateTraditionalInsights(weatherLogs: any[], startDate: Date, endDate: Date): Promise<any[]> {
+    const insights: any[] = [];
 
     // Análise de temperatura
     const tempInsight = await this.analyzeTemperature(weatherLogs, startDate, endDate);
@@ -45,10 +98,7 @@ export class InsightsService {
     const summaryInsight = await this.generateSummary(weatherLogs, startDate, endDate);
     if (summaryInsight) insights.push(summaryInsight);
 
-    // Salvar insights gerados
-    const savedInsights = await this.insightModel.insertMany(insights);
-
-    return savedInsights;
+    return insights;
   }
 
   private async analyzeTemperature(logs: any[], startDate: Date, endDate: Date) {

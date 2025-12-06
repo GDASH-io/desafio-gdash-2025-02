@@ -51,11 +51,13 @@ export function Dashboard() {
   async function handleGenerateInsights() {
     setInsightsLoading(true);
     try {
-      const newInsights = await insightsService.generate();
-      setInsights(newInsights);
+      await insightsService.generate();
+      // Buscar os insights atualizados após gerar
+      const latestInsights = await insightsService.getLatest();
+      setInsights(latestInsights);
       toast({
         title: 'Insights gerados',
-        description: `${newInsights.length} insights foram gerados com sucesso.`,
+        description: `Novos insights foram gerados com sucesso!`,
       });
     } catch (error) {
       console.error('Error generating insights:', error);
@@ -122,10 +124,19 @@ export function Dashboard() {
           loading={insightsLoading}
         />
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <TemperatureChart data={weatherLogs} />
-          <RainChart data={weatherLogs} />
+        {/* Charts Section */}
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-2xl font-bold">Monitoramento Diário</h2>
+            <p className="text-sm text-gray-600">
+              Acompanhe a variação de temperatura e probabilidade de chuva para hoje
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <TemperatureChart data={weatherLogs} />
+            <RainChart data={weatherLogs} />
+          </div>
         </div>
 
         {/* Weather Table */}

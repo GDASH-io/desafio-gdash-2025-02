@@ -1,23 +1,21 @@
-version: '3.8'
-
 services:
   # ==========================================
   # MONGODB - Banco de Dados
   # ==========================================
   mongodb:
     image: mongo:7
-    container_name: gdash-mongodb
+    container_name: weaither-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=gdash-weather
+      - MONGO_INITDB_DATABASE=weaither-db
     volumes:
       - mongodb_data:/data/db
     networks:
-      - gdash-network
+      - weaither-network
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/gdash-weather --quiet
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/weaither-db --quiet
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,7 +25,7 @@ services:
   # ==========================================
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: gdash-rabbitmq
+    container_name: weaither-rabbitmq
     restart: unless-stopped
     ports:
       - "5672:5672"      # AMQP port
@@ -38,7 +36,7 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - gdash-network
+      - weaither-network
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 10s
@@ -52,12 +50,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: gdash-backend
+    container_name: weaither-backend
     restart: unless-stopped
     ports:
       - "3001:3001"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/gdash-weather
+      - MONGODB_URI=mongodb://mongodb:27017/weaither-db
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
@@ -72,7 +70,7 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - gdash-network
+      - weaither-network
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -84,7 +82,7 @@ services:
     build:
       context: ./python-collector
       dockerfile: Dockerfile
-    container_name: gdash-python-collector
+    container_name: weaither-python-collector
     restart: unless-stopped
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -99,7 +97,7 @@ services:
       rabbitmq:
         condition: service_healthy
     networks:
-      - gdash-network
+      - weaither-network
     volumes:
       - ./python-collector:/app
 
@@ -110,7 +108,7 @@ services:
     build:
       context: ./go-worker
       dockerfile: Dockerfile
-    container_name: gdash-go-worker
+    container_name: weaither-go-worker
     restart: unless-stopped
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
@@ -122,7 +120,7 @@ services:
       backend:
         condition: service_started
     networks:
-      - gdash-network
+      - weaither-network
     volumes:
       - ./go-worker:/app
 
@@ -135,20 +133,20 @@ services:
       dockerfile: Dockerfile
       args:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:3001/api}
-    container_name: gdash-frontend
+    container_name: weaither-frontend
     restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
       - backend
     networks:
-      - gdash-network
+      - weaither-network
 
 # ==========================================
 # NETWORKS
 # ==========================================
 networks:
-  gdash-network:
+  weaither-network:
     driver: bridge
 
 # ==========================================

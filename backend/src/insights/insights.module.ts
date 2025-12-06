@@ -4,6 +4,7 @@ import { InsightsService } from './insights.service';
 import { InsightsController } from './insights.controller';
 import { Insight, InsightSchema } from './schemas/insight.schema';
 import { WeatherModule } from '../weather/weather.module';
+import { GeminiService } from './ai/gemini.service';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { WeatherModule } from '../weather/weather.module';
     WeatherModule, // Importar para usar WeatherService
   ],
   controllers: [InsightsController],
-  providers: [InsightsService],
+  providers: [InsightsService, GeminiService],
   exports: [InsightsService],
 })
 export class InsightsModule {}

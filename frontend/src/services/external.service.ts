@@ -23,6 +23,13 @@ export const externalService = {
     return response.json();
   },
 
+  // Buscar todos os nomes de Pokémon (para busca dinâmica)
+  async getAllPokemonNames() {
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1302');
+    const data = await response.json();
+    return data.results.map((p: any) => p.name);
+  },
+
   // ==========================================
   // STAR WARS API
   // ==========================================

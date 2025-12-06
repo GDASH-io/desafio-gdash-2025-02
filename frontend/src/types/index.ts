@@ -80,6 +80,7 @@ export interface Insight {
     dataPointsAnalyzed?: number;
     avgTemperature?: number;
     avgHumidity?: number;
+    source?: string;
   };
   generatedAt: string;
 }

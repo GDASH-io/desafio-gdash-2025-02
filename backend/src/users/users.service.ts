@@ -87,7 +87,7 @@ export class UsersService {
       await this.create({
         email: defaultEmail,
         password: process.env.DEFAULT_USER_PASSWORD || '123456',
-        name: process.env.DEFAULT_USER_NAME || 'Admin GDASH',
+        name: process.env.DEFAULT_USER_NAME || 'Admin WeAIther',
       });
       
       console.log('✅ Usuário padrão criado:', defaultEmail);

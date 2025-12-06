@@ -13,7 +13,7 @@ import (
 
 func main() {
 	log.Println("================================================================================")
-	log.Println("🌦️  GDASH Weather - Go Worker")
+	log.Println("🌦️  WeAIther - Go Worker")
 	log.Println("================================================================================")
 
 	// Carregar configurações

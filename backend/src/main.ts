@@ -25,8 +25,8 @@ async function bootstrap() {
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('GDASH Weather API')
-    .setDescription('API para coleta e análise de dados climáticos')
+    .setTitle('WeAIther API')
+    .setDescription('API para monitoramento climático com insights de IA')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

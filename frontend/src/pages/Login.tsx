@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Cloud, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export function Login() {
@@ -38,12 +38,17 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-900 to-slate-800 p-4">
       <Card className="w-full max-w-md border-slate-700 bg-slate-800/50">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-primary">
-            <Cloud className="h-8 w-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">GDASH Weather</h1>
-            <p className="text-sm text-gray-400">Sistema de Monitoramento Climático</p>
+          <div className="flex flex-col items-center justify-center gap-0">
+            <img
+              src="/IconWeAIther.png"
+              alt="WeAIther Icon"
+              className="h-20"
+            />
+            <img
+              src="/LogoWeAIther.png"
+              alt="WeAIther Logo"
+              className="h-24 -mt-4"
+            />
           </div>
         </CardHeader>
 
