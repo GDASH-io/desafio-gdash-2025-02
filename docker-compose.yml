@@ -1,0 +1,77 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.1.6
+    ports:
+      - "5672:5672"
+    networks:
+      - weather_net
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: pass
+  
+  mongo:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    ports:
+      - 27017:27017
+    networks:
+      - weather_net
+  
+  ollama:
+    image: ollama/ollama:0.13.2-rc1
+    ports:
+      - 11434:11434
+    networks:
+      - weather_net
+
+  ollama-puller:
+    image: ollama/ollama:0.13.2-rc1
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    command: pull gemma3:1b
+    depends_on:
+      - ollama
+    networks:
+      - weather_net
+
+  backend:
+    image: backend
+    depends_on:
+      - rabbitmq
+      - mongo
+      - ollama
+      - ollama-puller
+    networks:
+      - weather_net
+    ports:
+      - 3000:3000
+    
+  worker:
+    image: worker
+    depends_on:
+      - backend
+    networks:
+      - weather_net
+
+  frontend:
+    image: frontend
+    depends_on:
+      - backend
+      - collect
+    networks:
+      - weather_net
+    ports:
+      - 80:80
+
+  collect:
+    image: collect
+    depends_on:
+      - backend
+      - worker
+    networks:
+      - weather_net
+
+networks:
+  weather_net:

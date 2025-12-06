@@ -1,0 +1,31 @@
+.scroll-custon {
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+    scrollbar-width: auto;
+}
+
+.scroll-custon::-webkit-scrollbar {
+    width: 48px !important;
+    height: 48px !important;
+}
+
+.scroll-custon::-webkit-scrollbar:hover {
+    width: 48px !important;
+    height: 48px !important;
+}
+
+.scroll-custon::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scroll-custon::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 4px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+.scroll-custon::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.7);
+    min-width: 40px;
+    min-height: 40px;
+}

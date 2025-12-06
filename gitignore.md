@@ -1,0 +1,10 @@
+.vscode
+backend/.next
+backend/node_modules/
+collect/lib/
+collect/lib64/
+collect/bin/
+collect/include
+worker/logs/
+collect/pyvenv.cfg
+frontend/node_modules/

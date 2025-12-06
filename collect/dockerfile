@@ -1,0 +1,5 @@
+FROM python:3.12.12-alpine3.23
+WORKDIR /collect
+COPY ./  .
+RUN pip install -r requirements.txt
+CMD ["python", "./src/app.py"]

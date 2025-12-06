@@ -1,0 +1,8 @@
+FROM golang:tip-alpine3.23
+WORKDIR /worker
+COPY ./ .
+RUN go mod download
+RUN go install
+RUN go build -v -o app
+RUN mkdir logs
+CMD ["./app"]
