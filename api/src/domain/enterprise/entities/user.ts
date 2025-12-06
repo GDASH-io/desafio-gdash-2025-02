@@ -1,3 +1,4 @@
+import { Optional } from "@/core/@types/optional";
 import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
@@ -60,7 +61,7 @@ export class User extends Entity<UserProps> {
   }
 
   static create(
-    props: Omit<UserProps, "createdAt" | "updatedAt">,
+    props: Optional<UserProps, "createdAt" | "updatedAt">,
     id?: UniqueEntityID
   ) {
     const user = new User(

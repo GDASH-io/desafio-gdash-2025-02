@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { DatabaseModule } from "./database/mongodb/database.module";
 import { HttpModule } from "./http/http.module";
 
 @Module({
@@ -7,6 +8,7 @@ import { HttpModule } from "./http/http.module";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    DatabaseModule,
     HttpModule,
   ],
 })
