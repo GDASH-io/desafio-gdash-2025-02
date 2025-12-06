@@ -215,7 +215,7 @@ Aqui estão algumas telas reais do sistema em funcionamento, mostrando interface
 ### Usuários, LOGS e TMDB
 | | | |
 |---|---|---|
-| <img src="./assets/preview-07.jpg" width="400" alt="CRUD de usuários para contas admin"/> | <img src="./assets/preview-08.jpg" width="400" alt="Tela de logs com filtros e exportação"/> | <img src="./assets/preview-09.jpg" width="300" alt="Integração com TMDB com catálogo paginado"/> |
+| <img src="./assets/preview-07.jpg" width="400" /> | <img src="./assets/preview-08.jpg" width="400" /> | <img src="./assets/preview-09.jpg" width="300"/> |
 
 ---
 
