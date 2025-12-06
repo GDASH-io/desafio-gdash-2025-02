@@ -222,9 +222,63 @@ export class WeatherService {
     return this.create(logData);
   }
 
+  async createLogFromCoordinates(latitude: number, longitude: number, cityCoordinatesService: any): Promise<WeatherLog> {
+    const params = {
+      latitude,
+      longitude,
+      hourly: 'temperature_2m,apparent_temperature,weathercode,precipitation_probability,relativehumidity_2m,uv_index',
+      daily: 'weathercode,temperature_2m_max,temperature_2m_min,uv_index_max',
+      current_weather: true,
+      timezone: 'auto',
+    };
+
+    const response = await firstValueFrom(
+      this.httpService.get(this.OPEN_METEO_BASE_URL, { params }),
+    );
+    
+    const forecast = response.data;
+    
+    // Tenta encontrar cidade próxima, mas não salva o nome se não encontrar
+    // Isso permite logs apenas com coordenadas quando não há cidade próxima
+    const foundCity = cityCoordinatesService.getCityByCoordinates(latitude, longitude, 0.3);
+    
+    const logData = {
+      timestamp: new Date().toISOString(),
+      latitude,
+      longitude,
+      temperature: forecast.current_weather.temperature,
+      windspeed: forecast.current_weather.windspeed,
+      weathercode: forecast.current_weather.weathercode,
+      is_day: forecast.current_weather.is_day,
+      humidity: forecast.hourly?.relativehumidity_2m?.[0],
+      precipitation_probability: forecast.hourly?.precipitation_probability?.[0],
+      // Só salva o nome da cidade se encontrar uma muito próxima (tolerância menor)
+      city: foundCity?.name || undefined,
+    } as CreateWeatherLogDto;
+
+    return this.create(logData);
+  }
+
   async deleteByCity(city: string): Promise<{ deletedCount: number }> {
     const result = await this.weatherLogModel.deleteMany({ city }).exec();
     return { deletedCount: result.deletedCount || 0 };
+  }
+
+  async deleteByCoordinates(latitude: number, longitude: number, tolerance: number = 0.5): Promise<{ deletedCount: number }> {
+    try {
+      // Deleta logs dentro de uma tolerância de coordenadas
+      // Usa $or para buscar logs que podem ter cidade ou não
+      const result = await this.weatherLogModel.deleteMany({
+        $and: [
+          { latitude: { $gte: latitude - tolerance, $lte: latitude + tolerance } },
+          { longitude: { $gte: longitude - tolerance, $lte: longitude + tolerance } },
+        ],
+      }).exec();
+      return { deletedCount: result.deletedCount || 0 };
+    } catch (error) {
+      console.error('❌ [Weather] Erro ao deletar por coordenadas:', error);
+      throw new Error(`Erro ao deletar logs por coordenadas: ${error.message}`);
+    }
   }
 
   async getAverageTemperature(): Promise<number> {

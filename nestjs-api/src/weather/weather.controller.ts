@@ -242,20 +242,41 @@ export class WeatherController {
   }
 
   @Post('logs/update')
-  @ApiOperation({ summary: 'Busca dados atuais da API e cria um novo log para a cidade especificada' })
-  @ApiQuery({ name: 'city', type: String, required: true, description: 'Nome da cidade' })
-  async updateLogs(@Query('city') city: string) {
-    if (!city) {
-      throw new BadRequestException('Cidade é obrigatória');
-    }
-
+  @ApiOperation({ summary: 'Busca dados atuais da API e cria um novo log para a cidade ou coordenadas especificadas' })
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Nome da cidade' })
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (se não fornecer cidade)' })
+  async updateLogs(
+    @Query('city') city?: string,
+    @Query('latitude') latitude?: string | number,
+    @Query('longitude') longitude?: string | number,
+  ) {
     try {
-      const log = await this.weatherService.createLogFromApi(city, this.cityCoordinatesService);
-      return {
-        message: `Log criado com sucesso para ${city}`,
-        log,
-        count: 1,
-      };
+      if (city) {
+        const log = await this.weatherService.createLogFromApi(city, this.cityCoordinatesService);
+        return {
+          message: `Log criado com sucesso para ${city}`,
+          log,
+          count: 1,
+        };
+      } else if (latitude !== undefined && longitude !== undefined) {
+        // Converte para número se vier como string
+        const lat = typeof latitude === 'string' ? parseFloat(latitude) : latitude;
+        const lon = typeof longitude === 'string' ? parseFloat(longitude) : longitude;
+        
+        if (isNaN(lat) || isNaN(lon)) {
+          throw new BadRequestException('Latitude e longitude devem ser números válidos');
+        }
+
+        const log = await this.weatherService.createLogFromCoordinates(lat, lon, this.cityCoordinatesService);
+        return {
+          message: `Log criado com sucesso para coordenadas ${lat}, ${lon}`,
+          log,
+          count: 1,
+        };
+      } else {
+        throw new BadRequestException('Forneça "city" ou "latitude" e "longitude"');
+      }
     } catch (error: any) {
       console.error('❌ [Weather] Erro no controller updateLogs:', error);
       throw new InternalServerErrorException(
@@ -266,17 +287,38 @@ export class WeatherController {
   }
 
   @Delete('logs')
-  @ApiOperation({ summary: 'Remove todos os logs de uma cidade específica' })
-  @ApiQuery({ name: 'city', type: String, required: true, description: 'Nome da cidade' })
-  async clearLogs(@Query('city') city: string) {
-    if (!city) {
-      throw new BadRequestException('Cidade é obrigatória');
+  @ApiOperation({ summary: 'Remove todos os logs de uma cidade específica ou coordenadas' })
+  @ApiQuery({ name: 'city', type: String, required: false, description: 'Nome da cidade' })
+  @ApiQuery({ name: 'latitude', type: Number, required: false, description: 'Latitude (se não fornecer cidade)' })
+  @ApiQuery({ name: 'longitude', type: Number, required: false, description: 'Longitude (se não fornecer cidade)' })
+  async clearLogs(
+    @Query('city') city?: string,
+    @Query('latitude') latitude?: string | number,
+    @Query('longitude') longitude?: string | number,
+  ) {
+    if (city) {
+      const result = await this.weatherService.deleteByCity(city);
+      return {
+        message: `${result.deletedCount} log(s) removido(s) para ${city}`,
+        deletedCount: result.deletedCount,
+      };
+    } else if (latitude !== undefined && longitude !== undefined) {
+      // Converte para número se vier como string
+      const lat = typeof latitude === 'string' ? parseFloat(latitude) : latitude;
+      const lon = typeof longitude === 'string' ? parseFloat(longitude) : longitude;
+      
+      if (isNaN(lat) || isNaN(lon)) {
+        throw new BadRequestException('Latitude e longitude devem ser números válidos');
+      }
+
+      const result = await this.weatherService.deleteByCoordinates(lat, lon);
+      return {
+        message: `${result.deletedCount} log(s) removido(s) para coordenadas ${lat}, ${lon}`,
+        deletedCount: result.deletedCount,
+      };
+    } else {
+      throw new BadRequestException('Forneça "city" ou "latitude" e "longitude"');
     }
-    const result = await this.weatherService.deleteByCity(city);
-    return {
-      message: `${result.deletedCount} log(s) removido(s) para ${city}`,
-      deletedCount: result.deletedCount,
-    };
   }
 
   @Get('insights')
