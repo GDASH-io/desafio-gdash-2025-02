@@ -44,19 +44,14 @@ export function DashboardPage() {
         onExportCSV={handleExportCSV}
         onExportXLSX={handleExportXLSX}
       />
-
       <WeatherCards currentLog={currentLog} />
-
       <InsightsCard
         insights={insights}
         isLoading={isLoadingInsights}
         onRegenerate={regenerateInsights}
       />
-
       <WeatherCharts chartData={chartData} />
-
       <StatisticsCard statistics={dashboard?.statistics} />
-
       <ComfortIndexCard comfort={dashboard?.comfort} />
     </div>
   );
