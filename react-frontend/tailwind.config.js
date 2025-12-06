@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 const { fontFamily } = require("tailwindcss/defaultTheme")
 
 export default {
@@ -21,56 +20,54 @@ export default {
     },
     extend: {
       colors: {
-        border: "#1F2937", // Bordas padrão
-        input: "#1F2937", // Inputs
-        ring: "#3B82F6", // Anéis de foco
-        background: "#0D1117", // Preto grafite
-        foreground: "#E5E7EB", // Cinza claro
+        border: "#1F2937",
+        input: "#1F2937",
+        ring: "#3B82F6",
+        background: "#0D1117",
+        foreground: "#E5E7EB",
         primary: {
-          DEFAULT: "#3B82F6", // Primary azul
+          DEFAULT: "#3B82F6",
           foreground: "#E5E7EB",
         },
         secondary: {
-          DEFAULT: "#1F2937", // Bordas
+          DEFAULT: "#1F2937",
           foreground: "#E5E7EB",
         },
         destructive: {
-          DEFAULT: "#ef4444", // Vermelho padrão para destruição
+          DEFAULT: "#ef4444",
           foreground: "#ffffff",
         },
         muted: {
-          DEFAULT: "#1F2937", // Cinza escuro para elementos mutados
+          DEFAULT: "#1F2937",
           foreground: "#E5E7EB",
         },
         accent: {
-          DEFAULT: "#1F2937", // Acentos
+          DEFAULT: "#1F2937",
           foreground: "#E5E7EB",
         },
         popover: {
-          DEFAULT: "#161B22", // Cards padrão
+          DEFAULT: "#161B22",
           foreground: "#E5E7EB",
         },
         card: {
-          DEFAULT: "#161B22", // Cards padrão
+          DEFAULT: "#161B22",
           foreground: "#E5E7EB",
         },
-        // Cores da IA
         ai: {
-          primary: "#38BDF8", // Ciano claro
-          "primary-hover": "#0EA5E9", // Ciano escuro
-          icon: "#7DD3FC", // Ícones IA
-          glow: "#A5F3FC", // Detalhes brilhantes
-          secondary: "#8B5CF6", // Roxo leve
-          "secondary-hover": "#7C3AED", // Roxo hover
-          "glow-purple": "#C4B5FD", // Glow roxo
+          primary: "#38BDF8",
+          "primary-hover": "#0EA5E9",
+          icon: "#7DD3FC",
+          glow: "#A5F3FC",
+          secondary: "#8B5CF6",
+          "secondary-hover": "#7C3AED",
+          "glow-purple": "#C4B5FD",
         },
-        // Cores para ícones de clima
         weather: {
-          sun: "#FACC15", // Sol
-          rain: "#38BDF8", // Chuva
-          cloudy: "#94A3B8", // Nublado
-          storm: "#6366F1", // Tempestade
-          wind: "#7DD3FC", // Vento
+          sun: "#FACC15",
+          rain: "#38BDF8",
+          cloudy: "#94A3B8",
+          storm: "#6366F1",
+          wind: "#7DD3FC",
         },
       },
       borderRadius: {

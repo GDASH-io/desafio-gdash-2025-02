@@ -23,6 +23,7 @@ interface WeatherLog {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+// Mapeamento dos códigos de clima da API Open-Meteo para descrições em português
 const weatherCodeMap: { [key: number]: string } = {
   0: 'Céu limpo',
   1: 'Principalmente claro',
@@ -73,6 +74,7 @@ export function WeatherLogsPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 20;
 
+  // Carrega a localização salva do localStorage ao montar o componente
   useEffect(() => {
     const savedLocation = localStorage.getItem('current_location');
     if (savedLocation) {
@@ -91,21 +93,21 @@ export function WeatherLogsPage() {
     }
   }, []);
 
+  // Busca os logs quando a cidade ou localização do usuário mudar
   useEffect(() => {
     if (selectedCity || userLocation) {
       fetchWeatherLogs();
     }
   }, [selectedCity, userLocation]);
 
+  // Filtra e ordena os logs baseado na cidade selecionada ou coordenadas do usuário
+  // Usa tolerância de 0.5 graus para coordenadas (aproximadamente 55km)
   useEffect(() => {
     let filtered = [...weatherLogs];
 
     if (selectedCity) {
-      // Filtrar por cidade quando uma cidade está selecionada
       filtered = filtered.filter(log => log.city === selectedCity);
     } else if (userLocation) {
-      // Filtrar por coordenadas quando usa localização do navegador
-      // Tolerância de 0.5 grau (aproximadamente 55km) para capturar logs próximos
       const tolerance = 0.5;
       filtered = filtered.filter(log => {
         const latDiff = Math.abs(log.latitude - userLocation.latitude);
@@ -117,16 +119,19 @@ export function WeatherLogsPage() {
     applySortAndSet(filtered);
   }, [weatherLogs, selectedCity, userLocation, sortField, sortDirection]);
 
+  // Ordena os logs e trata valores nulos/undefined (coloca no final)
   const applySortAndSet = (logs: WeatherLog[]) => {
     const sorted = [...logs].sort((a, b) => {
       let aVal: any = a[sortField];
       let bVal: any = b[sortField];
 
+      // Converte timestamp para número para comparação
       if (sortField === 'timestamp') {
         aVal = new Date(a.timestamp).getTime();
         bVal = new Date(b.timestamp).getTime();
       }
 
+      // Valores nulos/undefined vão para o final da lista
       if (aVal === undefined || aVal === null) return 1;
       if (bVal === undefined || bVal === null) return -1;
 
@@ -160,7 +165,6 @@ export function WeatherLogsPage() {
     setLoading(true);
     setError(null);
     try {
-      // Se tem cidade, busca por cidade. Caso contrário, busca todos e filtra por coordenadas no frontend
       const url = selectedCity 
         ? `${API_BASE_URL}/api/weather/logs?city=${encodeURIComponent(selectedCity)}`
         : `${API_BASE_URL}/api/weather/logs`;
@@ -237,6 +241,7 @@ export function WeatherLogsPage() {
     }
   };
 
+  // Exporta os logs em CSV ou XLSX criando um download automático
   const handleExport = async (format: 'csv' | 'xlsx') => {
     try {
       let requestUrl = `${API_BASE_URL}/api/weather/export.${format}`;
@@ -247,6 +252,7 @@ export function WeatherLogsPage() {
       const response = await axios.get(requestUrl, {
         responseType: 'blob',
       });
+      // Cria um link temporário para fazer o download do arquivo
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -261,6 +267,7 @@ export function WeatherLogsPage() {
   };
 
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+  // Memoiza a paginação para evitar recálculos desnecessários
   const paginatedLogs = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredLogs.slice(start, start + itemsPerPage);
@@ -484,14 +491,18 @@ export function WeatherLogsPage() {
             >
               &lt;
             </Button>
+            {/* Renderiza no máximo 5 botões de página com lógica de navegação inteligente */}
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
+              // Mostra páginas 1-5 se estiver no início
               if (totalPages <= 5) {
                 pageNum = i + 1;
               } else if (currentPage <= 3) {
                 pageNum = i + 1;
+              // Mostra últimas 5 páginas se estiver no final
               } else if (currentPage >= totalPages - 2) {
                 pageNum = totalPages - 4 + i;
+              // Mostra página atual no centro com 2 antes e 2 depois
               } else {
                 pageNum = currentPage - 2 + i;
               }

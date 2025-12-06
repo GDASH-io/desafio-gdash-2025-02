@@ -17,25 +17,26 @@ function App() {
     <AuthProvider>
       <ToastProvider>
         <Routes>
+          {/* Rotas públicas - não requerem autenticação */}
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
 
-          {/* Rota pai para layout e proteção */}
+          {/* Rotas protegidas - requerem autenticação e layout comum */}
           <Route
             element={
               <Layout>
                 <PrivateRoute>
-                  <Outlet /> {/* Renderiza rotas filhas aqui */}
+                  <Outlet />
                 </PrivateRoute>
               </Layout>
             }
           >
-            {/* Rotas protegidas (filhas da rota pai) */}
             <Route path="/" element={<WeatherDashboard />} />
             <Route path="/dashboard" element={<WeatherDashboard />} />
             <Route path="/movies" element={<MovieList />} />
             <Route path="/movies/:id" element={<MovieDetail />} />
             <Route path="/logs" element={<WeatherLogsPage />} />
+            {/* Rota exclusiva para administradores */}
             <Route 
               path="/users" 
               element={

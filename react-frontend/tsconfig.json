@@ -14,7 +14,6 @@
       "@/auth/*": ["src/auth/*"]
     },
 
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -23,7 +22,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
 
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

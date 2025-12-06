@@ -20,15 +20,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<{ email: string; roles: string } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  // Decodifica o JWT token ao carregar para extrair informações do usuário
+  // JWT tem 3 partes separadas por ponto: header.payload.signature
   useEffect(() => {
     if (token) {
       try {
+        // Decodifica o payload (segunda parte do token) que contém email e roles
         const decoded = JSON.parse(atob(token.split('.')[1]));
         console.log('Token decodificado:', decoded);
         console.log('Roles do token:', decoded.roles);
         setUser({ email: decoded.email, roles: decoded.roles || 'user' });
       } catch (e) {
         console.error('Erro ao decodificar token:', e);
+        // Se o token estiver inválido, limpa tudo
         setToken(null);
         setUser(null);
         localStorage.removeItem('jwt_token');
@@ -39,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, [token]);
 
+  // Autentica o usuário e salva o token JWT no localStorage
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
@@ -46,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newToken = response.data.access_token;
       setToken(newToken);
       localStorage.setItem('jwt_token', newToken);
+      // Decodifica o token para obter informações do usuário sem precisar de outra requisição
       const decoded = JSON.parse(atob(newToken.split('.')[1]));
       console.log('Token decodificado no login:', decoded);
       console.log('Roles do token no login:', decoded.roles);
@@ -71,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Remove autenticação e limpa o token do localStorage
   const logout = () => {
     setToken(null);
     setUser(null);

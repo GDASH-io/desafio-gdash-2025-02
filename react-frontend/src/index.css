@@ -9,17 +9,16 @@
 
   color-scheme: dark;
 
-  /* Cores padrão (usuário/dados brutos) */
-  --background: #0D1117; /* Preto grafite */
-  --foreground: #E5E7EB; /* Cinza claro */
-  --card: #161B22; /* Cards padrão */
+  --background: #0D1117;
+  --foreground: #E5E7EB;
+  --card: #161B22;
   --card-foreground: #E5E7EB;
   --popover: #161B22;
   --popover-foreground: #E5E7EB;
-  --primary: #3B82F6; /* Primary azul */
-  --primary-hover: #2563EB; /* Primary hover */
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
   --primary-foreground: #E5E7EB;
-  --secondary: #1F2937; /* Bordas */
+  --secondary: #1F2937;
   --secondary-foreground: #E5E7EB;
   --muted: #1F2937;
   --muted-foreground: #E5E7EB;
@@ -27,31 +26,28 @@
   --accent-foreground: #E5E7EB;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
-  --border: #1F2937; /* Bordas */
+  --border: #1F2937;
   --input: #1F2937;
   --ring: #3B82F6;
   --radius: 0.5rem;
 
-  /* Cores da IA - Ciano */
-  --ai-primary: #38BDF8; /* Ciano claro */
-  --ai-primary-hover: #0EA5E9; /* Ciano escuro */
-  --ai-icon: #7DD3FC; /* Ícones IA */
-  --ai-glow: #A5F3FC; /* Detalhes brilhantes */
-  --ai-bg: rgba(56, 189, 248, 0.08); /* Fundo IA translúcido */
-  --ai-border: rgba(56, 189, 248, 0.25); /* Borda IA */
-  --ai-shadow: 0 0 15px rgba(56, 189, 248, 0.15); /* Sombra leve */
+  --ai-primary: #38BDF8;
+  --ai-primary-hover: #0EA5E9;
+  --ai-icon: #7DD3FC;
+  --ai-glow: #A5F3FC;
+  --ai-bg: rgba(56, 189, 248, 0.08);
+  --ai-border: rgba(56, 189, 248, 0.25);
+  --ai-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
 
-  /* Cores da IA - Roxo neural */
-  --ai-secondary: #8B5CF6; /* Roxo leve */
-  --ai-secondary-hover: #7C3AED; /* Roxo hover */
-  --ai-glow-purple: #C4B5FD; /* Glow roxo */
+  --ai-secondary: #8B5CF6;
+  --ai-secondary-hover: #7C3AED;
+  --ai-glow-purple: #C4B5FD;
 
-  /* Cores para ícones de clima */
-  --weather-sun: #FACC15; /* Sol */
-  --weather-rain: #38BDF8; /* Chuva */
-  --weather-cloudy: #94A3B8; /* Nublado */
-  --weather-storm: #6366F1; /* Tempestade */
-  --weather-wind: #7DD3FC; /* Vento */
+  --weather-sun: #FACC15;
+  --weather-rain: #38BDF8;
+  --weather-cloudy: #94A3B8;
+  --weather-storm: #6366F1;
+  --weather-wind: #7DD3FC;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -71,8 +67,8 @@ a:hover {
 html, body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--background); /* Preto grafite */
-  color: var(--foreground); /* Cinza claro */
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 body {
@@ -103,29 +99,27 @@ button:focus, button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* AI Insights Styles */
-
 .speech-bubble {
-  background: var(--ai-bg); /* Fundo IA translúcido */
+  background: var(--ai-bg);
   color: var(--foreground);
-  border: 1px solid var(--ai-border); /* Borda IA */
+  border: 1px solid var(--ai-border);
   border-radius: 0.75rem;
   padding: 12px 16px;
-  box-shadow: var(--ai-shadow); /* Sombra leve da IA */
+  box-shadow: var(--ai-shadow);
 }
 
 .ai-card {
-  background: var(--ai-bg); /* Fundo IA translúcido */
+  background: var(--ai-bg);
   color: var(--foreground);
-  border: 1px solid var(--ai-border); /* Borda IA */
+  border: 1px solid var(--ai-border);
   border-radius: 8px;
-  box-shadow: var(--ai-shadow); /* Sombra leve da IA */
+  box-shadow: var(--ai-shadow);
   padding: 20px;
   margin-bottom: 20px;
 }
 
 .ai-card h3 {
-  color: var(--ai-primary); /* Título em ciano */
+  color: var(--ai-primary);
   margin-top: 0;
 }
 
@@ -149,11 +143,9 @@ button:focus, button:focus-visible {
 }
 
 .expandable-card-header-hover:hover {
-  background-color: var(--ai-bg); /* Hover com fundo IA */
-  border-color: var(--ai-primary); /* Borda ciano no hover */
+  background-color: var(--ai-bg);
+  border-color: var(--ai-primary);
 }
-
-/* Scrollbar personalizada para previsões */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;

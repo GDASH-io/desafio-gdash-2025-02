@@ -238,8 +238,6 @@ export class WeatherService {
     
     const forecast = response.data;
     
-    // Tenta encontrar cidade próxima, mas não salva o nome se não encontrar
-    // Isso permite logs apenas com coordenadas quando não há cidade próxima
     const foundCity = cityCoordinatesService.getCityByCoordinates(latitude, longitude, 0.3);
     
     const logData = {
@@ -252,7 +250,6 @@ export class WeatherService {
       is_day: forecast.current_weather.is_day,
       humidity: forecast.hourly?.relativehumidity_2m?.[0],
       precipitation_probability: forecast.hourly?.precipitation_probability?.[0],
-      // Só salva o nome da cidade se encontrar uma muito próxima (tolerância menor)
       city: foundCity?.name || undefined,
     } as CreateWeatherLogDto;
 
@@ -266,8 +263,6 @@ export class WeatherService {
 
   async deleteByCoordinates(latitude: number, longitude: number, tolerance: number = 0.5): Promise<{ deletedCount: number }> {
     try {
-      // Deleta logs dentro de uma tolerância de coordenadas
-      // Usa $or para buscar logs que podem ter cidade ou não
       const result = await this.weatherLogModel.deleteMany({
         $and: [
           { latitude: { $gte: latitude - tolerance, $lte: latitude + tolerance } },

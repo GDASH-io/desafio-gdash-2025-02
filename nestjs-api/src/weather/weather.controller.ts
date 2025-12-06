@@ -260,7 +260,6 @@ export class WeatherController {
           count: 1,
         };
       } else if (latitude !== undefined && longitude !== undefined) {
-        // Converte para número se vier como string
         const lat = typeof latitude === 'string' ? parseFloat(latitude) : latitude;
         const lon = typeof longitude === 'string' ? parseFloat(longitude) : longitude;
         
@@ -303,7 +302,6 @@ export class WeatherController {
         deletedCount: result.deletedCount,
       };
     } else if (latitude !== undefined && longitude !== undefined) {
-      // Converte para número se vier como string
       const lat = typeof latitude === 'string' ? parseFloat(latitude) : latitude;
       const lon = typeof longitude === 'string' ? parseFloat(longitude) : longitude;
       

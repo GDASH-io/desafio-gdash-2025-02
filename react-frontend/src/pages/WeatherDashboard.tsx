@@ -68,6 +68,7 @@ interface AiInsightsData {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+// Retorna o ícone apropriado baseado no código de clima da Open-Meteo
 const getWeatherIcon = (weathercode: number, isDay: boolean = true, size: number = 24) => {
   switch (weathercode) {
     case 0:
@@ -123,6 +124,7 @@ export function WeatherDashboard() {
   const [genresLoaded, setGenresLoaded] = useState<boolean>(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
+  // Restaura a localização salva do localStorage ao carregar a página
   useEffect(() => {
     const savedLocation = localStorage.getItem('current_location');
     if (savedLocation) {
@@ -141,6 +143,7 @@ export function WeatherDashboard() {
     }
   }, []); 
 
+  // Carrega os gêneros do TMDB antes de buscar recomendações de filmes
   useEffect(() => {
     const buscarGêneros = async () => {
       try {
@@ -153,6 +156,9 @@ export function WeatherDashboard() {
     buscarGêneros();
   }, []);
 
+  // Busca dados do clima quando a localização estiver pronta
+  // Se não houver localização salva, tenta usar a geolocalização do navegador
+  // Fallback para Salvador-BA se a geolocalização falhar
   useEffect(() => {
     if (genresLoaded && (userLocation || selectedCity)) {
       fetchWeatherData();
@@ -166,6 +172,7 @@ export function WeatherDashboard() {
           }
         },
         () => {
+          // Fallback para coordenadas de Salvador-BA
           setUserLocation({ latitude: -12.9714, longitude: -38.5014 });
           setLoading(false);
         }
@@ -173,10 +180,12 @@ export function WeatherDashboard() {
     }
   }, [userLocation, selectedCity, genresLoaded]);
 
+  // Busca dados do clima, insights da IA e recomendações de filmes
   const fetchWeatherData = async () => {
     setLoading(true);
     setError(null);
     
+    // Monta o parâmetro de localização (cidade ou coordenadas)
     const usarCidade = selectedCity !== null;
     const parametroLocalizacao = usarCidade 
       ? `city=${encodeURIComponent(selectedCity!)}`
@@ -190,6 +199,7 @@ export function WeatherDashboard() {
     try {
       await axios.get(`${API_BASE_URL}/api/weather/forecast?${parametroLocalizacao}`);
 
+      // Busca insights gerados pela IA (Groq) baseados no clima atual
       const respostaInsights = await axios.get<AiInsightsData>(`${API_BASE_URL}/api/weather/ai-insights?${parametroLocalizacao}`);
       setAiInsights(respostaInsights.data);
 
@@ -218,6 +228,7 @@ export function WeatherDashboard() {
         temperature_2m_min: respostaInsights.data.weatherForecast.daily.temperature_2m_min[index],
       })));
 
+      // Busca filmes recomendados baseados nos critérios gerados pela IA
       if (respostaInsights.data.movieCriteria && respostaInsights.data.movieCriteria.generos_sugeridos.length > 0) {
         const locationParam = selectedCity 
           ? `city=${encodeURIComponent(selectedCity)}`
@@ -255,6 +266,7 @@ export function WeatherDashboard() {
 
   if (!currentWeather || !aiInsights) return <p className="text-foreground">Não foi possível obter dados de clima ou insights de IA.</p>;
 
+  // Filtra apenas as próximas 24 horas da previsão horária
   const currentHour = new Date().getHours();
   const next24HoursForecast = hourlyForecast.filter((_, index) => index >= currentHour && index < currentHour + 24);
 
@@ -351,6 +363,7 @@ export function WeatherDashboard() {
           <h3 className="text-xs font-medium text-[#9CA3AF] mb-2 uppercase tracking-wide">Previsão Diária</h3>
           <div className="flex overflow-x-auto space-x-2 pb-1 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             {dailyForecast.map((day, index) => {
+              // Destaca visualmente os dias com chuva (códigos 51-82)
               const isRainy = day.weathercode >= 51 && day.weathercode <= 82;
               return (
                 <div 

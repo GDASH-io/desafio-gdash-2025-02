@@ -21,6 +21,7 @@ interface User {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
+// Página de gerenciamento de usuários - disponível apenas para administradores
 export function UserManagement() {
   const { token, user, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -33,6 +34,7 @@ export function UserManagement() {
   const [newUserData, setNewUserData] = useState({ email: '', password: '', roles: 'user' });
   const [searchTerm, setSearchTerm] = useState<string>('');
 
+  // Carrega lista de usuários apenas se o usuário atual for admin
   useEffect(() => {
     if (token && user?.roles === 'admin') {
       fetchUsers();
@@ -88,6 +90,7 @@ export function UserManagement() {
     if (!currentUser) return;
     setIsSubmitting(true);
     try {
+      // Só envia senha se o campo não estiver vazio (permite atualizar sem mudar senha)
       const updateData: any = { email: newUserData.email, roles: newUserData.roles };
       if (newUserData.password) {
         updateData.password = newUserData.password;
@@ -149,7 +152,6 @@ export function UserManagement() {
     setIsDeleteDialogOpen(true);
   };
 
-  // Verificação de segurança - apenas admins podem acessar
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -168,7 +170,6 @@ export function UserManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-[#161B22] border border-[#1F2937]">
@@ -185,7 +186,6 @@ export function UserManagement() {
         </div>
       </div>
 
-      {/* Create User Form */}
       <Card className="bg-[#161B22] border-[#1F2937]">
         <CardHeader>
           <CardTitle className="text-[#E5E7EB] flex items-center gap-2">
@@ -259,7 +259,6 @@ export function UserManagement() {
         </CardContent>
       </Card>
 
-      {/* Users Table */}
       <Card className="bg-[#161B22] border-[#1F2937]">
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -285,6 +284,7 @@ export function UserManagement() {
               <Loader2 className="h-8 w-8 animate-spin text-[#3B82F6]" />
             </div>
           ) : (() => {
+            // Filtra usuários por email (busca case-insensitive)
             const filteredUsers = users.filter(user => 
               user.email.toLowerCase().includes(searchTerm.toLowerCase())
             );
@@ -362,7 +362,6 @@ export function UserManagement() {
         </CardContent>
       </Card>
 
-      {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[425px] bg-[#161B22] border-[#1F2937]">
           <DialogHeader>
@@ -436,7 +435,6 @@ export function UserManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete User Alert Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-[#161B22] border-[#1F2937]">
           <AlertDialogHeader>
