@@ -1,0 +1,121 @@
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:7.0
+    container_name: weather-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: weather
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - weather-network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: weather-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - weather-network
+
+  # Ollama
+  ollama:
+    image: ollama/ollama:latest
+    container_name: weather-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - weather-network
+    restart: unless-stopped
+
+  # Backend NestJS
+  backend:
+    build: ./weather-backend
+    container_name: weather-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/weather?authSource=admin
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - DEFAULT_USER_EMAIL="admin@example.com"
+      - DEFAULT_USER_PASSWORD="123456"
+      - DEFAULT_USER_NAME="Administrador"
+      - DEFAULT_USER_ROLE="admin"
+      - JWT_SECRET=123456
+      - OLLAMA_API_URL=http://ollama:11434
+    depends_on:
+      - mongodb
+      - rabbitmq
+    volumes:
+      - ./weather-backend:/app
+      - /app/node_modules
+    networks:
+      - weather-network
+
+  # Frontend React
+  frontend:
+    build: ./weather-frontend
+    container_name: weather-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./weather-frontend:/app
+      - /app/node_modules
+    networks:
+      - weather-network
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+  # Python Collector
+  weather-collector:
+    build: ./weather-collector
+    container_name: weather-collector
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - OPENWEATHER_API_KEY=b14d3b8f58ab7c250e496f270f163edb
+      - LAT=15.1334
+      - LON=59.2007
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./weather-collector:/app
+    networks:
+      - weather-network
+
+  # Go Worker
+  weather-worker:
+    build: ./weather-worker
+    container_name: weather-worker
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - API_URL=http://backend:3000
+    depends_on:
+      - rabbitmq
+      - backend
+    networks:
+      - weather-network
+
+volumes:
+  mongodb_data:
+  ollama_data:
+    driver: local
+
+networks:
+  weather-network:
+    driver: bridge
