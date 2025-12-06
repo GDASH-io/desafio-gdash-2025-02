@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copia requirements
+COPY collector/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia o código fonte
+COPY collector/ .
+
+CMD ["python", "-u", "main.py"]

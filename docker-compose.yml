@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: weather_mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - weather-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: weather_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - weather-network
+
+  backend:
+    build: ./backend
+    container_name: weather_backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/weather_db?authSource=admin
+      - RABBITMQ_URI=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      - JWT_SECRET=${JWT_SECRET}
+      - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
+      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - weather-network
+
+  frontend:
+    build: ./frontend
+    container_name: weather_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - weather-network
+
+  collector:
+    build: ./collector
+    container_name: weather_collector
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - LATITUDE=-23.5505
+      - LONGITUDE=-46.6333
+    depends_on:
+      - rabbitmq
+    networks:
+      - weather-network
+
+  worker:
+    build: ./worker
+    container_name: weather_worker
+    environment:
+      - RABBITMQ_URI=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+      - BACKEND_URL=http://backend:3000/weather/logs
+    depends_on:
+      - rabbitmq
+      - backend
+    networks:
+      - weather-network
+
+networks:
+  weather-network:
+    driver: bridge
+
+volumes:
+  mongo_data:

@@ -1,0 +1,3137 @@
+
+> frontend@0.0.0 test
+> vitest src/pages/Dashboard.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv4.0.13 [39m[90m/home/felipe/desafio-gdash/frontend[39m
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mrenders dashboard title
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Logs fetched: []
+Fetching insights...
+Logs fetched: []
+Fetching insights...
+Insights fetched: []
+Setting loading to false
+Insights fetched: []
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39mfetchData called
+Fetching logs...
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"p-8 space-y-8"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex justify-between items-center"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-9 w-64"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-x-4 flex"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-10 w-32"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-10 w-32"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-10 w-32"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid grid-cols-1 md:grid-cols-3 gap-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-lg border bg-card text-card-foreground shadow-sm"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-32"[39m
+              [36m/>[39m
+            [36m</h3>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-6 pt-0"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-12 w-24"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-lg border bg-card text-card-foreground shadow-sm"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-32"[39m
+              [36m/>[39m
+            [36m</h3>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-6 pt-0"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-12 w-24"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-lg border bg-card text-card-foreground shadow-sm"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-32"[39m
+              [36m/>[39m
+            [36m</h3>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-6 pt-0"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-12 w-24"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-lg border text-card-foreground shadow-sm bg-blue-50 border-blue-200"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-32"[39m
+            [36m/>[39m
+          [36m</h3>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-6 pt-0 space-y-2"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-full"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-3/4"[39m
+          [36m/>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-4 w-48 mt-2"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-lg border bg-card text-card-foreground shadow-sm"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-6 w-48"[39m
+            [36m/>[39m
+          [36m</h3>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-6 pt-0 h-[400px] flex items-center justify-center"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"w-full h-full space-y-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-8 w-full"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-8 w-full"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-8 w-full"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-8 w-full"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-8 w-full"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"animate-pulse bg-muted rounded-md h-8 w-full"[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+fetchData called
+Fetching logs...
+Logs fetched: [
+  {
+    city: [32m'São Paulo'[39m,
+    temperature: [33m25.5[39m,
+    humidity: [33m65[39m,
+    windSpeed: [33m12.3[39m,
+    condition: [32m'Partly Cloudy'[39m,
+    timestamp: [33m1763995009[39m
+  }
+]
+Fetching insights...
+Logs fetched: [
+  {
+    city: [32m'São Paulo'[39m,
+    temperature: [33m25.5[39m,
+    humidity: [33m65[39m,
+    windSpeed: [33m12.3[39m,
+    condition: [32m'Partly Cloudy'[39m,
+    timestamp: [33m1763995009[39m
+  }
+]
+Fetching insights...
+Insights fetched: { insight: [32m'Weather is stable'[39m, averageTemp: [33m25.5[39m }
+Setting loading to false
+Insights fetched: { insight: [32m'Weather is stable'[39m, averageTemp: [33m25.5[39m }
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mfetches and displays weather data
+[22m[39m[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mdisplays AI insights when available
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Logs fetched: [
+  {
+    city: [32m'São Paulo'[39m,
+    temperature: [33m25.5[39m,
+    humidity: [33m65[39m,
+    windSpeed: [33m12.3[39m,
+    condition: [32m'Partly Cloudy'[39m,
+    timestamp: [33m1763995009[39m
+  }
+]
+Fetching insights...
+Logs fetched: [
+  {
+    city: [32m'São Paulo'[39m,
+    temperature: [33m25.5[39m,
+    humidity: [33m65[39m,
+    windSpeed: [33m12.3[39m,
+    condition: [32m'Partly Cloudy'[39m,
+    timestamp: [33m1763995009[39m
+  }
+]
+Fetching insights...
+Insights fetched: { insight: [32m'Weather is stable'[39m, averageTemp: [33m25.5[39m }
+Setting loading to false
+Insights fetched: { insight: [32m'Weather is stable'[39m, averageTemp: [33m25.5[39m }
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mrenders export buttons
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Logs fetched: []
+Fetching insights...
+Logs fetched: []
+Fetching insights...
+Insights fetched: []
+Setting loading to false
+Insights fetched: []
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mrenders manage users button
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Logs fetched: []
+Fetching insights...
+Logs fetched: []
+Fetching insights...
+Insights fetched: []
+Setting loading to false
+Insights fetched: []
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mhandles API errors gracefully
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Setting loading to false
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2muses authorization header with token
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Logs fetched: []
+Fetching insights...
+Logs fetched: []
+Fetching insights...
+Insights fetched: []
+Setting loading to false
+Insights fetched: []
+Setting loading to false
+
+[90mstdout[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard Component[2m > [22m[2mdisplays temperature trend chart
+[22m[39mfetchData called
+Fetching logs...
+fetchData called
+Fetching logs...
+Logs fetched: [
+  {
+    city: [32m'São Paulo'[39m,
+    temperature: [33m25.5[39m,
+    humidity: [33m65[39m,
+    windSpeed: [33m12.3[39m,
+    condition: [32m'Partly Cloudy'[39m,
+    timestamp: [33m1763995009[39m
+  }
+]
+Fetching insights...
+Logs fetched: [
+  {
+    city: [32m'São Paulo'[39m,
+    temperature: [33m25.5[39m,
+    humidity: [33m65[39m,
+    windSpeed: [33m12.3[39m,
+    condition: [32m'Partly Cloudy'[39m,
+    timestamp: [33m1763995009[39m
+  }
+]
+Fetching insights...
+Insights fetched: { insight: [32m'Weather is stable'[39m, averageTemp: [33m25.5[39m }
+Setting loading to false
+Insights fetched: { insight: [32m'Weather is stable'[39m, averageTemp: [33m25.5[39m }
+Setting loading to false
+
+ [31m❯[39m src/pages/Dashboard.test.tsx [2m([22m[2m8 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1537[2mms[22m[39m
+     [32m✓[39m renders dashboard title[32m 162[2mms[22m[39m
+[31m     [31m×[31m fetches and displays weather data[39m[33m 1035[2mms[22m[39m
+     [32m✓[39m displays AI insights when available[32m 98[2mms[22m[39m
+     [32m✓[39m renders export buttons[32m 54[2mms[22m[39m
+     [32m✓[39m renders manage users button[32m 55[2mms[22m[39m
+     [32m✓[39m handles API errors gracefully[32m 36[2mms[22m[39m
+     [32m✓[39m uses authorization header with token[32m 43[2mms[22m[39m
+     [32m✓[39m displays temperature trend chart[32m 49[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/pages/Dashboard.test.tsx[2m > [22mDashboard Component[2m > [22mfetches and displays weather data
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the text: 25.5°C
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<div[39m
+  [33mclass[39m=[32m"text-2xl font-bold"[39m
+[36m>[39m
+  [0m25.5°C[0m
+[36m</div>[39m
+
+Ignored nodes: comments, script, style
+[36m<td[39m
+  [33mclass[39m=[32m"p-4 align-middle"[39m
+[36m>[39m
+  [0m25.5[0m
+  [0m°C[0m
+[36m</td>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 2v2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 12h2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Weather Dashboard[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+          [36m>[39m
+            [0mMonitoring: [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+            [36m>[39m
+              [0mSão Paulo[0m
+            [36m</span>[39m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"radix-_r_3_"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-haspopup[39m=[32m"dialog"[39m
+            [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+            [33mdata-state[39m=[32m"closed"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mChange City[0m
+          [36m</button>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-2"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Explore API"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"11"[39m
+                  [33mcy[39m=[32m"11"[39m
+                  [33mr[39m=[32m"8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+              [33mtitle[39m=[32m"Manage Users"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hove...
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-h-screen bg-slate-950 text-slate-100 p-8 font-sans"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<h1[39m
+              [33mclass[39m=[32m"text-3xl font-bold tracking-tight text-white flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-cloud-sun text-blue-500"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 2v2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m4.93 4.93 1.41 1.41"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 12h2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m19.07 4.93-1.41 1.41"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.947 12.65a4 4 0 0 0-5.925-4.128"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0m Weather Dashboard[0m
+            [36m</h1>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-slate-400 mt-1"[39m
+            [36m>[39m
+              [0mMonitoring: [0m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-semibold text-blue-400"[39m
+              [36m>[39m
+                [0mSão Paulo[0m
+              [36m</span>[39m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-3 items-center"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"radix-_r_3_"[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-haspopup[39m=[32m"dialog"[39m
+              [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 px-4 py-2 bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-100"[39m
+              [33mdata-state[39m=[32m"closed"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mChange City[0m
+            [36m</button>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+                [33mtitle[39m=[32m"Explore API"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-search h-4 w-4"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m21 21-4.34-4.34"[39m
+                  [36m/>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"11"[39m
+                    [33mcy[39m=[32m"11"[39m
+                    [33mr[39m=[32m"8"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border hover:text-accent-foreground h-10 w-10 bg-slate-900 border-slate-800 hover:bg-slate-800"[39m
+                [33mtitle[39m=[32m"Manage Users"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-user h-4 w-4"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"24"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                  [36m/>[39m
+                  [36m<circle[39m
+                    [33mcx[39m=[32m"12"[39m
+                    [33mcy[39m=[32m"7"[39m
+                    [33mr[39m=[32m"4"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"inline-flex items-center justify-center whitespace-nowrap round...
+[90m [2m❯[22m Proxy.waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[36m [2m❯[22m src/pages/Dashboard.test.tsx:[2m98:11[22m[39m
+    [90m 96| [39m    )[33m;[39m
+    [90m 97| [39m
+    [90m 98| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m {
+    [90m   | [39m          [31m^[39m
+    [90m 99| [39m      screen[33m.[39m[34mdebug[39m()[33m;[39m
+    [90m100| [39m      [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m'25.5°C'[39m))[33m.[39m[34mtoBeInTheDocument[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 11:36:47
+[2m   Duration [22m 3.87s[2m (transform 527ms, setup 280ms, collect 969ms, tests 1.54s, environment 858ms, prepare 15ms)[22m
+

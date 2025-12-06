@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copia arquivos considerando que o contexto é a RAIZ do projeto
+COPY backend/package*.json ./
+RUN npm install
+
+# Copia o código fonte
+COPY backend/ .
+
+RUN npm run build
+
+CMD ["npm", "run", "start:prod"]
