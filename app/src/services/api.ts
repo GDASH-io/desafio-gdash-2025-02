@@ -1,13 +1,12 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000", // SEM /api se a API não usar prefixo
+  baseURL: "http://localhost:3000",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Interceptor para adicionar token em todas as requisições
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -21,7 +20,6 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para tratar erros de autenticação
 api.interceptors.response.use(
   (response) => response,
   (error) => {

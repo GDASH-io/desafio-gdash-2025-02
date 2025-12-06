@@ -35,14 +35,12 @@ export class AuthenticateUserUseCase {
     email,
     password,
   }: AuthenticateUserUseCaseRequest): Promise<AuthenticateUserUseCaseResponse> {
-    // Busca usuário por email
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       return left(new InvalidCredentialsError());
     }
 
-    // Verifica senha
     const isPasswordValid = await this.hashProvider.compare(
       password,
       user.password
@@ -52,7 +50,6 @@ export class AuthenticateUserUseCase {
       return left(new InvalidCredentialsError());
     }
 
-    // Gera token JWT
     const accessToken = await this.tokenProvider.generate({
       sub: user.id.toString(),
       role: user.role,

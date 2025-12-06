@@ -16,30 +16,33 @@ export const weatherService = {
     endDate?: string;
   }) {
     const { data } = await api.get<{
-      data: { logs: WeatherLog[]; total: number };
+      data: WeatherLog[];
+      pagination: any;
     }>("/weather/logs", { params });
-    return data.data;
+    return { logs: data.data, pagination: data.pagination };
   },
 
   async getStatistics(params?: { startDate?: string; endDate?: string }) {
     const { data } = await api.get<{ data: WeatherStatistics }>(
-      "/weather/statistics",
+      "/weather/analytics/statistics",
       { params }
     );
     return data.data;
   },
 
   async getTrends(params?: { startDate?: string; endDate?: string }) {
-    const { data } = await api.get<{ data: WeatherTrend[] }>(
-      "/weather/trends",
+    const { data } = await api.get<{ data: { trends: WeatherTrend[] } }>(
+      "/weather/analytics/trends",
       { params }
     );
-    return data.data;
+    return data.data.trends;
   },
 
   async getAlerts() {
-    const { data } = await api.get<{ data: WeatherAlert[] }>("/weather/alerts");
-    return data.data;
+    const { data } = await api.get<{ data: { active: WeatherAlert[] } }>(
+      "/weather/analytics/alerts"
+    );
+    return data.data.active;
   },
 
   async getInsights(params?: { regenerate?: boolean }) {
@@ -57,10 +60,15 @@ export const weatherService = {
     return data.data;
   },
 
-  async getDashboard() {
-    const { data } = await api.get<{ data: WeatherDashboard }>(
-      "/weather/dashboard"
-    );
+  async getDashboard(params?: {
+    startDate?: string;
+    endDate?: string;
+    location?: string;
+    recentLogsLimit?: number;
+  }) {
+    const { data } = await api.get<{ data: WeatherDashboard }>("/dashboard", {
+      params,
+    });
     return data.data;
   },
 

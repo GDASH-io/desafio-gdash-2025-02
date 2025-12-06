@@ -14,12 +14,10 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  // 🔍 DEBUG: Listar todas as rotas
   const server = app.getHttpServer();
   const router = server._events.request._router;
 
   if (router && router.stack) {
-    console.log("\n=== 🔍 ROTAS REGISTRADAS ===");
     const routes = router.stack
       .filter((r) => r.route)
       .map((r) => ({
@@ -30,7 +28,6 @@ async function bootstrap() {
     routes.forEach((route) => {
       console.log(`${route.method.padEnd(6)} ${route.path}`);
     });
-    console.log("========================\n");
   }
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);

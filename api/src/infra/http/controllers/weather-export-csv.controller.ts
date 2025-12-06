@@ -15,7 +15,7 @@ import {
   exportWeatherLogsQuerySchema,
 } from "../schemas/weather-log.schema";
 
-@Controller("api/weather")
+@Controller("weather")
 export class WeatherExportCSVController {
   private readonly logger = new Logger(WeatherExportCSVController.name);
 

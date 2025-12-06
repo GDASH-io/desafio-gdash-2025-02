@@ -1,24 +1,40 @@
 export interface WeatherLog {
   id: string;
-  cityName: string;
   temperature: number;
   humidity: number;
   windSpeed: number;
-  condition: string;
-  precipitation: number;
-  pressure?: number;
-  visibility?: number;
-  timestamp: string;
+  skyCondition: string;
+  rainProbability: number;
+  location: string;
+  collectedAt: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface WeatherStatistics {
-  avgTemperature: number;
-  maxTemperature: number;
-  minTemperature: number;
-  avgHumidity: number;
-  avgWindSpeed: number;
-  totalRecords: number;
+  temperature: {
+    average: number;
+    min: number;
+    max: number;
+    unit: string;
+  };
+  humidity: {
+    average: number;
+    min: number;
+    max: number;
+    unit: string;
+  };
+  windSpeed: {
+    average: number;
+    min: number;
+    max: number;
+    unit: string;
+  };
+  rainProbability: {
+    average: number;
+    unit: string;
+  };
+  dataPointsAnalyzed: number;
   period: {
     start: string;
     end: string;
@@ -26,18 +42,19 @@ export interface WeatherStatistics {
 }
 
 export interface WeatherTrend {
-  type: "increasing" | "decreasing" | "stable";
-  metric: "temperature" | "humidity" | "windSpeed";
-  change: number;
+  metric: "temperature" | "humidity" | "windSpeed" | "rainProbability";
+  direction: "rising" | "falling" | "stable";
+  changeRate: number;
+  confidence: number;
   description: string;
 }
 
 export interface WeatherAlert {
-  id: string;
+  id?: string;
   type: "warning" | "info" | "danger";
   title: string;
   description: string;
-  timestamp: string;
+  timestamp?: string;
 }
 
 export interface WeatherInsight {
@@ -49,8 +66,60 @@ export interface WeatherInsight {
 }
 
 export interface WeatherDashboard {
-  current: WeatherLog | null;
-  recent: WeatherLog[];
-  statistics: WeatherStatistics;
-  insights: WeatherInsight | null;
+  generatedAt: string;
+  location: string;
+  period: {
+    start: string | null;
+    end: string | null;
+  };
+  recentLogs?: {
+    data: WeatherLog[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+  statistics?: WeatherStatistics;
+  trends?: {
+    trends: WeatherTrend[];
+    summary: string;
+  };
+  alerts?: {
+    active: WeatherAlert[];
+    hasActiveAlerts: boolean;
+  };
+  comfort?: {
+    score: number;
+    classification: string;
+    factors: {
+      temperature: {
+        value: number;
+        contribution: number;
+        status: string;
+      };
+      humidity: {
+        value: number;
+        contribution: number;
+        status: string;
+      };
+      windSpeed: {
+        value: number;
+        contribution: number;
+        status: string;
+      };
+    };
+    recommendations: string[];
+  };
+  currentDay?: {
+    classification: {
+      id: string;
+      classification: string;
+      description: string;
+      temperature: number;
+      humidity: number;
+      windSpeed: number;
+    };
+  };
 }

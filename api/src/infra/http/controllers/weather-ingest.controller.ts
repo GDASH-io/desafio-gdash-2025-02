@@ -18,7 +18,7 @@ import {
 } from "src/domain/application/use-cases/create-weather-log.use-case";
 import { WeatherLogPresenter } from "../presenters/weather-log.presenter";
 
-@Controller("api/weather")
+@Controller("weather")
 export class WeatherIngestController {
   private readonly logger = new Logger(WeatherIngestController.name);
 

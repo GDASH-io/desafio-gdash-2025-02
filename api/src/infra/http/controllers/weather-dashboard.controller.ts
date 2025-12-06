@@ -20,7 +20,7 @@ import {
   dashboardQuerySchema,
 } from "../schemas/weather-log.schema";
 
-@Controller("api/weather/dashboard")
+@Controller("dashboard")
 export class WeatherDashboardController {
   private readonly logger = new Logger(WeatherDashboardController.name);
 

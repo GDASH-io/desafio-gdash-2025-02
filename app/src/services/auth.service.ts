@@ -5,7 +5,6 @@ export const authService = {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
     const { data } = await api.post<LoginResponse>("/auth/login", credentials);
 
-    // Salvar token e usuário no localStorage
     if (data.data.accessToken) {
       localStorage.setItem("token", data.data.accessToken);
       localStorage.setItem("user", JSON.stringify(data.data.user));

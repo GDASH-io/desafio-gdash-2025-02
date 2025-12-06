@@ -26,5 +26,4 @@ export class UserSchema {
 
 export const UserModel = SchemaFactory.createForClass(UserSchema);
 
-// Índice para busca por texto (name e email)
 UserModel.index({ name: "text", email: "text" });

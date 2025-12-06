@@ -18,7 +18,6 @@ import {
   Wind,
   CloudRain,
 } from "lucide-react";
-import { formatDate } from "@/lib/utils";
 
 export function DashboardPage() {
   const [dashboard, setDashboard] = useState<WeatherDashboard | null>(null);
@@ -30,9 +29,10 @@ export function DashboardPage() {
   const loadDashboard = async () => {
     try {
       setIsRefreshing(true);
-      const data = await weatherService.getDashboard();
+      const data = await weatherService.getDashboard({ recentLogsLimit: 10 });
       setDashboard(data);
     } catch (error: any) {
+      console.error("Erro ao carregar dashboard:", error);
       toast({
         variant: "destructive",
         title: "Erro ao carregar dashboard",
@@ -106,7 +106,7 @@ export function DashboardPage() {
     );
   }
 
-  const current = dashboard?.current;
+  const currentLog = dashboard?.recentLogs?.data?.[0];
 
   return (
     <div className="space-y-6">
@@ -115,7 +115,7 @@ export function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold">Dashboard Climático</h1>
           <p className="text-muted-foreground">
-            Monitoramento em tempo real - Natal, RN
+            Monitoramento em tempo real - {dashboard?.location || "Natal, RN"}
           </p>
         </div>
         <div className="flex gap-2">
@@ -149,7 +149,7 @@ export function DashboardPage() {
       </div>
 
       {/* Current Weather Cards */}
-      {current && (
+      {currentLog ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -158,10 +158,15 @@ export function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {current.temperature.toFixed(1)}°C
+                {currentLog.temperature.toFixed(1)}°C
               </div>
               <p className="text-xs text-muted-foreground">
-                {formatDate(current.timestamp)}
+                {new Date(currentLog.collectedAt).toLocaleString("pt-BR", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </CardContent>
           </Card>
@@ -172,7 +177,7 @@ export function DashboardPage() {
               <Droplets className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{current.humidity}%</div>
+              <div className="text-2xl font-bold">{currentLog.humidity}%</div>
               <p className="text-xs text-muted-foreground">
                 Umidade relativa do ar
               </p>
@@ -185,7 +190,9 @@ export function DashboardPage() {
               <Wind className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{current.windSpeed} km/h</div>
+              <div className="text-2xl font-bold">
+                {currentLog.windSpeed.toFixed(1)} km/h
+              </div>
               <p className="text-xs text-muted-foreground">
                 Velocidade do vento
               </p>
@@ -198,29 +205,97 @@ export function DashboardPage() {
               <CloudRain className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{current.condition}</div>
+              <div className="text-xl font-bold capitalize">
+                {currentLog.skyCondition}
+              </div>
               <p className="text-xs text-muted-foreground">
-                Precipitação: {current.precipitation}mm
+                🌧️ Chuva: {currentLog.rainProbability}%
               </p>
             </CardContent>
           </Card>
         </div>
+      ) : (
+        <Card>
+          <CardContent className="py-8">
+            <p className="text-center text-muted-foreground">
+              Nenhum dado climático disponível no momento
+            </p>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Placeholder para gráficos e insights */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Estatísticas e Insights</CardTitle>
-          <CardDescription>
-            Análise detalhada dos dados climáticos será exibida aqui
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-center py-8">
-            Gráficos e insights de IA em desenvolvimento...
-          </p>
-        </CardContent>
-      </Card>
+      {/* Statistics */}
+      {dashboard?.statistics && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Estatísticas do Período</CardTitle>
+            <CardDescription>
+              {dashboard.statistics.dataPointsAnalyzed} registros analisados
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Temperatura
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboard.statistics.temperature.average.toFixed(1)}°C
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Min: {dashboard.statistics.temperature.min.toFixed(1)}°C |
+                  Max: {dashboard.statistics.temperature.max.toFixed(1)}°C
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Umidade Média
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboard.statistics.humidity.average.toFixed(1)}%
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Vento Médio
+                </p>
+                <p className="text-2xl font-bold">
+                  {dashboard.statistics.windSpeed.average.toFixed(1)} km/h
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Comfort Index */}
+      {dashboard?.comfort && dashboard.comfort.score !== undefined && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Índice de Conforto</CardTitle>
+            <CardDescription>Análise das condições atuais</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center">
+              <div className="text-4xl font-bold mb-2">
+                {dashboard.comfort.score}
+              </div>
+              <p className="text-lg font-medium capitalize">
+                {dashboard.comfort.classification.replace(/_/g, " ")}
+              </p>
+              {dashboard.comfort.recommendations && (
+                <div className="mt-4 text-left space-y-1">
+                  {dashboard.comfort.recommendations.map((rec, idx) => (
+                    <p key={idx} className="text-sm text-muted-foreground">
+                      • {rec}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -1,8 +1,3 @@
-// ==============================================================================
-// WEATHER API - TESTES COM BUN
-// Execute: bun run test-api.js
-// ==============================================================================
-
 const BASE_URL = "http://localhost:3000";
 
 const colors = {
@@ -55,10 +50,6 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// ==============================================================================
-// TESTES
-// ==============================================================================
-
 async function runTests() {
   console.log(`${colors.bright}${colors.magenta}
 ╔═══════════════════════════════════════════════════════════╗
@@ -66,7 +57,6 @@ async function runTests() {
 ╚═══════════════════════════════════════════════════════════╝
 ${colors.reset}`);
 
-  // 1. CRIAR LOGS
   log("1. CRIAR LOG CLIMÁTICO (Normal)", colors.green);
   await makeRequest("POST", "/api/weather/logs", {
     timestamp: "2025-11-29T21:00:00.000Z",
@@ -119,7 +109,6 @@ ${colors.reset}`);
     },
   });
 
-  // 2. LISTAR LOGS
   log("3. LISTAR LOGS (Paginação padrão)", colors.blue);
   await makeRequest("GET", "/api/weather/logs");
 
@@ -127,17 +116,28 @@ ${colors.reset}`);
   await makeRequest("GET", "/api/weather/logs?page=1&limit=10&location=Natal");
 
   log("5. LISTAR LOGS (Com data range)", colors.blue);
-  await makeRequest("GET", "/api/weather/logs?startDate=2025-11-29&endDate=2025-11-30");
+  await makeRequest(
+    "GET",
+    "/api/weather/logs?startDate=2025-11-29&endDate=2025-11-30"
+  );
 
-  // 3. ANALYTICS
   log("6. CALCULAR ESTATÍSTICAS", colors.yellow);
-  await makeRequest("GET", "/api/weather/analytics/statistics?startDate=2025-11-29&endDate=2025-11-30");
+  await makeRequest(
+    "GET",
+    "/api/weather/analytics/statistics?startDate=2025-11-29&endDate=2025-11-30"
+  );
 
   log("7. DETECTAR TENDÊNCIAS", colors.yellow);
-  await makeRequest("GET", "/api/weather/analytics/trends?startDate=2025-11-29&endDate=2025-11-30&location=Natal");
+  await makeRequest(
+    "GET",
+    "/api/weather/analytics/trends?startDate=2025-11-29&endDate=2025-11-30&location=Natal"
+  );
 
   log("8. GERAR ALERTAS", colors.yellow);
-  await makeRequest("GET", "/api/weather/analytics/alerts?startDate=2025-11-29&endDate=2025-11-30");
+  await makeRequest(
+    "GET",
+    "/api/weather/analytics/alerts?startDate=2025-11-29&endDate=2025-11-30"
+  );
 
   log("9. CLASSIFICAR DIA MAIS RECENTE", colors.yellow);
   await makeRequest("GET", "/api/weather/analytics/classify");
@@ -146,36 +146,50 @@ ${colors.reset}`);
   await makeRequest("GET", "/api/weather/analytics/comfort");
 
   log("11. GERAR RESUMO COMPLETO", colors.yellow);
-  await makeRequest("GET", "/api/weather/analytics/summary?startDate=2025-11-29&endDate=2025-11-30&days=7");
+  await makeRequest(
+    "GET",
+    "/api/weather/analytics/summary?startDate=2025-11-29&endDate=2025-11-30&days=7"
+  );
 
-  // 4. DASHBOARD
   log("12. DASHBOARD COMPLETO", colors.magenta);
   await makeRequest("GET", "/api/weather/dashboard");
 
   log("13. DASHBOARD COM FILTROS", colors.magenta);
-  await makeRequest("GET", "/api/weather/dashboard?startDate=2025-11-29&endDate=2025-11-30&location=Natal&recentLogsLimit=5");
+  await makeRequest(
+    "GET",
+    "/api/weather/dashboard?startDate=2025-11-29&endDate=2025-11-30&location=Natal&recentLogsLimit=5"
+  );
 
-  // 5. INSIGHTS
   log("14. GERAR INSIGHTS (GET)", colors.cyan);
-  await makeRequest("GET", "/api/weather/insights?startDate=2025-11-29&endDate=2025-11-30&location=Natal&limit=100");
+  await makeRequest(
+    "GET",
+    "/api/weather/insights?startDate=2025-11-29&endDate=2025-11-30&location=Natal&limit=100"
+  );
 
   log("15. GERAR INSIGHTS (POST)", colors.cyan);
-  await makeRequest("POST", "/api/weather/insights?startDate=2025-11-29&endDate=2025-11-30");
+  await makeRequest(
+    "POST",
+    "/api/weather/insights?startDate=2025-11-29&endDate=2025-11-30"
+  );
 
-  // 6. EXPORTS
   log("16. EXPORTAR CSV (Todos os dados)", colors.green);
   await downloadFile("/api/weather/export/csv", "weather_logs.csv");
 
   log("17. EXPORTAR CSV (Com filtros)", colors.green);
-  await downloadFile("/api/weather/export/csv?startDate=2025-11-29&endDate=2025-11-30&location=Natal", "weather_logs_filtered.csv");
+  await downloadFile(
+    "/api/weather/export/csv?startDate=2025-11-29&endDate=2025-11-30&location=Natal",
+    "weather_logs_filtered.csv"
+  );
 
   log("18. EXPORTAR XLSX (Todos os dados)", colors.green);
   await downloadFile("/api/weather/export/xlsx", "weather_logs.xlsx");
 
   log("19. EXPORTAR XLSX (Com filtros)", colors.green);
-  await downloadFile("/api/weather/export/xlsx?startDate=2025-11-29&endDate=2025-11-30&location=Natal", "weather_logs_filtered.xlsx");
+  await downloadFile(
+    "/api/weather/export/xlsx?startDate=2025-11-29&endDate=2025-11-30&location=Natal",
+    "weather_logs_filtered.xlsx"
+  );
 
-  // 7. CRIAR LOGS VARIADOS
   log("20. CRIAR MÚLTIPLOS LOGS (Diferentes condições)", colors.green);
 
   const conditions = [
@@ -247,7 +261,6 @@ ${colors.reset}`);
     await sleep(500);
   }
 
-  // 8. TESTES DE ERRO
   log("21. TESTE DE VALIDAÇÃO (Dados inválidos)", colors.yellow);
   await makeRequest("POST", "/api/weather/logs", {
     weather: {
@@ -259,7 +272,6 @@ ${colors.reset}`);
   log("22. TESTE DE PAGINAÇÃO INVÁLIDA", colors.yellow);
   await makeRequest("GET", "/api/weather/logs?page=-1&limit=0");
 
-  // RESUMO
   console.log(`\n${colors.bright}${colors.magenta}
 ╔═══════════════════════════════════════════════════════════╗
 ║              RESUMO DE ENDPOINTS DISPONÍVEIS             ║
@@ -296,5 +308,4 @@ ${colors.bright}✅ Testes concluídos! Verifique os arquivos CSV e XLSX gerados
 `);
 }
 
-// Executar testes
 runTests().catch(console.error);

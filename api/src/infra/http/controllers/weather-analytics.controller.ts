@@ -20,7 +20,7 @@ import {
 } from "../schemas/weather-log.schema";
 import { ClassifyWeatherDayUseCase } from "@/domain/application/use-cases/classify-weather-day.use-case";
 
-@Controller("api/weather/analytics")
+@Controller("weather/analytics")
 export class WeatherAnalyticsController {
   private readonly logger = new Logger(WeatherAnalyticsController.name);
 
@@ -78,7 +78,7 @@ export class WeatherAnalyticsController {
   }
 
   /**
-   * GET /api/weather/analytics/alerts
+   * GET /weather/analytics/alerts
    * Gera alertas climáticos
    */
   @Get("alerts")

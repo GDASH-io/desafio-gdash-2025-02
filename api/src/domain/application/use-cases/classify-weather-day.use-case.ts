@@ -53,7 +53,7 @@ export class ClassifyWeatherDayUseCase {
 
     return right({
       classification: {
-        id: weatherLog.idtoString(),
+        id: weatherLog.id.toString(),
         date: weatherLog.timestamp,
         classification: classification.type,
         description: classification.description,

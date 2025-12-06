@@ -15,7 +15,7 @@ import {
   insightsQuerySchema,
 } from "../schemas/weather-log.schema";
 
-@Controller("api/weather/insights")
+@Controller("weather/insights")
 export class WeatherInsightsController {
   private readonly logger = new Logger(WeatherInsightsController.name);
 

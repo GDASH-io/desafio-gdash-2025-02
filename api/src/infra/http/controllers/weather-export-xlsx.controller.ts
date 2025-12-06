@@ -19,7 +19,7 @@ interface ExportQueryParams {
   location?: string;
 }
 
-@Controller("api/weather")
+@Controller("weather")
 export class WeatherExportXLSXController {
   private readonly logger = new Logger(WeatherExportXLSXController.name);
 

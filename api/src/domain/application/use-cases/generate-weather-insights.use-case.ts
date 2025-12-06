@@ -116,10 +116,10 @@ Responda APENAS com o JSON, sem texto adicional.`;
             content: prompt,
           },
         ],
-        model: "llama-3.3-70b-versatile", // Modelo gratuito e poderoso
+        model: "llama-3.3-70b-versatile",
         temperature: 0.7,
         max_tokens: 2000,
-        response_format: { type: "json_object" }, // Força resposta em JSON
+        response_format: { type: "json_object" },
       });
 
       const content = chatCompletion.choices[0]?.message?.content;
