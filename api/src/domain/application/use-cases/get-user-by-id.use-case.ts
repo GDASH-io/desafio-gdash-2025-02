@@ -2,6 +2,7 @@ import { Either, left, right } from "@/core/either";
 import { User } from "@/domain/enterprise/entities/user";
 import { UserRepository } from "../repositories/user-repository";
 import { UserNotFoundError } from "./errors/user-not-found-error";
+import { Injectable } from "@nestjs/common";
 
 interface GetUserByIdUseCaseRequest {
   userId: string;
@@ -14,6 +15,7 @@ type GetUserByIdUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class GetUserByIdUseCase {
   constructor(private userRepository: UserRepository) {}
 

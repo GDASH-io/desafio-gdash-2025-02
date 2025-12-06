@@ -73,6 +73,11 @@ services:
       NODE_ENV: production
       PORT: 3000
       MONGODB_URI: mongodb://root:example@mongodb:27017/weather?authSource=admin
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      JWT_EXPIRES_IN: 7d
+      ADMIN_NAME: Administrator
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-123456}
       GROQ_API_KEY: ${GROQ_API_KEY}
     restart: unless-stopped
     networks:
@@ -94,10 +99,8 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASS: guest
       RABBITMQ_QUEUE: weather_data
-
       API_URL: http://api:3000/api/weather/logs
       API_TIMEOUT: 30
-
       MAX_RETRIES: 3
       RETRY_DELAY_SECONDS: 2
     restart: unless-stopped

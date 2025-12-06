@@ -1,6 +1,7 @@
 import { Either, left, right } from "@/core/either";
 import { UserRepository } from "../repositories/user-repository";
 import { UserNotFoundError } from "./errors/user-not-found-error";
+import { Injectable } from "@nestjs/common";
 
 interface DeleteUserUseCaseRequest {
   userId: string;
@@ -11,6 +12,7 @@ type DeleteUserUseCaseResponse = Either<
   Record<string, never>
 >;
 
+@Injectable()
 export class DeleteUserUseCase {
   constructor(private userRepository: UserRepository) {}
 
