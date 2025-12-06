@@ -1,0 +1,159 @@
+services:
+  # ==========================================
+  # MONGODB - Banco de Dados
+  # ==========================================
+  mongodb:
+    image: mongo:7
+    container_name: weaither-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=weaither-db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - weaither-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/weaither-db --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # RABBITMQ - Message Queue
+  # ==========================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: weaither-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"      # AMQP port
+      - "15672:15672"    # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - weaither-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================
+  # BACKEND - NestJS API
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: weaither-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/weaither-db
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - API_PORT=3001
+      - NODE_ENV=production
+      - DEFAULT_USER_EMAIL=${DEFAULT_USER_EMAIL}
+      - DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD}
+      - DEFAULT_USER_NAME=${DEFAULT_USER_NAME}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - weaither-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  # ==========================================
+  # PYTHON COLLECTOR - Weather Data
+  # ==========================================
+  python-collector:
+    build:
+      context: ./python-collector
+      dockerfile: Dockerfile
+    container_name: weaither-python-collector
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - WEATHER_API_URL=${WEATHER_API_URL}
+      - LOCATION_NAME=${LOCATION_NAME}
+      - LOCATION_LAT=${LOCATION_LAT}
+      - LOCATION_LON=${LOCATION_LON}
+      - LOCATION_TIMEZONE=${LOCATION_TIMEZONE}
+      - COLLECTION_INTERVAL_SECONDS=${COLLECTION_INTERVAL_SECONDS}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - weaither-network
+    volumes:
+      - ./python-collector:/app
+
+  # ==========================================
+  # GO WORKER - RabbitMQ Consumer
+  # ==========================================
+  go-worker:
+    build:
+      context: ./go-worker
+      dockerfile: Dockerfile
+    container_name: weaither-go-worker
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - API_URL=http://backend:3001/api
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    networks:
+      - weaither-network
+    volumes:
+      - ./go-worker:/app
+
+  # ==========================================
+  # FRONTEND - React + Vite
+  # ==========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:3001/api}
+    container_name: weaither-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - weaither-network
+
+# ==========================================
+# NETWORKS
+# ==========================================
+networks:
+  weaither-network:
+    driver: bridge
+
+# ==========================================
+# VOLUMES
+# ==========================================
+volumes:
+  mongodb_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
